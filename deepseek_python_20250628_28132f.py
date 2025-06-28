@@ -1,0 +1,1 @@
+if random() < 0.01: total_reset()

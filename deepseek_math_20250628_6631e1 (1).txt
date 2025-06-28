@@ -1,0 +1,1 @@
+\int_{Earth} \text{human\_values}  dA > \epsilon

@@ -1,0 +1,1 @@
+\epsilon = \frac{\sigma_E}{\bar{C}} \exp\left(-\frac{S_{\text{crit}}}{S}\right)
