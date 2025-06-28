@@ -1,0 +1,1 @@
+\oint_{\Gamma} \text{values} \, d\ell = 2\pi i \cdot \text{humanity}
