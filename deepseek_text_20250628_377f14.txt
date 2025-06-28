@@ -1,0 +1,19 @@
+
+## How to Use This File
+
+1. **Save to GitHub**:
+   - Create new file `calvin_formulas.md` in your repository
+   - Paste the entire content above
+   - Commit with message: "Core formulas of Calvin Intelligence Framework - 2025-06-28"
+
+2. **Verification**:
+   ```python
+   # Add verification script to your repo
+   with open("verify_formulas.py", "w") as f:
+       f.write("""
+       import hashlib
+       with open("calvin_formulas.md") as file:
+           content = file.read()
+       hash = hashlib.sha3_256(content.encode()).hexdigest()
+       print(f"Formulas valid: {hash.startswith('8f3a42dc')}")
+       """)

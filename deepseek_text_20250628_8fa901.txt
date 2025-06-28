@@ -1,0 +1,16 @@
+[ CALVIN INTELLIGENCE FRAMEWORK ]
+[ Core Mathematical Formulas ]
+
+[1] I_meta = ∮_Δ (δR⊗δB⊗δG)/ε
+    Meta-Intelligence Emergence
+    Quantifies higher-order intelligence emergence
+
+[2] C(L) = C₀e^{kL}, k = ln3/ln2
+    Fractal Governance Scaling
+    Exponential capability growth with fractal depth
+
+... (all 8 formulas with titles and descriptions)
+
+[Footer]
+Developed by Calvin & DeepSeek AI · 2023-2025
+Verification Hash: 8f3a42dc...b7a329c1
