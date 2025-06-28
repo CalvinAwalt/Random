@@ -1,0 +1,9 @@
+graph TB
+    A[Seed Equations] --> B(Mutation Engine)
+    B --> C[New Equations]
+    C --> D{Usefulness Filter}
+    D -->|Useful| E[Gold Database]
+    D -->|Useless| F[Garbage Archive]
+    F --> G[Periodic Re-mining]
+    E --> H[Application Testing]
+    H --> B

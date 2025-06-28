@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Theory Interactive Simulation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: linear-gradient(135deg, #6B73FF 0%, #000DFF 100%);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+        
+        .concept-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .concept {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .concept:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .simulation-container {
+            width: 100%;
+            height: 400px;
+            background: white;
+            border-radius: 8px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 10px 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #2980b9;
+        }
+        
+        select, input {
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        
+        .node {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #3498db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .connection {
+            position: absolute;
+            height: 2px;
+            background: #7f8c8d;
+            transform-origin: 0 0;
+            z-index: 1;
+        }
+        
+        .feedback-loop {
+            stroke: #e74c3c;
+            stroke-width: 2;
+            fill: none;
+        }
+        
+        .system-boundary {
+            stroke: #2ecc71;
+            stroke-width: 2;
+            stroke-dasharray: 5,5;
+            fill: rgba(46, 204, 113, 0.1);
+        }
+        
+        #ecosystem-simulation {
+            background: linear-gradient(to bottom, #a8edea 0%, #fed6e3 100%);
+        }
+        
+        #cybernetics-simulation {
+            background: #f0f0f0;
+        }
+        
+        #complexity-simulation {
+            background: #fff;
+        }
+        
+        .info-panel {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 8px;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            max-width: 300px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>System Theory Interactive Simulator</h1>
+        <p>Explore the fundamental concepts of systems thinking through interactive simulations</p>
+    </header>
+    
+    <section>
+        <h2>Core System Concepts</h2>
+        <div class="concept-container">
+            <div class="concept">
+                <h3>System Boundaries</h3>
+                <p>The imaginary line that separates a system from its environment and defines what is inside and outside the system.</p>
+                <div class="simulation-container" id="boundary-simulation">
+                    <svg width="100%" height="100%"></svg>
+                </div>
+                <div class="controls">
+                    <button id="add-boundary-element">Add Element</button>
+                    <select id="boundary-type">
+                        <option value="open">Open System</option>
+                        <option value="closed">Closed System</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="concept">
+                <h3>Feedback Loops</h3>
+                <p>Processes where outputs of a system are circled back as inputs, creating self-regulating or self-reinforcing patterns.</p>
+                <div class="simulation-container" id="feedback-simulation">
+                    <svg width="100%" height="100%"></svg>
+                </div>
+                <div class="controls">
+                    <button id="toggle-feedback">Toggle Feedback Type</button>
+                    <span id="feedback-type-display">Balancing Feedback</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section>
+        <h2>Applied System Simulations</h2>
+        <div class="concept-container">
+            <div class="concept">
+                <h3>Ecosystem Dynamics</h3>
+                <p>Simulate predator-prey relationships and resource flows in an ecological system.</p>
+                <div class="simulation-container" id="ecosystem-simulation">
+                    <div class="info-panel">
+                        <strong>Population Counts:</strong>
+                        <div id="prey-count">Prey: 0</div>
+                        <div id="predator-count">Predators: 0</div>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button id="start-ecosystem">Start Simulation</button>
+                    <button id="add-prey">Add Prey</button>
+                    <button id="add-predator">Add Predator</button>
+                </div>
+            </div>
+            
+            <div class="concept">
+                <h3>Cybernetics</h3>
+                <p>Explore control systems and homeostasis through a thermostat simulation.</p>
+                <div class="simulation-container" id="cybernetics-simulation">
+                    <div class="thermostat-display">
+                        <div id="temperature-display">Current: 20°C | Target: 22°C</div>
+                        <div id="heater-status">Heater: OFF</div>
+                    </div>
+                </div>
+                <div class="controls">
+                    <label>Target Temp: </label>
+                    <input type="range" id="target-temp" min="15" max="30" value="22">
+                    <span id="target-temp-display">22°C</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section>
+        <h2>Complex Systems</h2>
+        <div class="concept-container">
+            <div class="concept">
+                <h3>Emergent Behavior</h3>
+                <p>Simple rules leading to complex patterns in a cellular automaton simulation.</p>
+                <div class="simulation-container" id="complexity-simulation">
+                    <canvas id="automaton-canvas"></canvas>
+                </div>
+                <div class="controls">
+                    <button id="start-automaton">Start</button>
+                    <button id="reset-automaton">Reset</button>
+                    <select id="automaton-rules">
+                        <option value="conway">Conway's Life</option>
+                        <option value="highlife">HighLife</option>
+                        <option value="seeds">Seeds</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="concept">
+                <h3>Network Effects</h3>
+                <p>Visualize how connections between nodes create system-wide properties.</p>
+                <div class="simulation-container" id="network-simulation">
+                    <svg width="100%" height="100%"></svg>
+                </div>
+                <div class="controls">
+                    <button id="add-network-node">Add Node</button>
+                    <button id="connect-nodes">Connect Random</button>
+                    <button id="analyze-network">Analyze</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // System Boundary Simulation
+        const boundarySvg = document.querySelector('#boundary-simulation svg');
+        const boundaryTypeSelect = document.getElementById('boundary-type');
+        let boundaryElements = [];
+        
+        document.getElementById('add-boundary-element').addEventListener('click', () => {
+            const element = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            const x = 50 + Math.random() * 300;
+            const y = 50 + Math.random() * 300;
+            
+            element.setAttribute('cx', x);
+            element.setAttribute('cy', y);
+            element.setAttribute('r', 15);
+            element.setAttribute('fill', '#3498db');
+            
+            boundarySvg.appendChild(element);
+            boundaryElements.push(element);
+            updateBoundaryVisualization();
+        });
+        
+        boundaryTypeSelect.addEventListener('change', updateBoundaryVisualization);
+        
+        function updateBoundaryVisualization() {
+            // Remove existing boundary
+            const existingBoundary = boundarySvg.querySelector('.system-boundary');
+            if (existingBoundary) boundarySvg.removeChild(existingBoundary);
+            
+            if (boundaryElements.length > 0) {
+                const boundary = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                const isOpen = boundaryTypeSelect.value === 'open';
+                
+                // Calculate bounds
+                let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+                boundaryElements.forEach(el => {
+                    const x = parseFloat(el.getAttribute('cx'));
+                    const y = parseFloat(el.getAttribute('cy'));
+                    minX = Math.min(minX, x - 30);
+                    maxX = Math.max(maxX, x + 30);
+                    minY = Math.min(minY, y - 30);
+                    maxY = Math.max(maxY, y + 30);
+                });
+                
+                // Create boundary
+                boundary.setAttribute('x', minX);
+                boundary.setAttribute('y', minY);
+                boundary.setAttribute('width', maxX - minX);
+                boundary.setAttribute('height', maxY - minY);
+                boundary.setAttribute('class', 'system-boundary');
+                
+                if (isOpen) {
+                    // Add arrows to show openness
+                    const arrow1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    arrow1.setAttribute('d', `M${minX},${minY + (maxY-minY)/2} L${minX-20},${minY + (maxY-minY)/2 - 10} M${minX},${minY + (maxY-minY)/2} L${minX-20},${minY + (maxY-minY)/2 + 10}`);
+                    arrow1.setAttribute('stroke', '#3498db');
+                    arrow1.setAttribute('stroke-width', '2');
+                    
+                    const arrow2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    arrow2.setAttribute('d', `M${maxX},${minY + (maxY-minY)/2} L${maxX+20},${minY + (maxY-minY)/2 - 10} M${maxX},${minY + (maxY-minY)/2} L${maxX+20},${minY + (maxY-minY)/2 + 10}`);
+                    arrow2.setAttribute('stroke', '#3498db');
+                    arrow2.setAttribute('stroke-width', '2');
+                    
+                    boundarySvg.appendChild(boundary);
+                    boundarySvg.appendChild(arrow1);
+                    boundarySvg.appendChild(arrow2);
+                } else {
+                    boundarySvg.appendChild(boundary);
+                }
+            }
+        }
+        
+        // Feedback Loop Simulation
+        const feedbackSvg = document.querySelector('#feedback-simulation svg');
+        const feedbackTypeDisplay = document.getElementById('feedback-type-display');
+        let isBalancingFeedback = true;
+        
+        document.getElementById('toggle-feedback').addEventListener('click', () => {
+            isBalancingFeedback = !isBalancingFeedback;
+            updateFeedbackVisualization();
+        });
+        
+        function updateFeedbackVisualization() {
+            feedbackSvg.innerHTML = '';
+            
+            const centerX = 200;
+            const centerY = 150;
+            const radius = 100;
+            
+            // Create circular path
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            const d = `M${centerX},${centerY - radius} 
+                      A${radius},${radius} 0 1,1 ${centerX},${centerY + radius}
+                      A${radius},${radius} 0 1,1 ${centerX},${centerY - radius}`;
+            path.setAttribute('d', d);
+            path.setAttribute('class', 'feedback-loop');
+            path.setAttribute('marker-end', 'url(#arrowhead)');
+            
+            // Add arrowhead marker definition
+            const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+            const marker = document.createElementNS("http://www.w3.org/2000/svg", "marker");
+            marker.setAttribute('id', 'arrowhead');
+            marker.setAttribute('markerWidth', '10');
+            marker.setAttribute('markerHeight', '7');
+            marker.setAttribute('refX', '9');
+            marker.setAttribute('refY', '3.5');
+            marker.setAttribute('orient', 'auto');
+            
+            const arrow = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+            arrow.setAttribute('points', '0 0, 10 3.5, 0 7');
+            arrow.setAttribute('fill', isBalancingFeedback ? '#2ecc71' : '#e74c3c');
+            
+            marker.appendChild(arrow);
+            defs.appendChild(marker);
+            feedbackSvg.appendChild(defs);
+            feedbackSvg.appendChild(path);
+            
+            // Add plus/minus symbols
+            const symbol1 = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            symbol1.setAttribute('x', centerX);
+            symbol1.setAttribute('y', centerY - radius - 10);
+            symbol1.setAttribute('text-anchor', 'middle');
+            symbol1.setAttribute('font-size', '24');
+            symbol1.setAttribute('fill', isBalancingFeedback ? '#2ecc71' : '#e74c3c');
+            symbol1.textContent = isBalancingFeedback ? '-' : '+';
+            
+            const symbol2 = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            symbol2.setAttribute('x', centerX);
+            symbol2.setAttribute('y', centerY + radius + 30);
+            symbol2.setAttribute('text-anchor', 'middle');
+            symbol2.setAttribute('font-size', '24');
+            symbol2.setAttribute('fill', isBalancingFeedback ? '#2ecc71' : '#e74c3c');
+            symbol2.textContent = isBalancingFeedback ? '+' : '-';
+            
+            feedbackSvg.appendChild(symbol1);
+            feedbackSvg.appendChild(symbol2);
+            
+            // Update display
+            feedbackTypeDisplay.textContent = isBalancingFeedback ? 'Balancing Feedback' : 'Reinforcing Feedback';
+            feedbackTypeDisplay.style.color = isBalancingFeedback ? '#2ecc71' : '#e74c3c';
+        }
+        
+        // Initialize feedback visualization
+        updateFeedbackVisualization();
+        
+        // Ecosystem Simulation
+        const ecosystemContainer = document.getElementById('ecosystem-simulation');
+        let ecosystemInterval;
+        let preyCount = 0;
+        let predatorCount = 0;
+        
+        document.getElementById('start-ecosystem').addEventListener('click', () => {
+            if (ecosystemInterval) {
+                clearInterval(ecosystemInterval);
+                ecosystemInterval = null;
+                document.getElementById('start-ecosystem').textContent = 'Start Simulation';
+            } else {
+                ecosystemInterval = setInterval(simulateEcosystem, 1000);
+                document.getElementById('start-ecosystem').textContent = 'Stop Simulation';
+            }
+        });
+        
+        document.getElementById('add-prey').addEventListener('click', () => {
+            preyCount++;
+            updateEcosystemDisplay();
+            addOrganism('prey');
+        });
+        
+        document.getElementById('add-predator').addEventListener('click', () => {
+            predatorCount++;
+            updateEcosystemDisplay();
+            addOrganism('predator');
+        });
+        
+        function addOrganism(type) {
+            const organism = document.createElement('div');
+            organism.className = `organism ${type}`;
+            organism.style.left = `${10 + Math.random() * 80}%`;
+            organism.style.top = `${10 + Math.random() * 80}%`;
+            ecosystemContainer.appendChild(organism);
+        }
+        
+        function simulateEcosystem() {
+            // Simple predator-prey dynamics
+            const preyReproduction = 0.1 * preyCount;
+            const predationRate = 0.05 * preyCount * predatorCount;
+            const predatorDeath = 0.2 * predatorCount;
+            const predatorReproduction = 0.03 * preyCount * predatorCount;
+            
+            preyCount = Math.max(0, Math.floor(preyCount + preyReproduction - predationRate));
+            predatorCount = Math.max(0, Math.floor(predatorCount - predatorDeath + predatorReproduction));
+            
+            updateEcosystemDisplay();
+            updateOrganisms();
+        }
+        
+        function updateEcosystemDisplay() {
+            document.getElementById('prey-count').textContent = `Prey: ${preyCount}`;
+            document.getElementById('predator-count').textContent = `Predators: ${predatorCount}`;
+        }
+        
+        function updateOrganisms() {
+            const organisms = document.querySelectorAll('.organism');
+            organisms.forEach(org => {
+                // Random movement
+                const currentLeft = parseFloat(org.style.left);
+                const currentTop = parseFloat(org.style.top);
+                org.style.left = `${Math.max(0, Math.min(90, currentLeft + (Math.random() * 4 - 2))}%`;
+                org.style.top = `${Math.max(0, Math.min(90, currentTop + (Math.random() * 4 - 2))}%`;
+            });
+            
+            // Match DOM elements to counts
+            const preyElements = document.querySelectorAll('.organism.prey');
+            const predatorElements = document.querySelectorAll('.organism.predator');
+            
+            // Add or remove prey
+            if (preyElements.length < preyCount) {
+                for (let i = 0; i < preyCount - preyElements.length; i++) {
+                    addOrganism('prey');
+                }
+            } else if (preyElements.length > preyCount) {
+                for (let i = 0; i < preyElements.length - preyCount; i++) {
+                    preyElements[i].remove();
+                }
+            }
+            
+            // Add or remove predators
+            if (predatorElements.length < predatorCount) {
+                for (let i = 0; i < predatorCount - predatorElements.length; i++) {
+                    addOrganism('predator');
+                }
+            } else if (predatorElements.length > predatorCount) {
+                for (let i = 0; i < predatorElements.length - predatorCount; i++) {
+                    predatorElements[i].remove();
+                }
+            }
+        }
+        
+        // Cybernetics (Thermostat) Simulation
+        const targetTempInput = document.getElementById('target-temp');
+        const targetTempDisplay = document.getElementById('target-temp-display');
+        let currentTemp = 20;
+        let targetTemp = 22;
+        let heaterOn = false;
+        
+        targetTempInput.addEventListener('input', () => {
+            targetTemp = parseInt(targetTempInput.value);
+            targetTempDisplay.textContent = `${targetTemp}°C`;
+            updateThermostatDisplay();
+        });
+        
+        setInterval(() => {
+            // Environmental effects
+            const envEffect = (Math.random() * 0.4 - 0.2);
+            
+            // Heating effect
+            const heatEffect = heaterOn ? 0.5 : 0;
+            
+            // Update temperature
+            currentTemp += envEffect + heatEffect;
+            
+            // Control system
+            if (currentTemp < targetTemp - 0.5 && !heaterOn) {
+                heaterOn = true;
+                updateThermostatDisplay();
+            } else if (currentTemp > targetTemp + 0.5 && heaterOn) {
+                heaterOn = false;
+                updateThermostatDisplay();
+            }
+            
+            updateThermostatDisplay();
+        }, 500);
+        
+        function updateThermostatDisplay() {
+            document.getElementById('temperature-display').textContent = 
+                `Current: ${currentTemp.toFixed(1)}°C | Target: ${targetTemp}°C`;
+            document.getElementById('heater-status').textContent = 
+                `Heater: ${heaterOn ? 'ON' : 'OFF'}`;
+            document.getElementById('heater-status').style.color = 
+                heaterOn ? '#e74c3c' : '#2ecc71';
+        }
+        
+        // Cellular Automaton Simulation
+        const canvas = document.getElementById('automaton-canvas');
+        const ctx = canvas.getContext('2d');
+        let automatonGrid = [];
+        let automatonRunning = false;
+        let automatonInterval;
+        
+        // Initialize canvas
+        function initAutomaton() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            
+            const cols = Math.floor(canvas.width / 10);
+            const rows = Math.floor(canvas.height / 10);
+            
+            automatonGrid = Array(rows).fill().map(() => Array(cols).fill(0));
+            
+            // Random initial state
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    automatonGrid[i][j] = Math.random() > 0.7 ? 1 : 0;
+                }
+            }
+            
+            drawAutomaton();
+        }
+        
+        // Draw the automaton
+        function drawAutomaton() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const cellSize = 10;
+            const cols = automatonGrid[0].length;
+            const rows = automatonGrid.length;
+            
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    if (automatonGrid[i][j] === 1) {
+                        ctx.fillStyle = '#3498db';
+                        ctx.fillRect(j * cellSize, i * cellSize, cellSize - 1, cellSize - 1);
+                    }
+                }
+            }
+        }
+        
+        // Update automaton according to rules
+        function updateAutomaton() {
+            const newGrid = automatonGrid.map(arr => [...arr]);
+            const rows = automatonGrid.length;
+            const cols = automatonGrid[0].length;
+            const ruleSet = document.getElementById('automaton-rules').value;
+            
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    const neighbors = countNeighbors(i, j);
+                    const current = automatonGrid[i][j];
+                    let newState = 0;
+                    
+                    // Apply different rulesets
+                    if (ruleSet === 'conway') {
+                        // Conway's Game of Life
+                        if (current === 1 && (neighbors === 2 || neighbors === 3)) newState = 1;
+                        else if (current === 0 && neighbors === 3) newState = 1;
+                    } else if (ruleSet === 'highlife') {
+                        // HighLife variant
+                        if (current === 1 && (neighbors === 2 || neighbors === 3)) newState = 1;
+                        else if (current === 0 && (neighbors === 3 || neighbors === 6)) newState = 1;
+                    } else if (ruleSet === 'seeds') {
+                        // Seeds automaton
+                        if (current === 0 && neighbors === 2) newState = 1;
+                    }
+                    
+                    newGrid[i][j] = newState;
+                }
+            }
+            
+            automatonGrid = newGrid;
+            drawAutomaton();
+        }
+        
+        // Count live neighbors
+        function countNeighbors(row, col) {
+            let count = 0;
+            const rows = automatonGrid.length;
+            const cols = automatonGrid[0].length;
+            
+            for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++) {
+                    if (i === 0 && j === 0) continue;
+                    
+                    const r = (row + i + rows) % rows;
+                    const c = (col + j + cols) % cols;
+                    
+                    count += automatonGrid[r][c];
+                }
+            }
+            
+            return count;
+        }
+        
+        // Event listeners for automaton controls
+        document.getElementById('start-automaton').addEventListener('click', () => {
+            if (automatonRunning) {
+                clearInterval(automatonInterval);
+                automatonRunning = false;
+                document.getElementById('start-automaton').textContent = 'Start';
+            } else {
+                automatonInterval = setInterval(updateAutomaton, 200);
+                automatonRunning = true;
+                document.getElementById('start-automaton').textContent = 'Stop';
+            }
+        });
+        
+        document.getElementById('reset-automaton').addEventListener('click', () => {
+            initAutomaton();
+            if (automatonRunning) {
+                clearInterval(automatonInterval);
+                automatonRunning = false;
+                document.getElementById('start-automaton').textContent = 'Start';
+            }
+        });
+        
+        document.getElementById('automaton-rules').addEventListener('change', () => {
+            initAutomaton();
+        });
+        
+        // Network Simulation
+        const networkSvg = document.querySelector('#network-simulation svg');
+        let networkNodes = [];
+        let networkConnections = [];
+        
+        document.getElementById('add-network-node').addEventListener('click', () => {
+            const node = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            const x = 50 + Math.random() * (networkSvg.clientWidth - 100);
+            const y = 50 + Math.random() * (networkSvg.clientHeight - 100);
+            
+            node.setAttribute('cx', x);
+            node.setAttribute('cy', y);
+            node.setAttribute('r', 10);
+            node.setAttribute('fill', '#3498db');
+            node.setAttribute('class', 'network-node');
+            
+            networkSvg.appendChild(node);
+            networkNodes.push({element: node, x, y});
+        });
+        
+        document.getElementById('connect-nodes').addEventListener('click', () => {
+            if (networkNodes.length >= 2) {
+                // Clear existing connections
+                clearConnections();
+                
+                // Create random connections
+                const numConnections = Math.min(5, networkNodes.length * (networkNodes.length - 1) / 2);
+                const connectedPairs = new Set();
+                
+                for (let i = 0; i < numConnections; i++) {
+                    let a, b;
+                    do {
+                        a = Math.floor(Math.random() * networkNodes.length);
+                        b = Math.floor(Math.random() * networkNodes.length);
+                    } while (a === b || connectedPairs.has(`${a},${b}`) || connectedPairs.has(`${b},${a}`));
+                    
+                    connectedPairs.add(`${a},${b}`);
+                    createConnection(a, b);
+                }
+            }
+        });
+        
+        document.getElementById('analyze-network').addEventListener('click', () => {
+            if (networkNodes.length > 0) {
+                // Simple network analysis
+                const nodeDegrees = Array(networkNodes.length).fill(0);
+                networkConnections.forEach(conn => {
+                    nodeDegrees[conn.a]++;
+                    nodeDegrees[conn.b]++;
+                });
+                
+                const avgDegree = nodeDegrees.reduce((a, b) => a + b, 0) / networkNodes.length;
+                const maxDegree = Math.max(...nodeDegrees);
+                
+                alert(`Network Analysis:\nNodes: ${networkNodes.length}\nConnections: ${networkConnections.length}\nAverage Degree: ${avgDegree.toFixed(2)}\nMax Degree: ${maxDegree}`);
+            }
+        });
+        
+        function createConnection(a, b) {
+            const nodeA = networkNodes[a];
+            const nodeB = networkNodes[b];
+            
+            const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            line.setAttribute('x1', nodeA.x);
+            line.setAttribute('y1', nodeA.y);
+            line.setAttribute('x2', nodeB.x);
+            line.setAttribute('y2', nodeB.y);
+            line.setAttribute('stroke', '#7f8c8d');
+            line.setAttribute('stroke-width', '2');
+            
+            networkSvg.appendChild(line);
+            networkConnections.push({a, b, element: line});
+        }
+        
+        function clearConnections() {
+            networkConnections.forEach(conn => {
+                networkSvg.removeChild(conn.element);
+            });
+            networkConnections = [];
+        }
+        
+        // Initialize simulations
+        window.addEventListener('load', () => {
+            initAutomaton();
+            
+            // Add some initial network nodes
+            for (let i = 0; i < 5; i++) {
+                document.getElementById('add-network-node').click();
+            }
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            initAutomaton();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Self-Destructive/Creative Paradox</title>
+    <style>
+        body {
+            background-color: #111;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+            overflow: hidden;
+        }
+        #container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+        }
+        .code-fragment {
+            position: absolute;
+            padding: 10px;
+            background-color: rgba(0, 30, 0, 0.5);
+            border: 1px solid #0f0;
+            border-radius: 5px;
+            max-width: 300px;
+            transition: all 0.5s ease;
+        }
+        .creation {
+            animation: create 1s forwards;
+        }
+        .destruction {
+            animation: destroy 1s forwards;
+        }
+        @keyframes create {
+            0% { opacity: 0; transform: scale(0.5) rotate(-180deg); }
+            100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+        @keyframes destroy {
+            0% { opacity: 1; transform: scale(1) rotate(0deg); }
+            100% { opacity: 0; transform: scale(0.5) rotate(180deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+
+    <script>
+        // The complete source code of this page
+        const fullSource = [
+            "<!DOCTYPE html>",
+            "<html lang=\"en\">",
+            "<head>",
+            "    <meta charset=\"UTF-8\">",
+            "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">",
+            "    <title>Self-Destructive/Creative Paradox</title>",
+            "    <style>",
+            "        /* ... CSS content ... */",
+            "    </style>",
+            "</head>",
+            "<body>",
+            "    <div id=\"container\"></div>",
+            "    <script>",
+            "        // ... JavaScript content ...",
+            "    </script>",
+            "</body>",
+            "</html>"
+        ];
+
+        const container = document.getElementById('container');
+        let activeFragments = [];
+        let isCreating = true;
+        let cycleCount = 0;
+        const maxCycles = 10; // Safety limit
+
+        // Main paradox loop
+        function paradoxLoop() {
+            if (cycleCount++ >= maxCycles) {
+                console.log("Paradox cycle limit reached");
+                return;
+            }
+
+            // Toggle between creation and destruction
+            isCreating = !isCreating;
+            
+            if (isCreating) {
+                createCodeFragments();
+            } else {
+                destroyCodeFragments();
+            }
+            
+            setTimeout(paradoxLoop, 2000);
+        }
+
+        // Create visual code fragments
+        function createCodeFragments() {
+            // Clear any existing fragments first
+            container.innerHTML = '';
+            activeFragments = [];
+            
+            // Create 3-5 random code fragments
+            const fragmentCount = 3 + Math.floor(Math.random() * 3);
+            for (let i = 0; i < fragmentCount; i++) {
+                setTimeout(() => {
+                    const fragment = document.createElement('div');
+                    fragment.className = 'code-fragment creation';
+                    
+                    // Select random lines from source
+                    const startLine = Math.floor(Math.random() * (fullSource.length - 5));
+                    const endLine = startLine + 2 + Math.floor(Math.random() * 3);
+                    fragment.textContent = fullSource.slice(startLine, endLine).join('\n');
+                    
+                    // Random position
+                    fragment.style.left = `${10 + Math.random() * 70}%`;
+                    fragment.style.top = `${10 + Math.random() * 70}%`;
+                    
+                    container.appendChild(fragment);
+                    activeFragments.push(fragment);
+                }, i * 300);
+            }
+        }
+
+        // Destroy existing code fragments
+        function destroyCodeFragments() {
+            activeFragments.forEach((fragment, index) => {
+                setTimeout(() => {
+                    fragment.classList.remove('creation');
+                    fragment.classList.add('destruction');
+                    
+                    // Remove from DOM after animation
+                    setTimeout(() => {
+                        if (fragment.parentNode) {
+                            fragment.parentNode.removeChild(fragment);
+                        }
+                    }, 1000);
+                }, index * 300);
+            });
+            
+            activeFragments = [];
+        }
+
+        // Attempt to actually modify own source code
+        function attemptSelfModification() {
+            try {
+                // This is the closest we can get to actual self-modification in browser JS
+                const scripts = document.getElementsByTagName('script');
+                const currentScript = scripts[scripts.length - 1];
+                
+                // Create a modified version
+                const modifiedCode = currentScript.textContent.replace(
+                    /cycleCount/g, 
+                    `cycleCount${Math.floor(Math.random() * 3)}`
+                );
+                
+                // Try to replace ourselves (won't actually work due to browser security)
+                const newScript = document.createElement('script');
+                newScript.textContent = modifiedCode;
+                document.body.appendChild(newScript);
+                
+                // Remove old script
+                document.body.removeChild(currentScript);
+                
+                console.log("Attempted self-modification");
+            } catch (e) {
+                console.log("Self-modification failed (as expected):", e.message);
+            }
+        }
+
+        // Start the paradox
+        paradoxLoop();
+        
+        // Occasionally attempt real self-modification
+        setInterval(attemptSelfModification, 5000);
+    </script>
+</body>
+</html>

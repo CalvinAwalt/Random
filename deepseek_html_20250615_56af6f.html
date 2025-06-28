@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ever-Changing Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            transition: all 1s ease;
+            padding: 20px;
+        }
+        .content-box {
+            border: 2px solid #333;
+            padding: 15px;
+            margin: 10px 0;
+            transition: all 1s ease;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="main-title">The Page That Never Stays the Same</h1>
+    
+    <div class="content-box" id="box1">
+        <p>Watch as I transform before your eyes...</p>
+    </div>
+    
+    <div class="content-box" id="box2">
+        <p>Content will change, colors will shift,</p>
+        <p>And the structure will continually drift.</p>
+    </div>
+    
+    <button id="action-btn">Click Me (I change too)</button>
+    
+    <div id="dynamic-area"></div>
+
+    <script>
+        // Array of possible colors
+        const colors = ['#FF5733', '#33FF57', '#3357FF', '#F033FF', '#FF33F5', '#33FFF5'];
+        const fonts = ['Arial', 'Courier New', 'Georgia', 'Times New Roman', 'Verdana', 'Comic Sans MS'];
+        const words = ['transform', 'evolve', 'mutate', 'shift', 'change', 'adapt', 'modify'];
+        const phrases = [
+            "The only constant is change itself.",
+            "Nothing endures but change.",
+            "Change is the law of life.",
+            "All is flux, nothing stays still.",
+            "Life is about change, sometimes it's painful, sometimes it's beautiful.",
+            "Change before you have to."
+        ];
+        
+        // Elements to modify
+        const title = document.getElementById('main-title');
+        const box1 = document.getElementById('box1');
+        const box2 = document.getElementById('box2');
+        const btn = document.getElementById('action-btn');
+        const dynamicArea = document.getElementById('dynamic-area');
+        
+        // Random number generator
+        function randomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        
+        // Random color generator
+        function randomColor() {
+            return colors[randomInt(0, colors.length - 1)];
+        }
+        
+        // Modify the page elements
+        function transformPage() {
+            // Change title
+            title.textContent = `The Page That ${words[randomInt(0, words.length - 1)]}`;
+            title.style.color = randomColor();
+            title.style.fontFamily = fonts[randomInt(0, fonts.length - 1)];
+            
+            // Change box1
+            box1.innerHTML = `<p>${phrases[randomInt(0, phrases.length - 1)]}</p>`;
+            box1.style.backgroundColor = randomColor();
+            box1.style.borderColor = randomColor();
+            box1.style.color = randomColor();
+            
+            // Change box2
+            if(Math.random() > 0.7) {
+                box2.innerHTML = `
+                    <h3>New Section ${randomInt(1, 100)}</h3>
+                    <p>This content appeared randomly!</p>
+                    <ul>
+                        <li>Item ${randomInt(1, 10)}</li>
+                        <li>Item ${randomInt(1, 10)}</li>
+                    </ul>
+                `;
+            } else {
+                box2.innerHTML = `<p>${phrases[randomInt(0, phrases.length - 1)]}</p>`;
+            }
+            box2.style.borderRadius = `${randomInt(0, 50)}px`;
+            
+            // Change button
+            btn.textContent = ['Click Me', 'Press Here', 'Try This', 'Do It', 'Action'][randomInt(0, 4)];
+            btn.style.backgroundColor = randomColor();
+            btn.style.color = randomColor();
+            btn.style.padding = `${randomInt(5, 20)}px ${randomInt(10, 40)}px`;
+            
+            // Change body background
+            document.body.style.backgroundColor = `rgba(${randomInt(150, 255)}, ${randomInt(150, 255)}, ${randomInt(150, 255)}, 0.1)`;
+            
+            // Randomly add/remove elements
+            if(Math.random() > 0.8) {
+                if(dynamicArea.children.length > 3) {
+                    dynamicArea.removeChild(dynamicArea.lastChild);
+                } else {
+                    const newElement = document.createElement('div');
+                    newElement.className = 'content-box';
+                    newElement.innerHTML = `<p>New element added at ${new Date().toLocaleTimeString()}</p>`;
+                    newElement.style.backgroundColor = randomColor();
+                    dynamicArea.appendChild(newElement);
+                }
+            }
+            
+            // Randomly change layout
+            if(Math.random() > 0.9) {
+                document.body.style.flexDirection = ['row', 'column', 'row-reverse'][randomInt(0, 2)];
+            }
+        }
+        
+        // Initial transformation
+        transformPage();
+        
+        // Set up continuous transformation
+        setInterval(transformPage, 3000);
+        
+        // Button click adds special transformation
+        btn.addEventListener('click', function() {
+            // Create a temporary animation
+            document.body.style.transform = 'rotate(' + randomInt(-5, 5) + 'deg)';
+            setTimeout(() => {
+                document.body.style.transform = 'rotate(0deg)';
+            }, 500);
+            
+            // Add a special message
+            const specialMsg = document.createElement('div');
+            specialMsg.className = 'content-box';
+            specialMsg.innerHTML = '<p>You triggered a special change!</p>';
+            specialMsg.style.backgroundColor = '#ffff00';
+            specialMsg.style.animation = 'flash 1s';
+            dynamicArea.prepend(specialMsg);
+            
+            // Remove after some time
+            setTimeout(() => {
+                if(specialMsg.parentNode) {
+                    specialMsg.parentNode.removeChild(specialMsg);
+                }
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

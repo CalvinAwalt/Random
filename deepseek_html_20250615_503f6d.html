@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta name="title" content="Futurology Stocks - Invest in the Future">
+   <meta name="description" content="Discover the best futuristic stocks to invest in. Explore renewable energy, uranium, cryptocurrency, and space stocks on FutureStocks.ca.">
+   <meta name="keywords" content="future stocks, renewable energy stocks, uranium stocks, cryptocurrency stocks, space stocks, futuristic investments">
+   <meta name="robots" content="index, follow">
+   <meta name="language" content="English">
+   <meta name="author" content="FutureStocks.ca">
+   <link rel="canonical" href="https://futurestocks.ca">
+
+   <!-- Google tag (gtag.js) -->
+   <script async src="https://www.googletagmanager.com/gtag/js?id=G-WVMJSYY32M"></script>
+   <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-WVMJSYY32M');
+   </script>
+
+   <!-- Favicons -->
+   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+   <link rel="manifest" href="/site.webmanifest">
+   <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+   <meta name="msapplication-TileColor" content="#da532c">
+   <meta name="theme-color" content="#ffffff">
+
+   <!-- Styles -->
+   <link rel="stylesheet" href="styles.css">
+   <style>
+      body {
+         background-color: black;
+         color: white;
+         font-family: Arial, sans-serif;
+         margin: 0;
+         padding: 0;
+         transition: all 0.5s ease;
+      }
+      .tradingview-widget-container {
+         margin: 20px auto;
+         max-width: 100%;
+         overflow: hidden;
+      }
+      footer {
+         background-color: rgba(0, 0, 0, 0.5);
+         color: DarkGray;
+         text-align: center;
+         padding: 10px;
+         position: relative;
+         width: 100%;
+         transition: all 0.5s ease;
+      }
+      
+      /* Rapidly changing elements */
+      .hyper-header {
+         background-size: cover;
+         padding: 20px;
+         transition: all 0.5s ease;
+         position: relative;
+         overflow: hidden;
+      }
+      .hyper-header::before {
+         content: '';
+         position: absolute;
+         top: 0;
+         left: 0;
+         right: 0;
+         bottom: 0;
+         background: linear-gradient(45deg, 
+                                  rgba(255,0,0,0.2), 
+                                  rgba(0,255,0,0.2), 
+                                  rgba(0,0,255,0.2));
+         background-size: 400% 400%;
+         animation: gradientBG 15s ease infinite;
+         z-index: -1;
+      }
+      @keyframes gradientBG {
+         0% {background-position: 0% 50%;}
+         50% {background-position: 100% 50%;}
+         100% {background-position: 0% 50%;}
+      }
+      .hyper-quote {
+         font-size: 1.2em;
+         padding: 15px;
+         margin: 10px 0;
+         border-radius: 5px;
+         text-align: center;
+         transition: all 0.5s ease;
+         background-color: rgba(0,0,0,0.7);
+         border: 1px solid;
+      }
+      .hyper-stats {
+         display: flex;
+         justify-content: space-around;
+         flex-wrap: wrap;
+         padding: 10px;
+         margin: 15px 0;
+         transition: all 0.5s ease;
+      }
+      .hyper-stat {
+         padding: 10px;
+         margin: 5px;
+         min-width: 120px;
+         text-align: center;
+         border-radius: 5px;
+         transition: all 0.5s ease;
+         font-weight: bold;
+         animation: pulse 2s infinite alternate;
+      }
+      @keyframes pulse {
+         0% {transform: scale(1);}
+         100% {transform: scale(1.05);}
+      }
+      .hyper-ticker {
+         font-family: 'Courier New', monospace;
+         padding: 10px;
+         overflow: hidden;
+         white-space: nowrap;
+         transition: all 0.5s ease;
+         background-color: rgba(0,0,0,0.8);
+         border-top: 1px solid;
+         border-bottom: 1px solid;
+      }
+      .hyper-nav {
+         display: flex;
+         justify-content: center;
+         flex-wrap: wrap;
+         padding: 10px 0;
+      }
+      .hyper-nav a {
+         margin: 0 15px;
+         padding: 5px 10px;
+         text-decoration: none;
+         transition: all 0.3s ease;
+         border-radius: 4px;
+      }
+      
+      @media (max-width: 768px) {
+         .tradingview-widget-container {
+            margin: 10px auto;
+         }
+         footer {
+            position: static;
+         }
+         .hyper-stats {
+            flex-direction: column;
+         }
+         .hyper-nav {
+            flex-direction: column;
+            align-items: center;
+         }
+         .hyper-nav a {
+            margin: 5px 0;
+         }
+      }
+   </style>
+
+   <!-- Structured Data -->
+   <script type="application/ld+json">
+   {
+      "@context": "https://schema.org",
+      "@type": "Website",
+      "name": "Futurology Stocks",
+      "url": "https://futurestocks.ca",
+      "description": "Discover the best futuristic stocks to invest in. Explore renewable energy, uranium, cryptocurrency, and space stocks on FutureStocks.ca.",
+      "author": {
+         "@type": "Organization",
+         "name": "FutureStocks.ca"
+      }
+   }
+   </script>
+</head>
+<body id="hyper-body">
+   <header>
+      <div class="hyper-header">
+         <nav class="hyper-nav">
+            <a href="https://www.wikipedia.org" rel="noopener noreferrer">Wikipedia</a>
+            <a href="https://www.cnbc.com" rel="noopener noreferrer">CNBC</a>
+            <a href="https://www.reddit.com/r/Futurology/" rel="noopener noreferrer">Futurology</a>
+            <a href="https://www.futuretimeline.net" rel="noopener noreferrer">Timeline</a>
+            <a href="https://www.macroaxis.com/" rel="noopener noreferrer">Macroaxis</a>
+         </nav>
+         
+         <div class="hyper-quote" id="hyper-quote">
+            "The stock market is a device for transferring money from the impatient to the patient." - Warren Buffett
+         </div>
+      </div>
+   </header>
+
+   <main>
+      <div class="hyper-stats" id="hyper-stats">
+         <div class="hyper-stat" id="hyper-stat1">Future Trends: Loading...</div>
+         <div class="hyper-stat" id="hyper-stat2">Market Sentiment: Loading...</div>
+         <div class="hyper-stat" id="hyper-stat3">Innovation Index: Loading...</div>
+      </div>
+      
+      <div class="hyper-ticker" id="hyper-ticker">
+         Breaking: The future of investing is changing every second. Stay tuned for updates...
+      </div>
+
+      <!-- Macroaxis Widget Start --><script src="https://www.macroaxis.com/widgets/url.jsp?t=15&s=SRPT, NIO, AA,INDA,NVTS,SBET,VALE,ZIM,MVIS,IFOS,BABA,BNRG"></script><div class="macroaxis-copyright"></div><!-- Macroaxis Widget End -->
+      
+      <!-- TradingView Widgets (unchanged from original) -->
+      <div class="tradingview-widget-container">
+         <div class="tradingview-widget-container__widget"></div>
+         <div class="tradingview-widget-copyright">
+            <a href="https://www.tradingview.com" rel="noopener noreferrer" target="_blank"><span class="blue-text">Ticker Tape</span></a> by TradingView
+         </div>
+         <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+         {
+            "symbols": [
+               {"proName": "FOREXCOM:SPXUSD", "title": "S&P 500"},
+               {"proName": "FOREXCOM:NSXUSD", "title": "Nasdaq 100"},
+               {"proName": "FX_IDC:EURUSD", "title": "EUR/USD"},
+               {"proName": "BITSTAMP:BTCUSD", "title": "BTC/USD"},
+               {"proName": "BITSTAMP:ETHUSD", "title": "ETH/USD"}
+            ],
+            "showSymbolLogo": true,
+            "colorTheme": "dark",
+            "isTransparent": true,
+            "displayMode": "adaptive",
+            "locale": "en"
+         }
+         </script>
+      </div>
+
+      <!-- All other TradingView widgets remain unchanged -->
+      <!-- PLTR Chart Widget -->
+      <div class="tradingview-widget-container">
+         <div id="tradingview_0103c"></div>
+         <div class="tradingview-widget-copyright">
+            <a href="https://www.tradingview.com/symbols/NYSE-PLTR/" rel="noopener noreferrer" target="_blank"><span class="blue-text">PLTR Chart</span></a> by TradingView
+         </div>
+         <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+         <script type="text/javascript">
+            new TradingView.MediumWidget({
+               "symbols": [["NASDAQ:GOOG|ALL"], ["NASDAQ:NVDA|ALL"], ["NASDAQ:AMD|ALL"], ["NASDAQ:IRBT|ALL"], ["TSXV:QUIS|ALL"], ["TSXV:MCLD|ALL"], ["TSXV:NXO|ALL"], ["TSXV:SPOT|ALL"], ["AMEX:ARKW|ALL"], ["TSXV:BITF|ALL"]],
+               "chartOnly": false,
+               "width": "100%",
+               "height": "450",
+               "locale": "en",
+               "colorTheme": "dark",
+               "gridLineColor": "rgba(66, 66, 66, 1)",
+               "trendLineColor": "rgba(0, 0, 255, 1)",
+               "fontColor": "rgba(255, 0, 255, 1)",
+               "underLineColor": "rgba(0, 0, 255, 0.15)",
+               "isTransparent": true,
+               "autosize": false,
+               "container_id": "tradingview_0103c"
+            });
+         </script>
+      </div>
+
+      <!-- VEOEY Chart Widget -->
+      <div class="tradingview-widget-container">
+         <div id="tradingview_f9866"></div>
+         <div class="tradingview-widget-copyright">
+            <a href="https://www.tradingview.com/symbols/OTC-VEOEY/" rel="noopener noreferrer" target="_blank"><span class="blue-text">VEOEY Chart</span></a> by TradingView
+         </div>
+         <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+         <script type="text/javascript">
+            new TradingView.MediumWidget({
+               "symbols": [["OTC:VEOEY|ALL"], ["NYSE:PNR|ALL"], ["NASDAQ:YORW|ALL"], ["NYSE:CWT|ALL"], ["NYSE:AWR|ALL"], ["NYSE:WTRG|ALL"], ["TSX:GWR|ALL"], ["OTC:RAKR|ALL"]],
+               "chartOnly": false,
+               "width": "100%",
+               "height": "450",
+               "locale": "en",
+               "colorTheme": "dark",
+               "gridLineColor": "rgba(66, 66, 66, 1)",
+               "trendLineColor": "rgba(0, 0, 255, 1)",
+               "fontColor": "rgba(255, 0, 255, 1)",
+               "underLineColor": "rgba(0, 0, 255, 0.15)",
+               "isTransparent": true,
+               "autosize": false,
+               "container_id": "tradingview_f9866"
+            });
+         </script>
+      </div>
+
+      <!-- TRC Chart Widget -->
+      <div class="tradingview-widget-container">
+         <div id="tradingview_670f1"></div>
+         <div class="tradingview-widget-copyright">
+            <a href="https://www.tradingview.com/symbols/NYSE-TRC/" rel="noopener noreferrer" target="_blank"><span class="blue-text">TRC Chart</span></a> by TradingView
+         </div>
+         <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+         <script type="text/javascript">
+            new TradingView.MediumWidget({
+               "symbols": [["NYSE:TRC|ALL"], ["NASDAQ:CRESY|ALL"], ["NASDAQ:PICO|ALL"], ["NASDAQ:LAND|ALL"]],
+               "chartOnly": false,
+               "width": "100%",
+               "height": "450",
+               "locale": "en",
+               "colorTheme": "dark",
+               "gridLineColor": "rgba(66, 66, 66, 1)",
+               "trendLineColor": "rgba(0, 0, 255, 1)",
+               "fontColor": "rgba(255, 0, 255, 1)",
+               "underLineColor": "rgba(0, 0, 255, 0.15)",
+               "isTransparent": true,
+               "autosize": false,
+               "container_id": "tradingview_670f1"
+            });
+         </script>
+      </div>
+
+      <!-- SLV Chart Widget -->
+      <div class="tradingview-widget-container">
+         <div id="tradingview_c77df"></div>
+         <div class="tradingview-widget-copyright">
+            <a href="https://www.tradingview.com/symbols/AMEX-SLV/" rel="noopener noreferrer" target="_blank"><span class="blue-text">SLV Chart</span></a> by TradingView
+         </div>
+         <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+         <script type="text/javascript">
+            new TradingView.MediumWidget({
+               "symbols": [["AMEX:SLV|ALL"], ["NYSE:GOLD|ALL"], ["AMEX:BATT|ALL"], ["TSXV:NOU|ALL"], ["AMEX:JJN|ALL"], ["COPPER|ALL"], ["CBOT:ZCZ2024|ALL"], ["AMEX:URA|ALL"]],
+               "chartOnly": false,
+               "width": "100%",
+               "height": "450",
+               "locale": "en",
+               "colorTheme": "dark",
+               "gridLineColor": "rgba(66, 66, 66, 1)",
+               "trendLineColor": "rgba(0, 0, 255, 1)",
+               "fontColor": "rgba(255, 0, 255, 1)",
+               "underLineColor": "rgba(0, 0, 255, 0.15)",
+               "isTransparent": true,
+               "autosize": false,
+               "container_id": "tradingview_c77df"
+            });
+         </script>
+      </div>
+
+      <!-- TSLA Chart Widget -->
+      <div class="tradingview-widget-container">
+         <div id="tradingview_c825c"></div>
+         <div class="tradingview-widget-copyright">
+            <a href="https://www.tradingview.com/symbols/NASDAQ-TSLA/" rel="noopener noreferrer" target="_blank"><span class="blue-text">TSLA Chart</span></a> by TradingView
+         </div>
+         <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+         <script type="text/javascript">
+            new TradingView.MediumWidget({
+               "symbols": [["NASDAQ:TSLA|ALL"], ["NYSE:NIO|ALL"], ["NASDAQ:SOLO|ALL"], ["NYSE:XPEV|ALL"], ["NASDAQ:LI|ALL"], ["TSXV:GPV|ALL"], ["WKHS|ALL"], ["NASDAQ:PLUG|ALL"]],
+               "chartOnly": false,
+               "width": "100%",
+               "height": "450",
+               "locale": "en",
+               "colorTheme": "dark",
+               "gridLineColor": "rgba(66, 66, 66, 1)",
+               "trendLineColor": "rgba(0, 0, 255, 1)",
+               "fontColor": "rgba(255, 0, 255, 1)",
+               "underLineColor": "rgba(0, 0, 255, 0.15)",
+               "isTransparent": true,
+               "autosize": false,
+               "container_id": "tradingview_c825c"
+            });
+         </script>
+      </div>
+
+      <!-- MAXR Chart Widget -->
+      <div class="tradingview-widget-container">
+         <div id="tradingview_33995"></div>
+         <div class="tradingview-widget-copyright">
+            <a href="https://www.tradingview.com/symbols/NYSE-MAXR/" rel="noopener noreferrer" target="_blank"><span class="blue-text">MAXR Chart</span></a> by TradingView
+         </div>
+         <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+         <script type="text/javascript">
+            new TradingView.MediumWidget({
+               "symbols": [["NYSE:MAXR|ALL"], ["NYSE:SPCE|ALL"], ["NYSE:LMT|ALL"], ["NYSE:BA|ALL"], ["NYSE:NOC|ALL"], ["OTC:INTEQ|ALL"], ["NASDAQ:UFO|ALL"], ["NASDAQ:LORL|ALL"]],
+               "chartOnly": false,
+               "width": "100%",
+               "height": "450",
+               "locale": "en",
+               "colorTheme": "dark",
+               "gridLineColor": "rgba(66, 66, 66, 1)",
+               "trendLineColor": "rgba(0, 0, 255, 1)",
+               "fontColor": "rgba(255, 0, 255, 1)",
+               "underLineColor": "rgba(0, 0, 255, 0.15)",
+               "isTransparent": true,
+               "autosize": false,
+               "container_id": "tradingview_33995"
+            });
+         </script>
+      </div>
+
+      <!-- FSLR Chart Widget -->
+      <div class="tradingview-widget-container">
+         <div id="tradingview_9216c"></div>
+         <div class="tradingview-widget-copyright">
+            <a href="https://www.tradingview.com/symbols/NASDAQ-FSLR/" rel="noopener noreferrer" target="_blank"><span class="blue-text">FSLR Chart</span></a> by TradingView
+         </div>
+         <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+         <script type="text/javascript">
+            new TradingView.MediumWidget({
+               "symbols": [["NASDAQ:FSLR|ALL"], ["NASDAQ:SPWR|ALL"], ["NASDAQ:ENPH|ALL"], ["NASDAQ:SEDG|ALL"], ["TSXV:SOLR|ALL"], ["NASDAQ:CSIQ|ALL"], ["TSXV:NGY|ALL"], ["NASDAQ:ARRY|ALL"]],
+               "chartOnly": false,
+               "width": "100%",
+               "height": "450",
+               "locale": "en",
+               "colorTheme": "dark",
+               "gridLineColor": "rgba(66, 66, 66, 1)",
+               "trendLineColor": "rgba(0, 0, 255, 1)",
+               "fontColor": "rgba(255, 0, 255, 1)",
+               "underLineColor": "rgba(0, 0, 255, 0.15)",
+               "isTransparent": true,
+               "autosize": false,
+               "container_id": "tradingview_9216c"
+            });
+         </script>
+      </div>
+
+      <!-- DAN Chart Widget -->
+      <div class="tradingview-widget-container">
+         <div id="tradingview_faa65"></div>
+         <div class="tradingview-widget-copyright">
+            <a href="https://www.tradingview.com/symbols/TSXV-DAN/" rel="noopener noreferrer" target="_blank"><span class="blue-text">DAN Chart</span></a> by TradingView
+         </div>
+         <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+         <script type="text/javascript">
+            new TradingView.MediumWidget({
+               "symbols": [["TSXV:DAN|ALL"], ["ASX:AEV|ALL"], ["TSXV:GRO|ALL"], ["TSXV:IFOS|ALL"], ["NYSE:MOS|ALL"], ["NYSE:NTR|ALL"]],
+               "chartOnly": false,
+               "width": "100%",
+               "height": "450",
+               "locale": "en",
+               "colorTheme": "dark",
+               "gridLineColor": "rgba(66, 66, 66, 1)",
+               "trendLineColor": "rgba(0, 0, 255, 1)",
+               "fontColor": "rgba(255, 0, 255, 1)",
+               "underLineColor": "rgba(0, 0, 255, 0.15)",
+               "isTransparent": true,
+               "autosize": false,
+               "container_id": "tradingview_faa65"
+            });
+         </script>
+      </div>
+
+      <!-- Cryptocurrency Markets Widget -->
+      <div class="tradingview-widget-container">
+         <div class="tradingview-widget-container__widget"></div>
+         <div class="tradingview-widget-copyright">
+            <a href="https://www.tradingview.com/markets/cryptocurrencies/prices-all/" rel="noopener noreferrer" target="_blank"><span class="blue-text">Cryptocurrency Markets</span></a> by TradingView
+         </div>
+         <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-screener.js" async>
+         {
+            "width": "100%",
+            "height": "450",
+            "defaultColumn": "overview",
+            "screener_type": "crypto_mkt",
+            "displayCurrency": "USD",
+            "colorTheme": "dark",
+            "locale": "en",
+            "isTransparent": true
+         }
+         </script>
+      </div>
+   </main>
+
+   <!-- Footer -->
+   <footer id="hyper-footer">
+      <p>Copyright &copy; <span id="current-year">2025</span> Futurology Stocks</p>
+      <p>Financial Content By Macroaxis</p>
+      <p id="hyper-footer-message">Tracking the pulse of future markets...</p>
+   </footer>
+
+   <!-- Hyper Dynamic Content Script -->
+   <script>
+      // Enhanced content arrays with more variety
+      const hyperQuotes = [
+         {text: "The stock market is a device for transferring money from the impatient to the patient.", author: "Warren Buffett"},
+         {text: "In the short run, the market is a voting machine. In the long run, it's a weighing machine.", author: "Benjamin Graham"},
+         {text: "The four most dangerous words in investing: 'This time it's different.'", author: "Sir John Templeton"},
+         {text: "Risk comes from not knowing what you're doing.", author: "Warren Buffett"},
+         {text: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt"},
+         {text: "Innovation is calling the future into being.", author: "Unknown"},
+         {text: "The best way to predict the future is to invent it.", author: "Alan Kay"},
+         {text: "Disruptive innovation is the future of investing.", author: "Unknown"},
+         {text: "Price is what you pay. Value is what you get.", author: "Warren Buffett"},
+         {text: "The market can stay irrational longer than you can stay solvent.", author: "John Maynard Keynes"}
+      ];
+      
+      const hyperStats = [
+         {name: "Future Trends", values: ["🚀 Rising", "📉 Falling", "⚖️ Stable", "🌪️ Volatile", "🐂 Bullish", "🐻 Bearish", "🔥 Hot", "❄️ Cold"]},
+         {name: "Market Sentiment", values: ["😊 Optimistic", "🤔 Cautious", "😨 Fearful", "💰 Greedy", "😐 Neutral", "🎉 Excited", "😟 Worried", "🤩 Euphoric"]},
+         {name: "Innovation Index", values: ["💡 High", "✨ Very High", "🔍 Moderate", "📉 Low", "💥 Exploding", "🛑 Stagnant", "📈 Growing", "⚡ Rapid"]}
+      ];
+      
+      const hyperTickerMessages = [
+         "🚨 Breaking: The future of investing is changing every second. Stay tuned for updates...",
+         "💡 New tech IPO expected to disrupt traditional markets...",
+         "🌱 Renewable energy stocks show strong growth potential...",
+         "🚀 Space exploration companies attracting record investments...",
+         "💰 Crypto markets showing increased institutional interest...",
+         "🤖 AI and automation stocks lead market gains...",
+         "🌍 Investors shifting focus to sustainable technologies...",
+         "⚡ Quantum computing startups secure massive funding rounds...",
+         "🔋 Battery technology innovations driving EV stocks higher...",
+         "🛰️ Satellite internet companies poised for growth..."
+      ];
+      
+      const hyperFooterMessages = [
+         "📊 Tracking the pulse of future markets...",
+         "🔮 Your gateway to tomorrow's investments today...",
+         "💎 Where vision meets investment strategy...",
+         "🚀 Investing in the world of tomorrow...",
+         "🌌 Future-focused market intelligence...",
+         "⚡ Real-time futuristic market data...",
+         "🔍 Analyzing tomorrow's trends today...",
+         "📈 Predicting the next big investment wave..."
+      ];
+      
+      const hyperColors = [
+         "#FF5733", "#33FF57", "#3357FF", "#F033FF", "#FF33F5", 
+         "#33FFF5", "#FF3361", "#61FF33", "#3361FF", "#F533FF"
+      ];
+      
+      // Get DOM elements
+      const quoteElement = document.getElementById('hyper-quote');
+      const statElements = [
+         document.getElementById('hyper-stat1'),
+         document.getElementById('hyper-stat2'),
+         document.getElementById('hyper-stat3')
+      ];
+      const tickerElement = document.getElementById('hyper-ticker');
+      const footerElement = document.getElementById('hyper-footer-message');
+      const bodyElement = document.getElementById('hyper-body');
+      const headerElement = document.querySelector('.hyper-header');
+      const navLinks = document.querySelectorAll('.hyper-nav a');
+      const currentYear = document.getElementById('current-year');
+      
+      // Set current year
+      currentYear.textContent = new Date().getFullYear();
+      
+      // Function to get random item from array
+      function getRandomItem(array) {
+         return array[Math.floor(Math.random() * array.length)];
+      }
+      
+      // Function to get random color
+      function getRandomColor() {
+         return hyperColors[Math.floor(Math.random() * hyperColors.length)];
+      }
+      
+      // Update quote with rapid changes
+      function updateHyperQuote() {
+         const quote = getRandomItem(hyperQuotes);
+         quoteElement.innerHTML = `"${quote.text}" <em>- ${quote.author}</em>`;
+         quoteElement.style.borderColor = getRandomColor();
+         quoteElement.style.color = getRandomColor();
+      }
+      
+      // Update stats with rapid changes
+      function updateHyperStats() {
+         hyperStats.forEach((stat, index) => {
+            const statValue = getRandomItem(stat.values);
+            statElements[index].innerHTML = `${stat.name}: ${statValue}`;
+            statElements[index].style.backgroundColor = `rgba(${Math.floor(Math.random() * 100)}, ${Math.floor(Math.random() * 100)}, ${Math.floor(Math.random() * 100)}, 0.7)`;
+            statElements[index].style.color = getRandomColor();
+         });
+      }
+      
+      // Update ticker with rapid changes
+      function updateHyperTicker() {
+         tickerElement.textContent = getRandomItem(hyperTickerMessages);
+         tickerElement.style.borderColor = getRandomColor();
+         tickerElement.style.color = getRandomColor();
+      }
+      
+      // Update footer with rapid changes
+      function updateHyperFooter() {
+         footerElement.textContent = getRandomItem(hyperFooterMessages);
+         footerElement.style.color = getRandomColor();
+      }
+      
+      // Update background colors
+      function updateHyperBackground() {
+         const color1 = getRandomColor();
+         const color2 = getRandomColor();
+         bodyElement.style.background = `linear-gradient(135deg, ${color1}, ${color2})`;
+      }
+      
+      // Update navigation links
+      function updateHyperNav() {
+         navLinks.forEach(link => {
+            link.style.color = getRandomColor();
+            link.style.backgroundColor = `rgba(${Math.floor(Math.random() * 100)}, ${Math.floor(Math.random() * 100)}, ${Math.floor(Math.random() * 100)}, 0.3)`;
+         });
+      }
+      
+      // Initial updates
+      updateHyperQuote();
+      updateHyperStats();
+      updateHyperTicker();
+      updateHyperFooter();
+      updateHyperBackground();
+      updateHyperNav();
+      
+      // Set very short intervals for rapid changes
+      setInterval(updateHyperQuote, 2000);
+      setInterval(updateHyperStats, 1500);
+      setInterval(updateHyperTicker, 2500);
+      setInterval(updateHyperFooter, 3000);
+      setInterval(updateHyperBackground, 4000);
+      setInterval(updateHyperNav, 3500);
+      
+      // Animate ticker with rapid movement
+      let tickerPos = window.innerWidth;
+      function animateHyperTicker() {
+         tickerPos -= 5;
+         if (tickerPos < -tickerElement.scrollWidth) {
+            tickerPos = window.innerWidth;
+            updateHyperTicker();
+         }
+         tickerElement.style.transform = `translateX(${tickerPos}px)`;
+         requestAnimationFrame(animateHyperTicker);
+      }
+      animateHyperTicker();
+      
+      // Add occasional "glitch" effect
+      setInterval(() => {
+         if (Math.random() > 0.7) {
+            bodyElement.style.filter = "hue-rotate(90deg)";
+            setTimeout(() => {
+               bodyElement.style.filter = "none";
+            }, 300);
+         }
+      }, 5000);
+   </script>
+</body>
+</html>

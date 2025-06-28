@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reverse-Coding Website</title>
+    <style>
+        body {
+            background-color: #111122;
+            color: #00ff88;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        #terminal {
+            height: 300px;
+            border: 1px solid #00ff88;
+            padding: 15px;
+            overflow-y: scroll;
+            margin-bottom: 20px;
+            background-color: rgba(0, 20, 15, 0.3);
+        }
+        .terminal-line {
+            margin: 5px 0;
+            white-space: pre;
+        }
+        .reverse-animation {
+            animation: reverseType 0.5s linear forwards;
+        }
+        @keyframes reverseType {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        #content {
+            opacity: 0;
+            transition: opacity 2s;
+        }
+        .code-block {
+            background-color: rgba(0, 10, 5, 0.5);
+            border-left: 3px solid #00ff88;
+            padding: 10px;
+            margin: 15px 0;
+        }
+        .deconstruct {
+            animation: deconstruct 1s forwards;
+        }
+        @keyframes deconstruct {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.8); }
+        }
+    </style>
+</head>
+<body>
+    <div id="terminal"></div>
+    <div id="content">
+        <h1>Self-Reverse-Coding Website</h1>
+        <div class="code-block" id="html-block">
+            <h2>HTML Structure</h2>
+            <p>This section appears to write itself in reverse</p>
+        </div>
+        <div class="code-block" id="css-block">
+            <h2>CSS Styles</h2>
+            <p>Watch as styles are applied backwards</p>
+        </div>
+        <div class="code-block" id="js-block">
+            <h2>JavaScript Logic</h2>
+            <p>The code that makes this all work</p>
+        </div>
+    </div>
+
+    <script>
+        // The complete source code of this page
+        const fullSource = [
+            "<!DOCTYPE html>",
+            "<html lang=\"en\">",
+            "<head>",
+            "    <meta charset=\"UTF-8\">",
+            "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">",
+            "    <title>Reverse-Coding Website</title>",
+            "    <style>",
+            "        body {",
+            "            background-color: #111122;",
+            "            color: #00ff88;",
+            "            font-family: 'Courier New', monospace;",
+            "            margin: 0;",
+            "            padding: 20px;",
+            "            overflow-x: hidden;",
+            "        }",
+            "        /* ... more CSS ... */",
+            "    </style>",
+            "</head>",
+            "<body>",
+            "    <div id=\"terminal\"></div>",
+            "    <div id=\"content\">",
+            "        <h1>Self-Reverse-Coding Website</h1>",
+            "        <div class=\"code-block\" id=\"html-block\">",
+            "            <h2>HTML Structure</h2>",
+            "            <p>This section appears to write itself in reverse</p>",
+            "        </div>",
+            "        <div class=\"code-block\" id=\"css-block\">",
+            "            <h2>CSS Styles</h2>",
+            "            <p>Watch as styles are applied backwards</p>",
+            "        </div>",
+            "        <div class=\"code-block\" id=\"js-block\">",
+            "            <h2>JavaScript Logic</h2>",
+            "            <p>The code that makes this all work</p>",
+            "        </div>",
+            "    </div>",
+            "    <script>",
+            "        // The complete source code of this page",
+            "        const fullSource = [",
+            "            /* ... source lines ... */",
+            "        ];",
+            "        /* ... rest of JavaScript ... */",
+            "    </script>",
+            "</body>",
+            "</html>"
+        ];
+
+        // Simulate reverse coding effect
+        async function reverseCodeWebsite() {
+            const terminal = document.getElementById('terminal');
+            const content = document.getElementById('content');
+            
+            // Start with empty terminal
+            terminal.innerHTML = '';
+            
+            // Display source code in reverse order
+            for (let i = fullSource.length - 1; i >= 0; i--) {
+                await addTerminalLine(fullSource[i]);
+                
+                // Special handling for script section
+                if (fullSource[i].includes('<script>')) {
+                    await simulateScriptReverseCoding();
+                }
+                
+                // Show content when appropriate
+                if (i === fullSource.indexOf('    <div id="content">')) {
+                    content.style.opacity = '1';
+                }
+            }
+            
+            // Begin deconstruction after completion
+            setTimeout(startDeconstruction, 2000);
+        }
+        
+        // Add a line to terminal with animation
+        function addTerminalLine(text) {
+            return new Promise(resolve => {
+                const line = document.createElement('div');
+                line.className = 'terminal-line reverse-animation';
+                line.textContent = text;
+                document.getElementById('terminal').appendChild(line);
+                setTimeout(resolve, 50);
+            });
+        }
+        
+        // Simulate JavaScript being coded in reverse
+        async function simulateScriptReverseCoding() {
+            const jsLines = [
+                "// Initialize reverse coding",
+                "reverseCodeWebsite();",
+                "",
+                "// Handle deconstruction sequence",
+                "function startDeconstruction() {",
+                "    const blocks = document.querySelectorAll('.code-block');",
+                "    blocks.forEach((block, index) => {",
+                "        setTimeout(() => {",
+                "            block.classList.add('deconstruct');",
+                "        }, index * 800);",
+                "    });",
+                "    setTimeout(reverseCodeWebsite, blocks.length * 800 + 1000);",
+                "}",
+                "",
+                "// Add terminal line with animation",
+                "function addTerminalLine(text) {",
+                "    return new Promise(resolve => {",
+                "        const line = document.createElement('div');",
+                "        line.className = 'terminal-line reverse-animation';",
+                "        line.textContent = text;",
+                "        document.getElementById('terminal').appendChild(line);",
+                "        setTimeout(resolve, 50);",
+                "    });",
+                "}"
+            ];
+            
+            // Display JS lines in reverse
+            for (let i = jsLines.length - 1; i >= 0; i--) {
+                await addTerminalLine(jsLines[i]);
+            }
+        }
+        
+        // Handle deconstruction sequence
+        function startDeconstruction() {
+            const blocks = document.querySelectorAll('.code-block');
+            blocks.forEach((block, index) => {
+                setTimeout(() => {
+                    block.classList.add('deconstruct');
+                }, index * 800);
+            });
+            setTimeout(reverseCodeWebsite, blocks.length * 800 + 1000);
+        }
+        
+        // Start the reverse coding process
+        reverseCodeWebsite();
+    </script>
+</body>
+</html>
