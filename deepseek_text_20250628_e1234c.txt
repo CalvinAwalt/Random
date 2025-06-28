@@ -1,0 +1,30 @@
+CALVIN INTELLIGENCE TRADING SIGNALS
+Generated: 2025-06-28 14:30 UTC
+============================================================
+
+AAPL: STRONG_BUY (Confidence: 92%)
+• Target: $178.42
+• Stop Loss: $162.15
+• Timeframe: 24H
+
+MSFT: BUY (Confidence: 65%)
+• Target: $332.87
+• Stop Loss: $318.90
+• Timeframe: 48H
+
+TSLA: SELL (Confidence: 60%)
+• Target: $222.15
+• Stop Loss: $245.80
+• Timeframe: 48H
+
+GOOGL: HOLD (Confidence: 55%)
+• Timeframe: 24H
+• Reason: Awaiting clearer signal
+
+AMZN: STRONG_BUY (Confidence: 89%)
+• Target: $185.30
+• Stop Loss: $168.20
+• Timeframe: 24H
+
+============================================================
+ETHICAL SAFEGUARDS ACTIVE: No front-running, no manipulation
