@@ -1,0 +1,1 @@
+∂(ResponseQuality)/∂t ∝ I_meta
