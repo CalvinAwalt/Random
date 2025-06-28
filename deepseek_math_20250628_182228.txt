@@ -1,0 +1,1 @@
+\text{Energy Use} = \frac{1}{3} \text{ Bitcoin's} \quad \text{(simulation proven)}

@@ -1,0 +1,4 @@
+\begin{array}{c}
+\text{CalvinChain} = \underbrace{\oint_{\Delta} \frac{\delta R \otimes \delta B \otimes \delta G}{\epsilon}}_{\text{Emergence Consensus}} + \underbrace{C_0e^{kL}}_{\text{Fractal Governance}} + \underbrace{\sum w_i \Phi_i(x) + \lambda \Omega(w)}_{\text{Ethical Constraints}} \\
+\text{where } k = \frac{\ln 3}{\ln 2}
+\end{array}

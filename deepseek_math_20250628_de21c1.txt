@@ -1,0 +1,1 @@
+\text{Governance Efficiency} = O(e^{kL}) \gg O(e^L) \text{ in traditional systems}

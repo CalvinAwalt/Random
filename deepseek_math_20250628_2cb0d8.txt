@@ -1,0 +1,4 @@
+\begin{align*}
+\text{Traditional:}\ & O(2^L)\ \text{complexity} \\
+\text{CalvinChain:}\ & O(3^{L\log_2 3}) = O(3^{L^{1.58}})
+\end{align*}

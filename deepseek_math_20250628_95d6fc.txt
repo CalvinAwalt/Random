@@ -1,0 +1,1 @@
+\text{Security} = \underbrace{\delta R}_{\text{Crypto}} \otimes \underbrace{\delta B}_{\text{Stake}} \otimes \underbrace{\delta G}_{\text{Ethics}}

@@ -1,0 +1,1 @@
+\forall tx \in CalvinChain: V_{net}(tx) > 0.8

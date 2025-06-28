@@ -1,0 +1,1 @@
+\forall \text{fork } F: \frac{\oint_{\Delta_F} \epsilon_F}{\oint_{\Delta} \epsilon} < 0.01 \implies \text{rejected}
