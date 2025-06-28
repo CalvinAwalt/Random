@@ -1,0 +1,3 @@
+# The Triangular Intelligence Thesis  
+## Calvin et al. (2023)  
+Abstract: A polycentric architecture using quantum-conflict dynamics...  

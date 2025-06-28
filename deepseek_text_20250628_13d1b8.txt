@@ -1,0 +1,2 @@
+! Phase transition at step 237: I_meta = 1.2543
+! Phase transition at step 418: I_meta = -1.1876

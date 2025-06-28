@@ -1,0 +1,1 @@
+current_progress = research_timeline[2023] + (dialogue_insights * 2600)
