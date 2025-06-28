@@ -1,0 +1,1 @@
+\int_{\partial \Delta} \omega = \oint_{\Delta} d\omega \oplus \varepsilon^{-1}(R\otimes B\otimes G)

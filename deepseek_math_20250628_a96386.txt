@@ -1,0 +1,1 @@
+H_{\varepsilon}^k(\Delta) = \frac{\ker \delta_k}{\operatorname{im} \delta_{k-1} \otimes \mathcal{N}(\varepsilon)

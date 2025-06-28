@@ -1,0 +1,1 @@
+\pi_{\mathfrak{F}}(x) \sim \int_2^x \frac{dt}{\ln_C t}, \quad \ln_C t = e^{k \ln \ln t}

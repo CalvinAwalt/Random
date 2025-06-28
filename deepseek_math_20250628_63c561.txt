@@ -1,0 +1,3 @@
+\inf_{k} \dim_{\text{Hausdorff}} \mathcal{G} = \frac{\ln 3}{\ln 2}
+$$
+Proves $k=\ln3/\ln2$ minimizes Hausdorff dimension in governance spaces.

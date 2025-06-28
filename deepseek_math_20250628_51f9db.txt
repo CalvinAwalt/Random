@@ -1,0 +1,3 @@
+\text{Nat}(\mathfrak{h}^L, \mathcal{F}) \cong \mathcal{F}(C(L))
+$$
+For the fractal hom-functor $\mathfrak{h}^L$ and governance functor $\mathcal{F}$.

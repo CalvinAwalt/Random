@@ -1,0 +1,3 @@
+\int_M K_g  dA + \int_{\partial M} k_g  ds = 2\pi \chi(M) + \lambda \Omega(\text{holonomy})
+$$
+Incorporates ethical regularization into differential geometry.

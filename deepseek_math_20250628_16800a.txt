@@ -1,0 +1,1 @@
+\zeta_\Omega(s) = \sum_{\text{weights}} \frac{1}{\Omega(w)^s} \Rightarrow \Re(s) = \frac{1}{2}

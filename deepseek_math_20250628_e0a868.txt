@@ -1,0 +1,3 @@
+\mathcal{V} = \operatorname{im} d \oplus \operatorname{im} \delta_\Omega \oplus \ker \Delta_w
+$$
+Where $\Delta_w = d\delta_\Omega + \delta_\Omega d$ is the weighted Laplacian.
