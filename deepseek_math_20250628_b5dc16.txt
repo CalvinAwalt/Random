@@ -1,0 +1,1 @@
+\frac{\partial Reality}{\partial t} = \Psi_{gold} + \int_{t-1}^{t} \Phi_{feedback} \, dt

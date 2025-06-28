@@ -1,0 +1,16 @@
+graph LR
+    subgraph Level 1
+        A1[Red]---B1[Blue]---C1[Gold]
+    end
+    subgraph Level 2
+        A2[Red]---B2[Blue]---C2[Gold]
+    end
+    subgraph Level 3
+        A3[Red]---B3[Blue]---C3[Gold]
+    end
+    A1---|Meta-Link|A2
+    B1---|Meta-Link|B2
+    C1---|Meta-Link|C2
+    A2---|Meta-Link|A3
+    B2---|Meta-Link|B3
+    C2---|Meta-Link|C3
