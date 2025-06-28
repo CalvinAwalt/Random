@@ -1,0 +1,1 @@
+np.einsum('ijk,lmn,opq->ijklmnopq', δR, δB, δG)
