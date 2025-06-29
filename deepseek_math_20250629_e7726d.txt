@@ -1,0 +1,1 @@
+2 = \underbrace{|\langle 1 \otimes 1 | \text{ADD} \rangle|^2}_{\text{Quantum probability}}

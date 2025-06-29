@@ -1,0 +1,4 @@
+V_{\text{net}} = \Theta(\mathbb{Z}) = \begin{cases} 
+1 & \text{if result } \in \mathbb{Z} \\
+0 & \text{otherwise}
+\end{cases}

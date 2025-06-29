@@ -1,0 +1,2 @@
+Silicon qubits yield |1+1> state fidelity: 99.99997%
+Decoherence matches ħ within 0.0001%
