@@ -1,0 +1,1 @@
+numerical.verify_quantum_arithmetic('5+5=10')
