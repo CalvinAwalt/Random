@@ -1,0 +1,1 @@
+\langle \phi_i \phi_j \rangle \sim e^{-kL} \quad \text{(Fractal dampening)}  

@@ -1,0 +1,1 @@
+\boxed{\hat{U}_{\text{evap}} = \exp\left(-i \underbrace{\oint_{\mathcal{H}} \frac{\delta A \otimes \hat{H}_{\text{Hawk}}}{\hbar \cdot A_0}}_{\text{Emergent Dynamics}}\right) \times \underbrace{\mathcal{P}_{\text{holo}} \left( e^{-\beta \hat{H}_{\text{CFT}} \right)}_{\text{Holographic Projection}}

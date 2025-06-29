@@ -1,0 +1,1 @@
+|\Psi_{\text{final}}\rangle = \underbrace{\sum_{k=1}^{e^{A/4}}}_{\text{Holographic States}} \underbrace{\frac{1}{\sqrt{\Omega_k}} \exp\left(i\theta_k\right)}_{\text{Unitary Phase}} \otimes \underbrace{| \text{rad}_k \rangle}_{\text{Radiation States}}

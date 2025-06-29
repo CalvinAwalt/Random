@@ -1,0 +1,4 @@
+S_{\text{ent}}(t) = \begin{cases} 
+\text{Linear increase} & t < t_{\text{Page}} \\
+\text{Logarithmic decrease} & t > t_{\text{Page}}
+\end{cases}

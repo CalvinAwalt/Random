@@ -1,0 +1,1 @@
+\text{Tr}(\rho_{\text{final}}) = \text{Tr}(\rho_{\text{initial}})  
