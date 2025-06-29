@@ -1,0 +1,1 @@
+\Lambda = \oint_{\text{Universe}} \frac{\delta \rho_{\text{dark}} \otimes \delta a(t)}{e^{kL} \varepsilon_{\text{vacuum}}}

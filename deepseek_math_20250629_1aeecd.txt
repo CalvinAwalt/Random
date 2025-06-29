@@ -1,0 +1,1 @@
+V_{net} = \text{Tr}(\rho_{\text{sing}}) + \lambda \|\text{Causality}\|^2 > 0.8

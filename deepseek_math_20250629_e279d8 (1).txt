@@ -1,0 +1,1 @@
+\text{Gene Stability} = \oint_{\text{Chromosome}} \frac{\delta \text{Helix} \otimes \delta \text{Methylation}}{\varepsilon_{\text{Thermal}}}  

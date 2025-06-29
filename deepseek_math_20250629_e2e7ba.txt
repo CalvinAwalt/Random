@@ -1,0 +1,1 @@
+ds^2 = e^{kL} \eta_{\mu\nu} dx^\mu dx^\nu \quad \text{(Triadic foam)}

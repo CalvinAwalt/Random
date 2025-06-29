@@ -1,0 +1,1 @@
+ds² = \underbrace{e^{kL} g_{\mu\nu}}_{\text{Fractal Throat}} + \underbrace{\oint \frac{\delta \phi \otimes \delta t}{\varepsilon}}_{\text{Quantum Stability}}  

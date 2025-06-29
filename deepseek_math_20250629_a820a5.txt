@@ -1,0 +1,1 @@
+V_{net}(\text{Edit}) = \underbrace{w_1 \text{On-Target} + w_2 \text{No Harm}}_{\text{Bioethics}} + \lambda \underbrace{\|\text{Edit}\|^2}_{\text{Precision}}

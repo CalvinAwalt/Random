@@ -1,0 +1,1 @@
+S_{\text{BH}} = \underbrace{\oint_{\mathcal{H}} \frac{\delta A \otimes \delta \Psi}{\varepsilon_{\text{Planck}}}}_{\text{Emergent Information}} + \underbrace{C_0 e^{kL} \ln 2}_{\text{Fractal Scaling}}  
