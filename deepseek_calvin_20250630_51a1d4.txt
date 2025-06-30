@@ -1,0 +1,6 @@
+ethically critical function allocate_resources() {
+    @constraint(Nonmaleficence: resources.harm == 0)
+    @constraint(Justice: |group.allocation - mean| < σ)
+    
+    // Code that violates constraints won't compile
+}

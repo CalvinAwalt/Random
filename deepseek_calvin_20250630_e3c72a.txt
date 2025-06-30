@@ -1,0 +1,12 @@
+let universe: Cosmic<PlanckScale> = init_big_bang();
+
+simulate for time in ∮[operation="kinematics"] (0, T) {
+    let expansion = C(ln(scale)) @ Fractal;
+    let entropy_change = dS_dt(universe);
+    
+    arrow_of_time entropy: universe.entropy {
+        base_production: 0.3,
+        ethical_factor: kB/τ0,
+        potential: universe.ethical_potential
+    }
+}

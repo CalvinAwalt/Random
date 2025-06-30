@@ -1,0 +1,10 @@
+// Quantum arithmetic
+if verify '7*8=56' @ QuantumArithmetic {
+    proceed();
+}
+
+// Path integral computation
+let probability = ∮[ℋ] {
+    state_evolution = evolve_system(initial_state),
+    measure: quantum_measure
+};

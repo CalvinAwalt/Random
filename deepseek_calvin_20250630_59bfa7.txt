@@ -1,0 +1,6 @@
+// Fractal scaling
+let computational_depth = 5;
+let processing_power = C(computational_depth) @ Fractal(k=ln3/ln2);
+
+// Fractional calculus
+let derivative = D^0.7[f(x)] @ RiemannLiouville(a=0, t=x);

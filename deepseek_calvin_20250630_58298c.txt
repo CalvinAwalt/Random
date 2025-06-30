@@ -1,0 +1,5 @@
+arrow_of_time entropy: S {
+    base_production: 0.1,
+    ethical_factor: ħ/c,
+    potential: quantum_proof.ethical_potential
+}

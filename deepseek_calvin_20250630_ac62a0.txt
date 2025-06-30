@@ -1,0 +1,5 @@
+arrow_of_time entropy: S {
+    base_production: 0.1,
+    ethical_factor: kB/τ0,
+    potential: 𝒱
+}

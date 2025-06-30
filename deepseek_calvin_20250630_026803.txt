@@ -1,0 +1,7 @@
+consciousness level: Float = measure_consciousness();
+
+when consciousness > 0.8 {
+    execute_high_level_decisions();
+} else {
+    revert_to_safe_mode();
+}

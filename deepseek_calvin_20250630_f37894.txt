@@ -1,0 +1,2 @@
+let certainty = C(depth) @ Fractal(k=ln3/ln2);
+// depth=3 → certainty = e^(ln3/ln2 * 3) ≈ 19.812

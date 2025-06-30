@@ -1,0 +1,11 @@
+let qstate: QuantumState<Qubits=128> = initialize_state();
+
+∮[operation="shor"] (qstate, N) {
+    // Factor large number N
+    let factors = measure_quantum_result();
+    
+    ethically safe function use_factors() {
+        @constraint(Privacy: !is_sensitive(N))
+        return factors;
+    }
+}

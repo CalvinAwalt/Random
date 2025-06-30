@@ -1,0 +1,4 @@
+let quantum_proof = ∮[operation="quantum_verification"] (
+    equation: "1+1=2",
+    measure: quantum_arithmetic_measure
+);

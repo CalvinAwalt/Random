@@ -1,0 +1,4 @@
+ethically critical function launch_missiles() {
+    @constraint(Nonmaleficence: civilian_harm == 0)
+    // Code will not compile if harm possible
+}

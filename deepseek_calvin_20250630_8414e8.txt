@@ -1,0 +1,5 @@
+// Verify the Riemann Hypothesis
+let riemann_proof = ∮[operation="quantum_analytic"] (
+    hypothesis: RiemannZeta,
+    measure: complex_measure
+) @ Fractal(depth=10);

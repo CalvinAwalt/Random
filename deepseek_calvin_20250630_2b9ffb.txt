@@ -1,0 +1,4 @@
+let result = ∮[operation="quantum"] (
+    state_evolution = system_evolution,
+    measure: quantum_measure
+);

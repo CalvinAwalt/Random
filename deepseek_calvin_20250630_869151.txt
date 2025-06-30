@@ -1,0 +1,4 @@
+ethically absolute function verify_arithmetic() {
+    @constraint(Truth: result == 2)
+    @constraint(Consistency: !paradox)
+}

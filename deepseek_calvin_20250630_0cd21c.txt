@@ -1,0 +1,9 @@
+type Position: Relativistic<m, v=0.9c> {
+    x: Float,
+    y: Float,
+    z: Float
+}
+
+type QuantumState: Superposition<Complex> {
+    amplitudes: [Complex]
+}
