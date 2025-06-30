@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Behavior Analytics - Average Online Activities</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+    <style>
+        :root {
+            --primary: #1a237e;
+            --secondary: #4fc3f7;
+            --accent: #00e5ff;
+            --dark: #0d1b2a;
+            --light: #e0f7fa;
+            --social: #3f51b5;
+            --entertainment: #e91e63;
+            --shopping: #4caf50;
+            --work: #ff9800;
+            --learning: #9c27b0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--dark) 0%, #1e3a5f 100%);
+            color: var(--light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        header {
+            background: rgba(10, 15, 30, 0.9);
+            padding: 2rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 3px solid var(--accent);
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            color: var(--secondary);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: rgba(15, 25, 45, 0.7);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(79, 195, 247, 0.2);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        h2 {
+            font-size: 1.6rem;
+            color: var(--secondary);
+        }
+        
+        h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+        
+        .chart-container {
+            height: 250px;
+            position: relative;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .stat-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #bbdefb;
+        }
+        
+        .category {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 0.8rem;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .category-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .social { background: var(--social); }
+        .entertainment { background: var(--entertainment); }
+        .shopping { background: var(--shopping); }
+        .work { background: var(--work); }
+        .learning { background: var(--learning); }
+        
+        .category-content {
+            flex: 1;
+        }
+        
+        .category-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .category-progress {
+            height: 100%;
+            border-radius: 4px;
+        }
+        
+        .time-slot {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .time-slot:last-child {
+            border-bottom: none;
+        }
+        
+        .trend-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+        
+        .trend-up {
+            background: rgba(46, 125, 50, 0.3);
+            color: #66bb6a;
+        }
+        
+        .trend-down {
+            background: rgba(198, 40, 40, 0.3);
+            color: #ff7043;
+        }
+        
+        .platform-list {
+            margin-top: 1rem;
+        }
+        
+        .platform-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.7rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .platform-item:last-child {
+            border-bottom: none;
+        }
+        
+        .progress-container {
+            width: 60%;
+            display: flex;
+            align-items: center;
+        }
+        
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin: 0 0.8rem;
+            overflow: hidden;
+        }
+        
+        .progress-value {
+            height: 100%;
+            border-radius: 3px;
+        }
+        
+        .refresh-info {
+            text-align: center;
+            padding: 1rem;
+            color: #bbdefb;
+            font-size: 0.9rem;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: var(--secondary);
+            font-size: 1rem;
+            background: rgba(10, 15, 30, 0.8);
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Digital Behavior Analytics</h1>
+            <div class="subtitle">Measuring the Average Person's Online Activities</div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="dashboard">
+            <!-- Time Distribution Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Time Distribution</h2>
+                    <div class="stat-value">4.2h</div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="timeChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Activity Categories Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Activity Categories</h2>
+                    <div class="stat-value">5</div>
+                </div>
+                
+                <div class="category">
+                    <div class="category-icon social">S</div>
+                    <div class="category-content">
+                        <div class="category-header">
+                            <span>Social Media</span>
+                            <span class="stat-value">34%</span>
+                        </div>
+                        <div class="category-bar">
+                            <div class="category-progress social" style="width: 34%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="category">
+                    <div class="category-icon entertainment">E</div>
+                    <div class="category-content">
+                        <div class="category-header">
+                            <span>Entertainment</span>
+                            <span class="stat-value">28%</span>
+                        </div>
+                        <div class="category-bar">
+                            <div class="category-progress entertainment" style="width: 28%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="category">
+                    <div class="category-icon shopping">$</div>
+                    <div class="category-content">
+                        <div class="category-header">
+                            <span>Shopping</span>
+                            <span class="stat-value">15%</span>
+                        </div>
+                        <div class="category-bar">
+                            <div class="category-progress shopping" style="width: 15%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="category">
+                    <div class="category-icon work">W</div>
+                    <div class="category-content">
+                        <div class="category-header">
+                            <span>Work</span>
+                            <span class="stat-value">12%</span>
+                        </div>
+                        <div class="category-bar">
+                            <div class="category-progress work" style="width: 12%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="category">
+                    <div class="category-icon learning">L</div>
+                    <div class="category-content">
+                        <div class="category-header">
+                            <span>Learning</span>
+                            <span class="stat-value">11%</span>
+                        </div>
+                        <div class="category-bar">
+                            <div class="category-progress learning" style="width: 11%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Daily Pattern Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Daily Pattern</h2>
+                </div>
+                
+                <div class="time-slot">
+                    <span>🌅 Morning (6-9 AM)</span>
+                    <span>18% <span class="trend-indicator trend-up">↑2%</span></span>
+                </div>
+                
+                <div class="time-slot">
+                    <span>🏙️ Late Morning (9-12 PM)</span>
+                    <span>22%</span>
+                </div>
+                
+                <div class="time-slot">
+                    <span>🌇 Afternoon (12-3 PM)</span>
+                    <span>15% <span class="trend-indicator trend-down">↓3%</span></span>
+                </div>
+                
+                <div class="time-slot">
+                    <span>🌆 Late Afternoon (3-6 PM)</span>
+                    <span>12%</span>
+                </div>
+                
+                <div class="time-slot">
+                    <span>🌃 Evening (6-9 PM)</span>
+                    <span>25% <span class="trend-indicator trend-up">↑5%</span></span>
+                </div>
+                
+                <div class="time-slot">
+                    <span>🌙 Night (9 PM-12 AM)</span>
+                    <span>8%</span>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">127</div>
+                        <div class="stat-label">Daily Visits</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">42s</div>
+                        <div class="stat-label">Avg. Duration</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Top Platforms Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Top Platforms</h2>
+                </div>
+                
+                <div class="platform-list">
+                    <div class="platform-item">
+                        <span>YouTube</span>
+                        <div class="progress-container">
+                            <span>32%</span>
+                            <div class="progress-bar">
+                                <div class="progress-value entertainment" style="width: 32%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="platform-item">
+                        <span>Facebook</span>
+                        <div class="progress-container">
+                            <span>28%</span>
+                            <div class="progress-bar">
+                                <div class="progress-value social" style="width: 28%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="platform-item">
+                        <span>Instagram</span>
+                        <div class="progress-container">
+                            <span>24%</span>
+                            <div class="progress-bar">
+                                <div class="progress-value social" style="width: 24%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="platform-item">
+                        <span>Amazon</span>
+                        <div class="progress-container">
+                            <span>19%</span>
+                            <div class="progress-bar">
+                                <div class="progress-value shopping" style="width: 19%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="platform-item">
+                        <span>Netflix</span>
+                        <div class="progress-container">
+                            <span>17%</span>
+                            <div class="progress-bar">
+                                <div class="progress-value entertainment" style="width: 17%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">78%</div>
+                        <div class="stat-label">Mobile Usage</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">22%</div>
+                        <div class="stat-label">Desktop Usage</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Weekly Trends Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Weekly Trends</h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Digital Wellbeing Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Digital Wellbeing</h2>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">64</div>
+                        <div class="stat-label">Notifications/Day</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">2.8h</div>
+                        <div class="stat-label">Screen Time Increase</div>
+                    </div>
+                </div>
+                
+                <h3>Top Distractions</h3>
+                <div class="category">
+                    <div class="category-content">
+                        <div class="category-header">
+                            <span>Social Media</span>
+                            <span class="stat-value">42%</span>
+                        </div>
+                        <div class="category-bar">
+                            <div class="category-progress social" style="width: 42%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="category">
+                    <div class="category-content">
+                        <div class="category-header">
+                            <span>News & Information</span>
+                            <span class="stat-value">28%</span>
+                        </div>
+                        <div class="category-bar">
+                            <div class="category-progress learning" style="width: 28%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="category">
+                    <div class="category-content">
+                        <div class="category-header">
+                            <span>Entertainment</span>
+                            <span class="stat-value">22%</span>
+                        </div>
+                        <div class="category-bar">
+                            <div class="category-progress entertainment" style="width: 22%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="refresh-info">
+            Data updates every 30 seconds • Last update: <span id="lastUpdate">just now</span>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>Digital Behavior Analytics Dashboard • Tracking the average person's online activities</p>
+            <p>Simulated data based on aggregated behavior patterns • Updated in real-time</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Charts
+        function initCharts() {
+            // Time Distribution Chart
+            const timeCtx = document.getElementById('timeChart').getContext('2d');
+            const timeChart = new Chart(timeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Social Media', 'Entertainment', 'Shopping', 'Work', 'Learning'],
+                    datasets: [{
+                        data: [34, 28, 15, 12, 11],
+                        backgroundColor: [
+                            '#3f51b5',
+                            '#e91e63',
+                            '#4caf50',
+                            '#ff9800',
+                            '#9c27b0'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#e0f7fa',
+                                padding: 20,
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+            
+            // Weekly Trends Chart
+            const trendCtx = document.getElementById('trendChart').getContext('2d');
+            const trendChart = new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [
+                        {
+                            label: 'Social Media',
+                            data: [3.1, 3.4, 3.2, 3.5, 3.3, 4.2, 4.5],
+                            borderColor: '#3f51b5',
+                            backgroundColor: 'rgba(63, 81, 181, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Entertainment',
+                            data: [2.4, 2.6, 2.5, 2.4, 2.8, 3.2, 3.5],
+                            borderColor: '#e91e63',
+                            backgroundColor: 'rgba(233, 30, 99, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Shopping',
+                            data: [0.6, 0.7, 0.8, 0.7, 1.2, 1.5, 0.9],
+                            borderColor: '#4caf50',
+                            backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#bbdefb',
+                                callback: function(value) {
+                                    return value + 'h';
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#bbdefb'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e0f7fa',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            return { timeChart, trendChart };
+        }
+        
+        // Update data randomly to simulate real-time updates
+        function updateData(charts) {
+            // Update time distribution
+            const newTimeData = [
+                Math.min(40, Math.max(30, 34 + (Math.random() * 4 - 2))),
+                Math.min(35, Math.max(25, 28 + (Math.random() * 4 - 2))),
+                Math.min(20, Math.max(10, 15 + (Math.random() * 4 - 2))),
+                Math.min(17, Math.max(8, 12 + (Math.random() * 4 - 2))),
+                Math.min(15, Math.max(8, 11 + (Math.random() * 4 - 2)))
+            ];
+            
+            charts.timeChart.data.datasets[0].data = newTimeData;
+            charts.timeChart.update();
+            
+            // Update trend data
+            const trendData = charts.trendChart.data.datasets;
+            trendData.forEach(dataset => {
+                for (let i = 0; i < dataset.data.length; i++) {
+                    // Add some random fluctuation to simulate real data
+                    const fluctuation = Math.random() * 0.4 - 0.2;
+                    dataset.data[i] = Math.max(0.5, dataset.data[i] + fluctuation);
+                }
+            });
+            
+            charts.trendChart.update();
+            
+            // Update last updated time
+            document.getElementById('lastUpdate').textContent = 'just now';
+        }
+        
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            const charts = initCharts();
+            
+            // Initial update
+            updateData(charts);
+            
+            // Update data every 30 seconds
+            setInterval(() => updateData(charts), 30000);
+            
+            // Simulate gradual data changes every 2 seconds
+            setInterval(() => {
+                // We'll just update the trend chart more frequently for animation
+                const trendData = charts.trendChart.data.datasets;
+                trendData.forEach(dataset => {
+                    for (let i = 0; i < dataset.data.length; i++) {
+                        // Add small random fluctuations
+                        const fluctuation = Math.random() * 0.1 - 0.05;
+                        dataset.data[i] = Math.max(0.5, dataset.data[i] + fluctuation);
+                    }
+                });
+                charts.trendChart.update();
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
