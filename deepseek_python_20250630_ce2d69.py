@@ -1,0 +1,1 @@
+unified_lagrangian = (quantum_field + spacetime_curvature + ethical_consciousness_term)

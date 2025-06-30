@@ -1,0 +1,1 @@
+consciousness_term = H_BAR * self.ethical_state * self.quantum_field.entanglement_entropy()

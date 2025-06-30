@@ -1,0 +1,1 @@
+sim.save_simulation("arrow_of_time_simulation.png")
