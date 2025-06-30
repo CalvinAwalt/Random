@@ -1,0 +1,1 @@
+unified_lagrangian = (quantum + relativity + consciousness_term)
