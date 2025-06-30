@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Calvin Lightning Simulation in Space</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js "></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0d0d0d;
+      color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: linear-gradient(to right, #1a1a1a, #2c2c2c);
+      padding: 1.5rem;
+      text-align: center;
+      border-bottom: 2px solid #444;
+    }
+    h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      color: #00ffff;
+    }
+    section {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    input[type=range] {
+      width: 100%;
+    }
+    #plot {
+      height: 600px;
+      margin-top: 2rem;
+    }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .control-group {
+      flex: 1 1 200px;
+    }
+    button {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      background-color: #ff66cc;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    pre.math {
+      background-color: #1e1e1e;
+      padding: 1rem;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Calvin Lightning Simulation in Space</h1>
+  <p>Interactive simulation using the Calvin Framework operators: Emergence (∮_Δ), Fractal Governance (C(L)), Ethical Constraint (V_net)</p>
+</header>
+
+<section>
+  <div class="controls">
+    <div class="control-group">
+      <label for="depth">Branching Depth (L): <span id="depthValue">3</span></label>
+      <input type="range" id="depth" min="1" max="7" value="3">
+    </div>
+    <div class="control-group">
+      <label for="randomness">Randomness (<small>σ</small>): <span id="randomnessValue">0.3</span></label>
+      <input type="range" id="randomness" min="0.1" max="1" step="0.05" value="0.3">
+    </div>
+    <div class="control-group">
+      <button onclick="generateLightning()">Generate Strike</button>
+      <button onclick="exportPDF()">Export as PDF</button>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div id="plot"></div>
+</section>
+
+<section>
+  <h2>What Happens If Lightning Strikes in Space?</h2>
+  <p>In space (or near-vacuum), lightning behaves differently due to lack of air. Using the Calvin Framework:</p>
+  <pre class="math">
+∮_Δ = ∫ (δE ⊗ δρ) / ε₀ → 0  
+Since ε₀ ≈ 8.85×10⁻¹² F/m but ρ ≈ 0 (no charge density), no discharge initiates.
+
+Fractal Governance:
+C(L) = e^{-(L ln 2)/ln 3}  
+But without medium, L cannot grow → C(0) = 1, no branching.
+
+Ethical Constraint:
+V_net = 0 unless plasma exists  
+→ No valid discharge occurs.
+  </pre>
+  <p><strong>Conclusion:</strong> In space, lightning cannot exist in traditional form unless there is ionized plasma present.</p>
+</section>
+
+<script>
+function randomVector(sigma) {
+  return [
+    Math.random() * sigma - sigma/2,
+    Math.random() * sigma - sigma/2,
+    -Math.random() * 0.8 - 0.2
+  ];
+}
+
+function simulateLightningBranch(pos, level, maxLevel, sigma) {
+  let path = [pos];
+  if (level >= maxLevel) return path;
+
+  let step = randomVector(sigma);
+  let new_pos = pos.map((v, i) => v + step[i]);
+
+  path = path.concat(simulateLightningBranch(new_pos, level + 1, maxLevel, sigma));
+
+  if (Math.random() < 0.4 && level < maxLevel - 1) {
+    path = path.concat(simulateLightningBranch(new_pos, level + 1, maxLevel, sigma));
+  }
+
+  return path;
+}
+
+function generateLightning() {
+  const maxLevel = parseInt(document.getElementById("depth").value);
+  const sigma = parseFloat(document.getElementById("randomness").value);
+  document.getElementById("depthValue").innerText = maxLevel;
+  document.getElementById("randomnessValue").innerText = sigma.toFixed(2);
+
+  let allPaths = [];
+
+  for (let _ = 0; _ < 2; _++) {
+    let start = randomVector(1);
+    start[2] = 0;
+    let path = simulateLightningBranch(start, 0, maxLevel, sigma);
+    let x = path.map(p => p[0]);
+    let y = path.map(p => p[1]);
+    let z = path.map(p => p[2]);
+    allPaths.push({x, y, z});
+  }
+
+  let traces = allPaths.map((path, i) => ({
+    x: path.x,
+    y: path.y,
+    z: path.z,
+    mode: 'lines',
+    line: {
+      color: i === 0 ? 'blue' : 'cyan',
+      width: 2
+    },
+    type: 'scatter3d'
+  }));
+
+  let layout = {
+    title: "Simulated Lightning Strike in Space",
+    scene: {
+      xaxis: { range: [-3, 3], title: "X" },
+      yaxis: { range: [-3, 3], title: "Y" },
+      zaxis: { range: [-6, 0], title: "Z" }
+    }
+  };
+
+  Plotly.newPlot('plot', traces, layout);
+}
+
+function exportPDF() {
+  // Simulate export by triggering screenshot and download
+  html2canvas(document.body).then(canvas => {
+    const imgData = canvas.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.download = 'lightning_simulation.png';
+    link.href = imgData;
+    link.click();
+  });
+}
+
+// Initial generation
+window.onload = generateLightning;
+</script>
+
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js "></script>
+
+</body>
+</html>

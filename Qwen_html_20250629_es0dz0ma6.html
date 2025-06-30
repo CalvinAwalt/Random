@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Calvin Asteroid in a Mathematically Governed Universe</title>
+  <script src="https://cdn.jsdelivr.net/npm/three @0.152.2/build/three.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+      color: #eee;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    #info {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.7);
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      max-width: 300px;
+      box-shadow: 0 0 10px #00ffffaa;
+    }
+    .equation {
+      background: #1e1e1e;
+      padding: 6px 10px;
+      margin-top: 6px;
+      border-left: 4px solid #00ffff;
+      font-family: monospace;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+<div id="info">
+  <h3>Calvin Asteroid Simulation</h3>
+  <p><strong>Position:</strong> |x⟩ = [0, 0, 0]</p>
+  <p><strong>Velocity:</strong> |v⟩ = [0.02, 0.01, 0.03]</p>
+  <div class="equation">|x_{n+1}⟩ = ∮_Δ (|x_n⟩ + |v_n⟩ Δt)</div>
+  <p><strong>Energy:</strong> E = constant ✅</p>
+  <div class="equation">V_net = 
+    \begin{cases}
+      1 & \text{if } E_{total} = const \\
+      0 & \text{otherwise}
+    \end{cases}</div>
+  <p><strong>Fractal Level (L):</strong> 0 → C(L) = 1</p>
+  <div class="equation">C(L) = e^{-(L \ln 2)/\ln 3}</div>
+</div>
+
+<script>
+  // Scene Setup
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  // Lighting
+  const light = new THREE.PointLight(0xffffff, 1);
+  light.position.set(10, 10, 10);
+  scene.add(light);
+
+  // Asteroid (Sphere)
+  const geometry = new THREE.SphereGeometry(0.2, 16, 16);
+  const material = new THREE.MeshStandardMaterial({ color: 0xff6600 });
+  const asteroid = new THREE.Mesh(geometry, material);
+  scene.add(asteroid);
+
+  // Starfield Background
+  const starsGeometry = new THREE.BufferGeometry();
+  const starCount = 1000;
+  const starVertices = [];
+
+  for (let i = 0; i < starCount; i++) {
+    const x = THREE.MathUtils.randFloatSpread(200);
+    const y = THREE.MathUtils.randFloatSpread(200);
+    const z = THREE.MathUtils.randFloatSpread(200);
+    starVertices.push(x, y, z);
+  }
+
+  starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+  const starsMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.5 });
+  const starField = new THREE.Points(starsGeometry, starsMaterial);
+  scene.add(starField);
+
+  camera.position.z = 5;
+
+  // Calvin Framework Operators
+  let position = new THREE.Vector3(0, 0, 0);
+  let velocity = new THREE.Vector3(0.02, 0.01, 0.03);
+  const L = 0;
+  const CL = Math.exp(-(L * Math.log(2)) / Math.log(3)); // Fractal Governance
+  const infoBox = document.getElementById("info");
+
+  function emergenceOperator(pos, vel, dt) {
+    return pos.clone().add(vel.clone().multiplyScalar(dt));
+  }
+
+  function ethicalConstraint(pos, vel) {
+    const kinetic = 0.5 * vel.lengthSq();
+    const potential = 0;
+    const totalEnergy = kinetic + potential;
+    return totalEnergy > 0;
+  }
+
+  function animate() {
+    requestAnimationFrame(animate);
+
+    const dt = 0.016;
+
+    // Apply Emergence Operator
+    position = emergenceOperator(position, velocity, dt);
+
+    // Update Position
+    asteroid.position.copy(position);
+
+    // Check Energy Conservation
+    if (!ethicalConstraint(position, velocity)) {
+      console.warn("Violation: Conservation of energy failed.");
+      velocity.set(0, 0, 0);
+    }
+
+    // Update Info Box
+    infoBox.innerHTML = `
+      <h3>Calvin Asteroid Simulation</h3>
+      <p><strong>Position:</strong> |x⟩ = [${position.x.toFixed(2)}, ${position.y.toFixed(2)}, ${position.z.toFixed(2)}]</p>
+      <p><strong>Velocity:</strong> |v⟩ = [${velocity.x.toFixed(3)}, ${velocity.y.toFixed(3)}, ${velocity.z.toFixed(3)}]</p>
+      <div class="equation">|x_{n+1}⟩ = ∮_Δ (|x_n⟩ + |v_n⟩ Δt)</div>
+      <p><strong>Energy:</strong> ${ethicalConstraint(position, velocity) ? "E = constant ✅" : "⚠️ Violation"}</p>
+      <div class="equation">V_net = 
+        \\begin{cases}
+          1 & \\text{if } E_{\\text{total}} = const \\\\
+          0 & \\text{otherwise}
+        \\end{cases}</div>
+      <p><strong>Fractal Level (L):</strong> ${L} → C(L) = ${CL.toFixed(3)}</p>
+      <div class="equation">C(L) = e^{-(L \\ln 2)/\\ln 3}</div>
+    `;
+
+    renderer.render(scene, camera);
+  }
+
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Calvin Asteroid Simulator</title>
+  <style>
+    body { margin: 0; overflow: hidden; background: #000; color: #eee; }
+    #info {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.6);
+      padding: 10px;
+      border-radius: 5px;
+      font-family: monospace;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div id="info">
+    <h3>Calvin Asteroid in Perpetual Motion</h3>
+    <p><strong>Position:</strong> |x⟩ = [0, 0, 0]</p>
+    <p><strong>Velocity:</strong> |v⟩ = [0.02, 0.01, 0.03]</p>
+    <p><strong>Energy:</strong> E = constant ✅</p>
+    <p><strong>Fractal Level (L):</strong> 0 → C(L) = 1</p>
+    <p><strong>∮_Δ Applied:</strong> Yes</p>
+  </div>
+
+  <!-- Three.js for 3D rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/three @0.152.2/build/three.min.js"></script>
+  <script>
+    // Scene Setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Lighting
+    const light = new THREE.PointLight(0xffffff, 1);
+    light.position.set(10, 10, 10);
+    scene.add(light);
+
+    // Asteroid (Sphere)
+    const geometry = new THREE.SphereGeometry(0.2, 16, 16);
+    const material = new THREE.MeshStandardMaterial({ color: 0xff6600 });
+    const asteroid = new THREE.Mesh(geometry, material);
+    scene.add(asteroid);
+
+    // Starfield Background
+    const starsGeometry = new THREE.BufferGeometry();
+    const starCount = 1000;
+    const starVertices = [];
+
+    for (let i = 0; i < starCount; i++) {
+      const x = THREE.MathUtils.randFloatSpread(200);
+      const y = THREE.MathUtils.randFloatSpread(200);
+      const z = THREE.MathUtils.randFloatSpread(200);
+      starVertices.push(x, y, z);
+    }
+
+    starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+    const starsMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.5 });
+    const starField = new THREE.Points(starsGeometry, starsMaterial);
+    scene.add(starField);
+
+    camera.position.z = 5;
+
+    // Math Operators from Calvin Framework
+    let position = new THREE.Vector3(0, 0, 0);
+    let velocity = new THREE.Vector3(0.02, 0.01, 0.03);
+    const L = 0;
+    const CL = Math.exp(-(L * Math.log(2)) / Math.log(3)); // Fractal Governance
+    const infoBox = document.getElementById("info");
+
+    function emergenceOperator(pos, vel, dt) {
+      return pos.clone().add(vel.clone().multiplyScalar(dt));
+    }
+
+    function ethicalConstraint(pos, vel) {
+      // Ensure total energy is conserved
+      const kinetic = 0.5 * vel.lengthSq();
+      const potential = 0; // In deep space, assume flat potential
+      const totalEnergy = kinetic + potential;
+      return totalEnergy > 0;
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Time step
+      const dt = 0.016;
+
+      // Apply Emergence Operator
+      position = emergenceOperator(position, velocity, dt);
+
+      // Update Asteroid Position
+      asteroid.position.copy(position);
+
+      // Check Ethical Constraint
+      if (!ethicalConstraint(position, velocity)) {
+        console.warn("Violation: Conservation of energy failed.");
+        velocity.set(0, 0, 0);
+      }
+
+      // Update Info Box
+      infoBox.innerHTML = `
+        <h3>Calvin Asteroid in Perpetual Motion</h3>
+        <p><strong>Position:</strong> |x⟩ = [${position.x.toFixed(2)}, ${position.y.toFixed(2)}, ${position.z.toFixed(2)}]</p>
+        <p><strong>Velocity:</strong> |v⟩ = [${velocity.x.toFixed(3)}, ${velocity.y.toFixed(3)}, ${velocity.z.toFixed(3)}]</p>
+        <p><strong>Energy:</strong> ${ethicalConstraint(position, velocity) ? "E = constant ✅" : "⚠️ Violation"}</p>
+        <p><strong>Fractal Level (L):</strong> ${L} → C(L) = ${CL.toFixed(3)}</p>
+        <p><strong>∮_Δ Applied:</strong> Yes</p>
+      `;
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // Responsive Resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>

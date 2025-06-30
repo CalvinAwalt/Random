@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="title" content="Futurology Stocks - Invest in the Future">
+    <meta name="description" content="Discover the best futuristic stocks to invest in. Explore renewable energy, uranium, cryptocurrency, and space stocks on FutureStocks.ca.">
+    <meta name="keywords" content="future stocks, renewable energy stocks, uranium stocks, cryptocurrency stocks, space stocks, futuristic investments">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="English">
+    <meta name="author" content="FutureStocks.ca">
+    <link rel="canonical" href="https://futurestocks.ca">
+    
+    <title>FutureStocks.ca | Quantum Financial Analytics</title>
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WVMJSYY32M"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-WVMJSYY32M');
+    </script>
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        :root {
+            --space-dark: #0b0c1d;
+            --space-blue: #1a1c3a;
+            --neon-purple: #9d4edd;
+            --neon-pink: #ff4d8d;
+            --neon-cyan: #00f5d4;
+            --star-gold: #ffd166;
+            --text-light: #f8f9fa;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--space-dark), var(--space-blue));
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 5px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 3px),
+                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 4px);
+            background-size: 550px 550px, 350px 350px, 250px 250px;
+            background-position: 0 0, 40px 60px, 130px 270px;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 40px;
+            background: rgba(26, 28, 58, 0.8);
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(157, 78, 221, 0.3);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 10px 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            background: rgba(157, 78, 221, 0.2);
+            box-shadow: 0 0 15px rgba(157, 78, 221, 0.4);
+        }
+        
+        .nav-links a.active {
+            background: rgba(157, 78, 221, 0.3);
+            box-shadow: 0 0 15px rgba(157, 78, 221, 0.4);
+        }
+        
+        /* Hero Section */
+        .hero {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 60px 40px;
+            margin: 40px 0;
+            background: rgba(26, 28, 58, 0.8);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(157, 78, 221, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(157, 78, 221, 0.1) 0%, transparent 70%);
+            z-index: -1;
+            animation: rotate 20s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .hero-content {
+            flex: 1;
+            padding-right: 50px;
+        }
+        
+        .hero h1 {
+            font-size: 3.8rem;
+            margin-bottom: 25px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 1.4rem;
+            margin-bottom: 35px;
+            color: var(--neon-cyan);
+            max-width: 700px;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .btn {
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink));
+            color: white;
+            box-shadow: 0 0 20px rgba(157, 78, 221, 0.5);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--neon-cyan);
+            border: 2px solid var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(0, 245, 212, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(157, 78, 221, 0.7);
+        }
+        
+        .hero-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .stock-visualization {
+            width: 100%;
+            max-width: 500px;
+            height: 350px;
+            background: rgba(11, 12, 29, 0.7);
+            border-radius: 15px;
+            border: 1px solid rgba(0, 245, 212, 0.2);
+            padding: 20px;
+        }
+        
+        /* Dashboard Section */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 50px 0;
+        }
+        
+        .dashboard-card {
+            background: rgba(26, 28, 58, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(157, 78, 221, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(157, 78, 221, 0.4);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .card-title {
+            font-size: 1.6rem;
+            color: var(--neon-cyan);
+        }
+        
+        .card-icon {
+            font-size: 2rem;
+            color: var(--neon-purple);
+        }
+        
+        .stock-value {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin: 15px 0;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .stock-change {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .positive {
+            color: #00ff9d;
+        }
+        
+        .negative {
+            color: #ff4d8d;
+        }
+        
+        /* Quantum Stock Predictor */
+        .predictor-section {
+            background: rgba(26, 28, 58, 0.8);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 50px 0;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(157, 78, 221, 0.3);
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: var(--star-gold);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .predictor-content {
+            display: flex;
+            gap: 40px;
+        }
+        
+        .predictor-controls {
+            flex: 1;
+        }
+        
+        .predictor-visual {
+            flex: 1;
+            min-height: 400px;
+            background: rgba(11, 12, 29, 0.7);
+            border-radius: 15px;
+            border: 1px solid rgba(0, 245, 212, 0.2);
+            padding: 20px;
+        }
+        
+        .stock-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stock-option {
+            padding: 12px 24px;
+            background: rgba(11, 12, 29, 0.7);
+            border-radius: 10px;
+            border: 1px solid rgba(157, 78, 221, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .stock-option:hover, .stock-option.active {
+            background: rgba(157, 78, 221, 0.3);
+            box-shadow: 0 0 15px rgba(157, 78, 221, 0.4);
+        }
+        
+        .param-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .param-group {
+            background: rgba(11, 12, 29, 0.7);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(0, 245, 212, 0.2);
+        }
+        
+        .param-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--neon-cyan);
+        }
+        
+        .slider-container {
+            margin: 15px 0;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+            outline: none;
+        }
+        
+        /* Quantum Finance Equation */
+        .equation-container {
+            background: rgba(11, 12, 29, 0.7);
+            border-radius: 10px;
+            padding: 30px;
+            margin: 40px 0;
+            border: 1px solid rgba(0, 245, 212, 0.2);
+            font-size: 1.1rem;
+            position: relative;
+            overflow-x: auto;
+            text-align: center;
+        }
+        
+        .equation-title {
+            font-size: 1.8rem;
+            color: var(--neon-cyan);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        /* Stock Widgets Section */
+        .widget-section {
+            margin: 50px 0;
+        }
+        
+        .tradingview-widget-container {
+            margin: 20px auto;
+            max-width: 100%;
+            overflow: hidden;
+            background: rgba(26, 28, 58, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(157, 78, 221, 0.3);
+        }
+        
+        .widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .widget-title {
+            font-size: 1.5rem;
+            color: var(--neon-cyan);
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 60px 20px 30px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(157, 78, 221, 0.3);
+            position: relative;
+        }
+        
+        .footer-logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links a {
+            color: var(--neon-cyan);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px rgba(255, 77, 141, 0.7);
+        }
+        
+        .copyright {
+            margin-top: 30px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .pulse {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: var(--neon-pink);
+            border-radius: 50%;
+            margin-right: 8px;
+            box-shadow: 0 0 0 0 rgba(255, 77, 141, 0.7);
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 77, 141, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 12px rgba(255, 77, 141, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 77, 141, 0);
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .hero {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .hero-content {
+                padding-right: 0;
+                margin-bottom: 40px;
+            }
+            
+            .hero-buttons {
+                justify-content: center;
+            }
+            
+            .predictor-content {
+                flex-direction: column;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.8rem;
+            }
+            
+            .hero p {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <nav>
+            <div class="logo">
+                <i class="fas fa-chart-network"></i>
+                <span>FutureStocks.ca</span>
+            </div>
+            <div class="nav-links">
+                <a href="#" class="active">Dashboard</a>
+                <a href="#">Predictions</a>
+                <a href="#">Markets</a>
+                <a href="#">Portfolio</a>
+                <a href="#">Research</a>
+                <a href="#">Quantum Lab</a>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Quantum Financial Analytics for the Next Generation</h1>
+                <p>Harness the power of cosmic algorithms and quantum computing to predict market movements with unprecedented accuracy.</p>
+                <div class="hero-buttons">
+                    <a href="#" class="btn btn-primary">
+                        <i class="fas fa-rocket"></i> Launch Predictor
+                    </a>
+                    <a href="#" class="btn btn-secondary">
+                        <i class="fas fa-video"></i> Watch Demo
+                    </a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="stock-visualization">
+                    <canvas id="heroChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Section -->
+        <div class="dashboard">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3 class="card-title">Quantum AI Stock</h3>
+                    <i class="fas fa-atom card-icon"></i>
+                </div>
+                <div class="stock-value">$347.82</div>
+                <div class="stock-change positive">+4.32% <i class="fas fa-arrow-up"></i></div>
+                <p>Quantum computing powered financial analytics</p>
+            </div>
+            
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3 class="card-title">Neural Investments</h3>
+                    <i class="fas fa-brain card-icon"></i>
+                </div>
+                <div class="stock-value">$218.45</div>
+                <div class="stock-change positive">+2.17% <i class="fas fa-arrow-up"></i></div>
+                <p>AI-driven investment portfolio management</p>
+            </div>
+            
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3 class="card-title">Crypto Future Tech</h3>
+                    <i class="fas fa-coins card-icon"></i>
+                </div>
+                <div class="stock-value">$154.29</div>
+                <div class="stock-change negative">-1.24% <i class="fas fa-arrow-down"></i></div>
+                <p>Blockchain innovations and digital assets</p>
+            </div>
+            
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3 class="card-title">Space Commerce Ltd</h3>
+                    <i class="fas fa-satellite card-icon"></i>
+                </div>
+                <div class="stock-value">$421.76</div>
+                <div class="stock-change positive">+5.63% <i class="fas fa-arrow-up"></i></div>
+                <p>Commercial space exploration and technology</p>
+            </div>
+        </div>
+
+        <!-- Quantum Stock Predictor -->
+        <section class="predictor-section">
+            <h2 class="section-title">
+                <i class="fas fa-cogs"></i> Quantum Stock Predictor
+            </h2>
+            
+            <div class="predictor-content">
+                <div class="predictor-controls">
+                    <h3>Select a Stock</h3>
+                    <div class="stock-selector">
+                        <div class="stock-option active">QNTM</div>
+                        <div class="stock-option">NRL</div>
+                        <div class="stock-option">SPC</div>
+                        <div class="stock-option">CRYP</div>
+                        <div class="stock-option">AI</div>
+                        <div class="stock-option">QTECH</div>
+                    </div>
+                    
+                    <div class="equation-container">
+                        <div class="equation-title">Quantum Finance Equation</div>
+                        <p>\[
+                        P(t) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(r - \mu)^2}{2\sigma^2}} \times \oint_{\Gamma} e^{iS/\hbar} \mathcal{D}x
+                        \]</p>
+                        <p>Combining quantum path integrals with traditional financial models for superior predictions</p>
+                    </div>
+                    
+                    <div class="param-controls">
+                        <div class="param-group">
+                            <div class="param-title">Time Horizon</div>
+                            <div class="slider-container">
+                                <div class="slider-label">
+                                    <span>Short-term</span>
+                                    <span>Long-term</span>
+                                </div>
+                                <input type="range" min="1" max="100" value="50">
+                            </div>
+                        </div>
+                        
+                        <div class="param-group">
+                            <div class="param-title">Risk Profile</div>
+                            <div class="slider-container">
+                                <div class="slider-label">
+                                    <span>Conservative</span>
+                                    <span>Aggressive</span>
+                                </div>
+                                <input type="range" min="1" max="100" value="75">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary" style="width: 100%; margin-top: 30px;">
+                        <i class="fas fa-bolt"></i> Generate Quantum Prediction
+                    </button>
+                </div>
+                
+                <div class="predictor-visual">
+                    <canvas id="predictorChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stock Widgets Section -->
+        <section class="widget-section">
+            <h2 class="section-title">
+                <i class="fas fa-chart-line"></i> Market Analysis
+            </h2>
+            
+            <!-- Ticker Tape Widget -->
+            <div class="tradingview-widget-container">
+                <div class="widget-header">
+                    <h3 class="widget-title">Market Overview</h3>
+                </div>
+                <div class="tradingview-widget-container__widget"></div>
+                <div class="tradingview-widget-copyright">
+                    <a href="https://www.tradingview.com" rel="noopener noreferrer" target="_blank"><span class="blue-text">Ticker Tape</span></a> by TradingView
+                </div>
+                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+                {
+                    "symbols": [
+                        {"proName": "FOREXCOM:SPXUSD", "title": "S&P 500"},
+                        {"proName": "FOREXCOM:NSXUSD", "title": "Nasdaq 100"},
+                        {"proName": "FX_IDC:EURUSD", "title": "EUR/USD"},
+                        {"proName": "BITSTAMP:BTCUSD", "title": "BTC/USD"},
+                        {"proName": "BITSTAMP:ETHUSD", "title": "ETH/USD"}
+                    ],
+                    "showSymbolLogo": true,
+                    "colorTheme": "dark",
+                    "isTransparent": true,
+                    "displayMode": "adaptive",
+                    "locale": "en"
+                }
+                </script>
+            </div>
+
+            <!-- PLTR Chart Widget -->
+            <div class="tradingview-widget-container">
+                <div class="widget-header">
+                    <h3 class="widget-title">Tech & AI Stocks</h3>
+                </div>
+                <div id="tradingview_0103c"></div>
+                <div class="tradingview-widget-copyright">
+                    <a href="https://www.tradingview.com/symbols/NYSE-PLTR/" rel="noopener noreferrer" target="_blank"><span class="blue-text">PLTR Chart</span></a> by TradingView
+                </div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                    new TradingView.MediumWidget({
+                        "symbols": [["NASDAQ:GOOG|ALL"], ["NASDAQ:NVDA|ALL"], ["NASDAQ:AMD|ALL"], ["NASDAQ:IRBT|ALL"], ["TSXV:QUIS|ALL"], ["TSXV:MCLD|ALL"], ["TSXV:NXO|ALL"], ["TSXV:SPOT|ALL"], ["AMEX:ARKW|ALL"], ["TSXV:BITF|ALL"]],
+                        "chartOnly": false,
+                        "width": "100%",
+                        "height": "450",
+                        "locale": "en",
+                        "colorTheme": "dark",
+                        "gridLineColor": "rgba(66, 66, 66, 1)",
+                        "trendLineColor": "rgba(0, 0, 255, 1)",
+                        "fontColor": "rgba(255, 0, 255, 1)",
+                        "underLineColor": "rgba(0, 0, 255, 0.15)",
+                        "isTransparent": true,
+                        "autosize": false,
+                        "container_id": "tradingview_0103c"
+                    });
+                </script>
+            </div>
+
+            <!-- VEOEY Chart Widget -->
+            <div class="tradingview-widget-container">
+                <div class="widget-header">
+                    <h3 class="widget-title">Renewable Energy Stocks</h3>
+                </div>
+                <div id="tradingview_f9866"></div>
+                <div class="tradingview-widget-copyright">
+                    <a href="https://www.tradingview.com/symbols/OTC-VEOEY/" rel="noopener noreferrer" target="_blank"><span class="blue-text">VEOEY Chart</span></a> by TradingView
+                </div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                    new TradingView.MediumWidget({
+                        "symbols": [["OTC:VEOEY|ALL"], ["NYSE:PNR|ALL"], ["NASDAQ:YORW|ALL"], ["NYSE:CWT|ALL"], ["NYSE:AWR|ALL"], ["NYSE:WTRG|ALL"], ["TSX:GWR|ALL"], ["OTC:RAKR|ALL"]],
+                        "chartOnly": false,
+                        "width": "100%",
+                        "height": "450",
+                        "locale": "en",
+                        "colorTheme": "dark",
+                        "gridLineColor": "rgba(66, 66, 66, 1)",
+                        "trendLineColor": "rgba(0, 0, 255, 1)",
+                        "fontColor": "rgba(255, 0, 255, 1)",
+                        "underLineColor": "rgba(0, 0, 255, 0.15)",
+                        "isTransparent": true,
+                        "autosize": false,
+                        "container_id": "tradingview_f9866"
+                    });
+                </script>
+            </div>
+
+            <!-- TRC Chart Widget -->
+            <div class="tradingview-widget-container">
+                <div class="widget-header">
+                    <h3 class="widget-title">Real Estate & Infrastructure</h3>
+                </div>
+                <div id="tradingview_670f1"></div>
+                <div class="tradingview-widget-copyright">
+                    <a href="https://www.tradingview.com/symbols/NYSE-TRC/" rel="noopener noreferrer" target="_blank"><span class="blue-text">TRC Chart</span></a> by TradingView
+                </div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                    new TradingView.MediumWidget({
+                        "symbols": [["NYSE:TRC|ALL"], ["NASDAQ:CRESY|ALL"], ["NASDAQ:PICO|ALL"], ["NASDAQ:LAND|ALL"]],
+                        "chartOnly": false,
+                        "width": "100%",
+                        "height": "450",
+                        "locale": "en",
+                        "colorTheme": "dark",
+                        "gridLineColor": "rgba(66, 66, 66, 1)",
+                        "trendLineColor": "rgba(0, 0, 255, 1)",
+                        "fontColor": "rgba(255, 0, 255, 1)",
+                        "underLineColor": "rgba(0, 0, 255, 0.15)",
+                        "isTransparent": true,
+                        "autosize": false,
+                        "container_id": "tradingview_670f1"
+                    });
+                </script>
+            </div>
+
+            <!-- SLV Chart Widget -->
+            <div class="tradingview-widget-container">
+                <div class="widget-header">
+                    <h3 class="widget-title">Commodities & Resources</h3>
+                </div>
+                <div id="tradingview_c77df"></div>
+                <div class="tradingview-widget-copyright">
+                    <a href="https://www.tradingview.com/symbols/AMEX-SLV/" rel="noopener noreferrer" target="_blank"><span class="blue-text">SLV Chart</span></a> by TradingView
+                </div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                    new TradingView.MediumWidget({
+                        "symbols": [["AMEX:SLV|ALL"], ["NYSE:GOLD|ALL"], ["AMEX:BATT|ALL"], ["TSXV:NOU|ALL"], ["AMEX:JJN|ALL"], ["COPPER|ALL"], ["CBOT:ZCZ2024|ALL"], ["AMEX:URA|ALL"]],
+                        "chartOnly": false,
+                        "width": "100%",
+                        "height": "450",
+                        "locale": "en",
+                        "colorTheme": "dark",
+                        "gridLineColor": "rgba(66, 66, 66, 1)",
+                        "trendLineColor": "rgba(0, 0, 255, 1)",
+                        "fontColor": "rgba(255, 0, 255, 1)",
+                        "underLineColor": "rgba(0, 0, 255, 0.15)",
+                        "isTransparent": true,
+                        "autosize": false,
+                        "container_id": "tradingview_c77df"
+                    });
+                </script>
+            </div>
+
+            <!-- TSLA Chart Widget -->
+            <div class="tradingview-widget-container">
+                <div class="widget-header">
+                    <h3 class="widget-title">Automotive & EV Stocks</h3>
+                </div>
+                <div id="tradingview_c825c"></div>
+                <div class="tradingview-widget-copyright">
+                    <a href="https://www.tradingview.com/symbols/NASDAQ-TSLA/" rel="noopener noreferrer" target="_blank"><span class="blue-text">TSLA Chart</span></a> by TradingView
+                </div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                    new TradingView.MediumWidget({
+                        "symbols": [["NASDAQ:TSLA|ALL"], ["NYSE:NIO|ALL"], ["NASDAQ:SOLO|ALL"], ["NYSE:XPEV|ALL"], ["NASDAQ:LI|ALL"], ["TSXV:GPV|ALL"], ["WKHS|ALL"], ["NASDAQ:PLUG|ALL"]],
+                        "chartOnly": false,
+                        "width": "100%",
+                        "height": "450",
+                        "locale": "en",
+                        "colorTheme": "dark",
+                        "gridLineColor": "rgba(66, 66, 66, 1)",
+                        "trendLineColor": "rgba(0, 0, 255, 1)",
+                        "fontColor": "rgba(255, 0, 255, 1)",
+                        "underLineColor": "rgba(0, 0, 255, 0.15)",
+                        "isTransparent": true,
+                        "autosize": false,
+                        "container_id": "tradingview_c825c"
+                    });
+                </script>
+            </div>
+
+            <!-- MAXR Chart Widget -->
+            <div class="tradingview-widget-container">
+                <div class="widget-header">
+                    <h3 class="widget-title">Space & Aerospace Stocks</h3>
+                </div>
+                <div id="tradingview_33995"></div>
+                <div class="tradingview-widget-copyright">
+                    <a href="https://www.tradingview.com/symbols/NYSE-MAXR/" rel="noopener noreferrer" target="_blank"><span class="blue-text">MAXR Chart</span></a> by TradingView
+                </div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                    new TradingView.MediumWidget({
+                        "symbols": [["NYSE:MAXR|ALL"], ["NYSE:SPCE|ALL"], ["NYSE:LMT|ALL"], ["NYSE:BA|ALL"], ["NYSE:NOC|ALL"], ["OTC:INTEQ|ALL"], ["NASDAQ:UFO|ALL"], ["NASDAQ:LORL|ALL"]],
+                        "chartOnly": false,
+                        "width": "100%",
+                        "height": "450",
+                        "locale": "en",
+                        "colorTheme": "dark",
+                        "gridLineColor": "rgba(66, 66, 66, 1)",
+                        "trendLineColor": "rgba(0, 0, 255, 1)",
+                        "fontColor": "rgba(255, 0, 255, 1)",
+                        "underLineColor": "rgba(0, 0, 255, 0.15)",
+                        "isTransparent": true,
+                        "autosize": false,
+                        "container_id": "tradingview_33995"
+                    });
+                </script>
+            </div>
+
+            <!-- FSLR Chart Widget -->
+            <div class="tradingview-widget-container">
+                <div class="widget-header">
+                    <h3 class="widget-title">Solar & Renewable Energy</h3>
+                </div>
+                <div id="tradingview_9216c"></div>
+                <div class="tradingview-widget-copyright">
+                    <a href="https://www.tradingview.com/symbols/NASDAQ-FSLR/" rel="noopener noreferrer" target="_blank"><span class="blue-text">FSLR Chart</span></a> by TradingView
+                </div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                    new TradingView.MediumWidget({
+                        "symbols": [["NASDAQ:FSLR|ALL"], ["NASDAQ:SPWR|ALL"], ["NASDAQ:ENPH|ALL"], ["NASDAQ:SEDG|ALL"], ["TSXV:SOLR|ALL"], ["NASDAQ:CSIQ|ALL"], ["TSXV:NGY|ALL"], ["NASDAQ:ARRY|ALL"]],
+                        "chartOnly": false,
+                        "width": "100%",
+                        "height": "450",
+                        "locale": "en",
+                        "colorTheme": "dark",
+                        "gridLineColor": "rgba(66, 66, 66, 1)",
+                        "trendLineColor": "rgba(0, 0, 255, 1)",
+                        "fontColor": "rgba(255, 0, 255, 1)",
+                        "underLineColor": "rgba(0, 0, 255, 0.15)",
+                        "isTransparent": true,
+                        "autosize": false,
+                        "container_id": "tradingview_9216c"
+                    });
+                </script>
+            </div>
+
+            <!-- DAN Chart Widget -->
+            <div class="tradingview-widget-container">
+                <div class="widget-header">
+                    <h3 class="widget-title">Agriculture & Food Tech</h3>
+                </div>
+                <div id="tradingview_faa65"></div>
+                <div class="tradingview-widget-copyright">
+                    <a href="https://www.tradingview.com/symbols/TSXV-DAN/" rel="noopener noreferrer" target="_blank"><span class="blue-text">DAN Chart</span></a> by TradingView
+                </div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                    new TradingView.MediumWidget({
+                        "symbols": [["TSXV:DAN|ALL"], ["ASX:AEV|ALL"], ["TSXV:GRO|ALL"], ["TSXV:IFOS|ALL"], ["NYSE:MOS|ALL"], ["NYSE:NTR|ALL"]],
+                        "chartOnly": false,
+                        "width": "100%",
+                        "height": "450",
+                        "locale": "en",
+                        "colorTheme": "dark",
+                        "gridLineColor": "rgba(66, 66, 66, 1)",
+                        "trendLineColor": "rgba(0, 0, 255, 1)",
+                        "fontColor": "rgba(255, 0, 255, 1)",
+                        "underLineColor": "rgba(0, 0, 255, 0.15)",
+                        "isTransparent": true,
+                        "autosize": false,
+                        "container_id": "tradingview_faa65"
+                    });
+                </script>
+            </div>
+
+            <!-- Cryptocurrency Markets Widget -->
+            <div class="tradingview-widget-container">
+                <div class="widget-header">
+                    <h3 class="widget-title">Cryptocurrency Markets</h3>
+                </div>
+                <div class="tradingview-widget-container__widget"></div>
+                <div class="tradingview-widget-copyright">
+                    <a href="https://www.tradingview.com/markets/cryptocurrencies/prices-all/" rel="noopener noreferrer" target="_blank"><span class="blue-text">Cryptocurrency Markets</span></a> by TradingView
+                </div>
+                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-screener.js" async>
+                {
+                    "width": "100%",
+                    "height": "450",
+                    "defaultColumn": "overview",
+                    "screener_type": "crypto_mkt",
+                    "displayCurrency": "USD",
+                    "colorTheme": "dark",
+                    "locale": "en",
+                    "isTransparent": true
+                }
+                </script>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-logo">FutureStocks.ca</div>
+            <p>The next generation of stock market analysis powered by quantum computing and cosmic algorithms</p>
+            
+            <div class="footer-links">
+                <a href="#"><i class="fas fa-home"></i> Home</a>
+                <a href="#"><i class="fas fa-chart-line"></i> Markets</a>
+                <a href="#"><i class="fas fa-atom"></i> Quantum Lab</a>
+                <a href="#"><i class="fas fa-book"></i> Research</a>
+                <a href="#"><i class="fas fa-envelope"></i> Contact</a>
+                <a href="#"><i class="fas fa-lock"></i> Privacy</a>
+            </div>
+            
+            <p><span class="pulse"></span> <span style="color: var(--neon-cyan);">Quantum Prediction Engine: ONLINE</span></p>
+            
+            <div class="copyright">
+                &copy; 2023 FutureStocks.ca | Quantum Financial Analytics Platform<br>
+                Financial Content By Macroaxis
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Initialize charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hero Chart
+            const heroCtx = document.getElementById('heroChart').getContext('2d');
+            const heroChart = new Chart(heroCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Quantum AI Stock (QNTM)',
+                        data: [180, 195, 210, 240, 275, 310, 290, 305, 330, 350, 340, 347],
+                        borderColor: 'rgba(0, 245, 212, 1)',
+                        backgroundColor: 'rgba(0, 245, 212, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0
+                    }, {
+                        label: 'Market Average',
+                        data: [200, 205, 215, 225, 240, 250, 245, 255, 265, 275, 270, 280],
+                        borderColor: 'rgba(157, 78, 221, 0.7)',
+                        borderDash: [5, 5],
+                        pointRadius: 0,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Predictor Chart
+            const predictorCtx = document.getElementById('predictorChart').getContext('2d');
+            const predictorChart = new Chart(predictorCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Now', '+1M', '+2M', '+3M', '+4M', '+5M', '+6M'],
+                    datasets: [{
+                        label: 'Quantum Prediction',
+                        data: [347, 362, 380, 405, 440, 475, 510],
+                        borderColor: 'rgba(0, 245, 212, 1)',
+                        backgroundColor: 'rgba(0, 245, 212, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 5
+                    }, {
+                        label: 'Traditional Forecast',
+                        data: [347, 355, 365, 370, 375, 380, 390],
+                        borderColor: 'rgba(157, 78, 221, 0.7)',
+                        tension: 0.4,
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Stock selector functionality
+            const stockOptions = document.querySelectorAll('.stock-option');
+            stockOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    stockOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // In a real app, this would update the chart data
+                    // For demo, we'll just update the prediction chart slightly
+                    const base = Math.random() * 100 + 300;
+                    const newData = [base];
+                    for (let i = 1; i < 7; i++) {
+                        newData.push(base + i * (25 + Math.random() * 15));
+                    }
+                    
+                    predictorChart.data.datasets[0].data = newData;
+                    predictorChart.update();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

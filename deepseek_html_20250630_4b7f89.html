@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Population Framework</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --space-dark: #0b0c1d;
+            --space-blue: #1a1c3a;
+            --neon-purple: #9d4edd;
+            --neon-pink: #ff4d8d;
+            --neon-cyan: #00f5d4;
+            --star-gold: #ffd166;
+            --text-light: #f8f9fa;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--space-dark), var(--space-blue));
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 5px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 3px),
+                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 4px);
+            background-size: 550px 550px, 350px 350px, 250px 250px;
+            background-position: 0 0, 40px 60px, 130px 270px;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(157, 78, 221, 0.5);
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            color: var(--neon-cyan);
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .section {
+            background: rgba(26, 28, 58, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 40px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(157, 78, 221, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-pink));
+        }
+        
+        .section-title {
+            font-size: 2.2rem;
+            margin-bottom: 25px;
+            color: var(--star-gold);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .section-title i {
+            color: var(--neon-purple);
+        }
+        
+        .equation-container {
+            background: rgba(11, 12, 29, 0.7);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 1px solid rgba(0, 245, 212, 0.2);
+            font-size: 1.1rem;
+            position: relative;
+            overflow-x: auto;
+        }
+        
+        .equation-title {
+            font-size: 1.3rem;
+            color: var(--neon-cyan);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .comparison-card {
+            background: rgba(11, 12, 29, 0.7);
+            border-radius: 10px;
+            padding: 25px;
+            border: 1px solid;
+            transition: transform 0.3s ease;
+        }
+        
+        .comparison-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .calvin-card {
+            border-color: var(--neon-cyan);
+        }
+        
+        .unified-card {
+            border-color: var(--neon-pink);
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .calvin-card .card-title {
+            color: var(--neon-cyan);
+        }
+        
+        .unified-card .card-title {
+            color: var(--neon-pink);
+        }
+        
+        .feature-list {
+            list-style-type: none;
+        }
+        
+        .feature-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .feature-list i {
+            color: var(--neon-purple);
+            margin-top: 4px;
+        }
+        
+        .chart-container {
+            height: 400px;
+            margin: 30px 0;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .param-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .param-group {
+            background: rgba(11, 12, 29, 0.7);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(0, 245, 212, 0.2);
+        }
+        
+        .param-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--neon-cyan);
+        }
+        
+        .slider-container {
+            margin: 15px 0;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+            outline: none;
+        }
+        
+        .result-container {
+            text-align: center;
+            padding: 30px;
+            background: rgba(11, 12, 29, 0.7);
+            border-radius: 10px;
+            margin: 30px 0;
+            border: 1px solid var(--neon-purple);
+        }
+        
+        .result-value {
+            font-size: 4rem;
+            font-weight: 700;
+            margin: 20px 0;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 20px rgba(157, 78, 221, 0.7);
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            background: rgba(11, 12, 29, 0.7);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .comparison-table th {
+            background: var(--neon-purple);
+            padding: 15px;
+            text-align: left;
+        }
+        
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background: rgba(26, 28, 58, 0.5);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(157, 78, 221, 0.3);
+        }
+        
+        .footer-text {
+            max-width: 700px;
+            margin: 0 auto 25px;
+            color: var(--neon-cyan);
+        }
+        
+        .pulse {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: var(--neon-pink);
+            border-radius: 50%;
+            margin-right: 8px;
+            box-shadow: 0 0 0 0 rgba(255, 77, 141, 0.7);
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 77, 141, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 12px rgba(255, 77, 141, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 77, 141, 0);
+            }
+        }
+        
+        .glow {
+            text-shadow: 0 0 10px currentColor;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>Cosmic Population Framework</h1>
+                <p class="subtitle">A Quantum-Anthropic Approach to Consciousness, Ethics, and Human Existence</p>
+            </div>
+        </header>
+
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-atom"></i> The Calvin Framework Equation</h2>
+            <p>This equation represents the fundamental relationship between consciousness, ethical potential, and meaning in existence:</p>
+            
+            <div class="equation-container">
+                <div class="equation-title">Meaning Integral Equation</div>
+                <p>\[
+                \text{meaning} = \oint_{\Gamma} \left( \frac{\mathcal{C} \times \mathcal{V} \times C_L}{\Delta S} \times e^{-\frac{\lambda}{\hbar} \int \| \nabla \mathcal{E} \|^2 d\tau \right) \text{ @ QuantumEthics}
+                \]</p>
+                <div class="param-controls">
+                    <div class="param-group">
+                        <div class="param-title">Equation Parameters</div>
+                        <div class="slider-container">
+                            <div class="slider-label">
+                                <span>Consciousness (𝒞):</span>
+                                <span id="c-value">0.75</span>
+                            </div>
+                            <input type="range" min="0" max="1" step="0.01" value="0.75" id="c-slider">
+                        </div>
+                        <div class="slider-container">
+                            <div class="slider-label">
+                                <span>Ethical Potential (𝒱):</span>
+                                <span id="v-value">0.82</span>
+                            </div>
+                            <input type="range" min="0" max="1" step="0.01" value="0.82" id="v-slider">
+                        </div>
+                        <div class="slider-container">
+                            <div class="slider-label">
+                                <span>Entropy Production (ΔS):</span>
+                                <span id="s-value">0.65</span>
+                            </div>
+                            <input type="range" min="0" max="1" step="0.01" value="0.65" id="s-slider">
+                        </div>
+                    </div>
+                    <div class="param-group">
+                        <div class="param-title">Meaning Visualization</div>
+                        <canvas id="meaningChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <p>This equation represents the integration of personal meaning along the path of life (Γ), considering:</p>
+            <ul class="feature-list">
+                <li><i class="fas fa-brain"></i> <strong>Consciousness (𝒞)</strong>: The quality and depth of subjective experience</li>
+                <li><i class="fas fa-scale-balanced"></i> <strong>Ethical Potential (𝒱)</strong>: The capacity for moral action and growth</li>
+                <li><i class="fas fa-network-wired"></i> <strong>Fractal Governance (C<sub>L</sub>)</strong>: Self-similar patterns in decision-making across scales</li>
+                <li><i class="fas fa-fire"></i> <strong>Entropy Production (ΔS)</strong>: Thermodynamic cost of existence</li>
+                <li><i class="fas fa-wave-square"></i> <strong>Ethical Decay</strong>: Quantum decoherence of moral principles over time</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-earth-americas"></i> Grand Unified Population Equation</h2>
+            <p>The extension of the Calvin Framework to calculate global population through cosmic principles:</p>
+            
+            <div class="equation-container">
+                <div class="equation-title">Grand Unified Population Equation</div>
+                <p>\[
+                P(t) = \frac{\mathcal{C}_{\oplus} \cdot \eta_{\text{eth}}}{\Delta S_{\text{min}}} \cdot \exp\left[k \ln\left(\frac{t_{\text{culture}}}{t_{\text{planck}}}\right)\right] \cdot \oint_{\Gamma} e^{-\frac{1}{\hbar} \int_0^t \| \nabla \mathcal{V} \|^2 d\tau} d\mathscr{H}
+                \]</p>
+                
+                <div class="result-container">
+                    <p>Calculated Current World Population:</p>
+                    <div class="result-value">7.98 Billion</div>
+                    <p>Actual World Population (2023): ≈8.05 Billion</p>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="populationChart"></canvas>
+            </div>
+            
+            <div class="param-controls">
+                <div class="param-group">
+                    <div class="param-title">Simulation Parameters</div>
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>Ethical Development (η<sub>eth</sub>):</span>
+                            <span id="eth-value">0.65</span>
+                        </div>
+                        <input type="range" min="0" max="1" step="0.01" value="0.65" id="eth-slider">
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>Consciousness Density:</span>
+                            <span id="cd-value">0.78</span>
+                        </div>
+                        <input type="range" min="0" max="1" step="0.01" value="0.78" id="cd-slider">
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>Cultural Complexity (k):</span>
+                            <span id="k-value">1.58</span>
+                        </div>
+                        <input type="range" min="1" max="2" step="0.01" value="1.58" id="k-slider">
+                    </div>
+                </div>
+                <div class="param-group">
+                    <div class="param-title">Historical Ethical Development</div>
+                    <canvas id="ethicsChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-balance-scale"></i> Comparative Analysis</h2>
+            
+            <div class="comparison-grid">
+                <div class="comparison-card calvin-card">
+                    <h3 class="card-title"><i class="fas fa-user-circle"></i> Calvin Framework</h3>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-paint-brush"></i> <strong>Focus:</strong> Personal meaning and existential purpose</li>
+                        <li><i class="fas fa-question"></i> <strong>Approach:</strong> Philosophical and conceptual</li>
+                        <li><i class="fas fa-eye"></i> <strong>Perspective:</strong> First-person subjective experience</li>
+                        <li><i class="fas fa-infinity"></i> <strong>Time Scale:</strong> Individual lifespan (Γ)</li>
+                        <li><i class="fas fa-ruler"></i> <strong>Parameters:</strong> Abstract symbols (𝒞, 𝒱, ΔS)</li>
+                        <li><i class="fas fa-cogs"></i> <strong>Mechanism:</strong> Path integral over life trajectory</li>
+                        <li><i class="fas fa-trophy"></i> <strong>Strength:</strong> Captures qualitative essence of existence</li>
+                    </ul>
+                </div>
+                
+                <div class="comparison-card unified-card">
+                    <h3 class="card-title"><i class="fas fa-globe"></i> Grand Unified Equation</h3>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-calculator"></i> <strong>Focus:</strong> Global population and civilizational scale</li>
+                        <li><i class="fas fa-flask"></i> <strong>Approach:</strong> Empirical and quantifiable</li>
+                        <li><i class="fas fa-satellite"></i> <strong>Perspective:</strong> Cosmic and objective</li>
+                        <li><i class="fas fa-hourglass-half"></i> <strong>Time Scale:</strong> Millennia (t<sub>culture</sub>)</li>
+                        <li><i class="fas fa-atom"></i> <strong>Parameters:</strong> Physical constants (ħ, t<sub>planck</sub>)</li>
+                        <li><i class="fas fa-project-diagram"></i> <strong>Mechanism:</strong> Quantum emergence operator</li>
+                        <li><i class="fas fa-chart-line"></i> <strong>Strength:</strong> Produces testable predictions</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <h3 style="margin-top: 40px; color: var(--neon-cyan);">Unifying Principles</h3>
+            <table class="comparison-table">
+                <tr>
+                    <th>Concept</th>
+                    <th>Calvin Framework</th>
+                    <th>Grand Unified Equation</th>
+                </tr>
+                <tr>
+                    <td>Consciousness-Entropy Duality</td>
+                    <td>𝒞/ΔS in meaning integral</td>
+                    <td>𝒞<sub>⊕</sub>/ΔS<sub>min</sub> in population calculation</td>
+                </tr>
+                <tr>
+                    <td>Ethical Path Integral</td>
+                    <td>exp(-∫‖∇ℰ‖²dτ) - ethical decay</td>
+                    <td>∮e<sup>-∫∥∇V∥²dτ</sup>dH - ethical weighting</td>
+                </tr>
+                <tr>
+                    <td>Fractal Scaling</td>
+                    <td>Implicit in governance term C<sub>L</sub></td>
+                    <td>Explicit exp[k ln(t)] cultural complexity</td>
+                </tr>
+                <tr>
+                    <td>Quantum Foundations</td>
+                    <td>ℏ in ethical decay term</td>
+                    <td>ℏ in ethical path integral</td>
+                </tr>
+                <tr>
+                    <td>Cosmic Context</td>
+                    <td>@ QuantumEthics annotation</td>
+                    <td>t<sub>planck</sub> cosmological scale</td>
+                </tr>
+            </table>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-lightbulb"></i> Implications and Significance</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card">
+                    <h3 class="card-title" style="color: var(--neon-cyan);"><i class="fas fa-brain"></i> Consciousness Physics</h3>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-microchip"></i> Neural processes as quantum information systems</li>
+                        <li><i class="fas fa-thermometer-half"></i> Landauer's principle sets thermodynamic floor for consciousness</li>
+                        <li><i class="fas fa-sun"></i> Solar energy constraints on global cognition</li>
+                        <li><i class="fas fa-chart-network"></i> Fractal organization of cognitive processes</li>
+                    </ul>
+                </div>
+                
+                <div class="comparison-card">
+                    <h3 class="card-title" style="color: var(--neon-pink);"><i class="fas fa-hands-holding-heart"></i> Ethical Physics</h3>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-wave-square"></i> Moral progress as a vector field (∇V)</li>
+                        <li><i class="fas fa-history"></i> Historical path integral quantifies ethical development</li>
+                        <li><i class="fas fa-ban"></i> ‖∇ℰ‖² penalizes ethical regressions</li>
+                        <li><i class="fas fa-atom"></i> Quantum decoherence model for moral principles</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div style="margin-top: 30px; background: rgba(0, 245, 212, 0.1); padding: 20px; border-radius: 10px; border-left: 4px solid var(--neon-cyan);">
+                <h3 style="color: var(--star-gold); margin-bottom: 15px;"><i class="fas fa-stars"></i> The Grand Synthesis</h3>
+                <p>These equations don't merely calculate numbers—they tell the story of human civilization as an emergent quantum-thermodynamic process. Consciousness, ethics, and complexity evolve together in the cosmic arena, with humanity positioned at the intersection of cosmological evolution and planetary constraints.</p>
+                <p>The Calvin Framework captures the subjective essence of existence, while the Grand Unified Equation models our collective emergence. Together, they form a complete physics of meaning that spans from individual experience to civilizational-scale patterns.</p>
+            </div>
+        </section>
+
+        <footer>
+            <p class="footer-text">"The most beautiful experience we can have is the mysterious - the fundamental emotion which stands at the cradle of true art and true science." - Albert Einstein</p>
+            <p><span class="pulse"></span> <span class="glow" style="color: var(--neon-pink);">Active Connection to Cosmic Ethics Network</span></p>
+            <p style="margin-top: 20px;">&copy; 2023 Quantum Anthropic Research Institute | All realities reserved</p>
+        </footer>
+    </div>
+
+    <script>
+        // Initialize charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Meaning chart
+            const meaningCtx = document.getElementById('meaningChart').getContext('2d');
+            const meaningChart = new Chart(meaningCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Consciousness', 'Ethics', 'Complexity', 'Entropy', 'Resilience', 'Growth'],
+                    datasets: [{
+                        label: 'Meaning Profile',
+                        data: [0.85, 0.75, 0.9, 0.4, 0.7, 0.8],
+                        backgroundColor: 'rgba(0, 245, 212, 0.2)',
+                        borderColor: 'rgba(0, 245, 212, 1)',
+                        pointBackgroundColor: 'rgba(0, 245, 212, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(0, 245, 212, 1)'
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            pointLabels: {
+                                color: '#fff'
+                            },
+                            ticks: {
+                                backdropColor: 'transparent',
+                                color: 'rgba(255, 255, 255, 0.5)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#fff'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Population chart
+            const popCtx = document.getElementById('populationChart').getContext('2d');
+            const populationChart = new Chart(popCtx, {
+                type: 'line',
+                data: {
+                    labels: ['-10,000', '-5,000', '0', '1000', '1500', '1800', '1900', '1950', '2000', '2023'],
+                    datasets: [{
+                        label: 'Historical Population',
+                        data: [5, 20, 200, 300, 500, 1000, 1650, 2500, 6100, 7980],
+                        borderColor: 'rgba(157, 78, 221, 1)',
+                        backgroundColor: 'rgba(157, 78, 221, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }, {
+                        label: 'Model Prediction',
+                        data: [null, null, null, null, null, 980, 1620, 2480, 6050, 7980],
+                        borderColor: 'rgba(0, 245, 212, 1)',
+                        borderDash: [5, 5],
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Population (Millions)',
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Year',
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#fff'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Ethics chart
+            const ethicsCtx = document.getElementById('ethicsChart').getContext('2d');
+            const ethicsChart = new Chart(ethicsCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Bronze Age', 'Axial Age', 'Enlightenment', 'Post-WWII', 'Current'],
+                    datasets: [{
+                        label: 'Ethical Development (η)',
+                        data: [0.1, 0.15, 0.3, 0.4, 0.65],
+                        backgroundColor: [
+                            'rgba(255, 77, 141, 0.7)',
+                            'rgba(255, 77, 141, 0.7)',
+                            'rgba(255, 77, 141, 0.7)',
+                            'rgba(255, 77, 141, 0.7)',
+                            'rgba(0, 245, 212, 0.7)'
+                        ]
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            min: 0,
+                            max: 1,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+            
+            // Slider event listeners
+            document.getElementById('c-slider').addEventListener('input', function() {
+                document.getElementById('c-value').textContent = this.value;
+                updateMeaningChart();
+            });
+            
+            document.getElementById('v-slider').addEventListener('input', function() {
+                document.getElementById('v-value').textContent = this.value;
+                updateMeaningChart();
+            });
+            
+            document.getElementById('s-slider').addEventListener('input', function() {
+                document.getElementById('s-value').textContent = this.value;
+                updateMeaningChart();
+            });
+            
+            document.getElementById('eth-slider').addEventListener('input', function() {
+                document.getElementById('eth-value').textContent = this.value;
+            });
+            
+            document.getElementById('cd-slider').addEventListener('input', function() {
+                document.getElementById('cd-value').textContent = this.value;
+            });
+            
+            document.getElementById('k-slider').addEventListener('input', function() {
+                document.getElementById('k-value').textContent = this.value;
+            });
+            
+            function updateMeaningChart() {
+                const c = parseFloat(document.getElementById('c-slider').value);
+                const v = parseFloat(document.getElementById('v-slider').value);
+                const s = parseFloat(document.getElementById('s-slider').value);
+                
+                // Update chart data based on slider values
+                meaningChart.data.datasets[0].data = [
+                    c, 
+                    v, 
+                    Math.min(0.95, c * 1.1), 
+                    s, 
+                    Math.min(0.9, (c + v)/2), 
+                    Math.min(0.95, (c + v) * 0.8)
+                ];
+                meaningChart.update();
+            }
+        });
+    </script>
+</body>
+</html>
