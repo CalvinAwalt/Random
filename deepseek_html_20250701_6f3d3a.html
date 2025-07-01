@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asteroid Simulation - Calvin Framework Physics</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0b0c2a, #1a1c4e);
+            color: #f0f0ff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        header {
+            background: rgba(10, 10, 40, 0.9);
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 2px solid #6a4fff;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, #00e5ff, #6a4fff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            gap: 2rem;
+        }
+        
+        .simulation-container {
+            flex: 1;
+            min-width: 500px;
+            height: 600px;
+            background: rgba(20, 20, 50, 0.6);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(106, 79, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        #universe {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+        
+        .controls button {
+            background: #6a4fff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .controls button:hover {
+            background: #00e5ff;
+            transform: translateY(-2px);
+        }
+        
+        .math-container {
+            flex: 1;
+            min-width: 400px;
+            background: rgba(20, 20, 50, 0.6);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(106, 79, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .formula-section {
+            background: rgba(30, 30, 70, 0.7);
+            border-radius: 10px;
+            padding: 1.5rem;
+            border-left: 4px solid #6a4fff;
+        }
+        
+        .formula-header {
+            margin-bottom: 1rem;
+            color: #00e5ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .formula-content {
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        
+        .live-data {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 1rem;
+        }
+        
+        .data-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+        
+        .data-label {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-bottom: 0.3rem;
+        }
+        
+        .data-value {
+            font-size: 1.2rem;
+            color: #00e5ff;
+        }
+        
+        .asteroid-info {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .info-card {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .info-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #00e5ff;
+            margin: 0.5rem 0;
+        }
+        
+        .info-label {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        .signature {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        .creator {
+            font-family: 'Brush Script MT', cursive;
+            font-size: 1.8rem;
+            color: #00e5ff;
+            margin-top: 0.5rem;
+        }
+        
+        @media (max-width: 1100px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .simulation-container {
+                min-width: 100%;
+                height: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Asteroid Simulation with Calvin Framework Physics</h1>
+        <p class="subtitle">Visualizing celestial mechanics using ∮_Δ emergence operator and C(L) fractal governance</p>
+    </header>
+    
+    <div class="container">
+        <div class="simulation-container">
+            <div id="universe"></div>
+            <div class="controls">
+                <button id="pauseBtn">Pause</button>
+                <button id="resetBtn">Reset</button>
+                <button id="trailBtn">Toggle Trails</button>
+            </div>
+        </div>
+        
+        <div class="math-container">
+            <div class="formula-section">
+                <div class="formula-header">
+                    <h3>Calvin Physics Framework</h3>
+                    <div>Status: <span style="color:#00ff9d;">Active</span></div>
+                </div>
+                <p>This simulation uses Calvin Framework physics to model asteroid motion through gravitational fields:</p>
+                
+                <div class="formula-content">
+                    \[
+                    \vec{F}_{\text{calvin}} = \oint_{\Delta} \frac{\delta \vec{r} \otimes \delta M}{\varepsilon_{\text{grav}}} \cdot C(L) \cdot V_{net}
+                    \]
+                </div>
+                
+                <div class="live-data">
+                    <div class="data-item">
+                        <div class="data-label">Emergence Operator (∮_Δ)</div>
+                        <div class="data-value" id="emergenceValue">0.874</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Fractal Governance (C(L))</div>
+                        <div class="data-value" id="fractalValue">1.254</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Ethical Constraint (V_net)</div>
+                        <div class="data-value" id="vnetValue">0.992</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Resultant Force (N)</div>
+                        <div class="data-value" id="forceValue">3.82e15</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="formula-section">
+                <div class="formula-header">
+                    <h3>Trajectory Equations</h3>
+                    <div>Orbital Mechanics</div>
+                </div>
+                
+                <div class="formula-content">
+                    \[
+                    \frac{d^2\vec{r}}{dt^2} = \frac{\vec{F}_{\text{calvin}}}{m} + \beta \cdot C(L) \cdot \frac{\delta \vec{v}}{\varepsilon_{\text{rel}}}
+                    \]
+                </div>
+                
+                <div class="live-data">
+                    <div class="data-item">
+                        <div class="data-label">Position (x, y)</div>
+                        <div class="data-value" id="positionValue">0, 0</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Velocity (km/s)</div>
+                        <div class="data-value" id="velocityValue">0, 0</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Acceleration (m/s²)</div>
+                        <div class="data-value" id="accelValue">0, 0</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Orbital Period (days)</div>
+                        <div class="data-value" id="periodValue">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="formula-section">
+                <div class="formula-header">
+                    <h3>Fractal Dark Matter Influence</h3>
+                    <div>Calvin Framework Extension</div>
+                </div>
+                
+                <div class="formula-content">
+                    \[
+                    \rho_{\text{DM}}(r) = \rho_0 \cdot \exp\left(-\oint_{\Delta_r} \frac{\delta v \otimes \delta r}{\varepsilon_{\text{grav}}} \cdot C(L)\right)
+                    \]
+                </div>
+                
+                <div class="asteroid-info">
+                    <div class="info-card">
+                        <div class="info-value" id="distanceValue">1.00</div>
+                        <div class="info-label">AU from Star</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-value" id="darkMatterValue">0.024</div>
+                        <div class="info-label">Dark Matter Density</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-value" id="timeValue">0.0</div>
+                        <div class="info-label">Years Elapsed</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="signature">
+                <p>Calvin Framework Physics Simulation</p>
+                <p class="creator">Calvin A. Walt</p>
+                <p>calvinawalt@gmail.com | Framework Signature: CF_9a8f7d2e4c</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Three.js
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(document.getElementById('universe').offsetWidth, document.getElementById('universe').offsetHeight);
+        document.getElementById('universe').appendChild(renderer.domElement);
+        
+        // Create star
+        const starGeometry = new THREE.SphereGeometry(2, 32, 32);
+        const starMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0xffff00,
+            emissive: 0xffff00,
+            emissiveIntensity: 0.5
+        });
+        const star = new THREE.Mesh(starGeometry, starMaterial);
+        scene.add(star);
+        
+        // Create asteroid
+        const asteroidGeometry = new THREE.SphereGeometry(0.5, 16, 16);
+        const asteroidMaterial = new THREE.MeshPhongMaterial({ 
+            color: 0x888888,
+            shininess: 30 
+        });
+        const asteroid = new THREE.Mesh(asteroidGeometry, asteroidMaterial);
+        asteroid.position.set(8, 0, 0);
+        scene.add(asteroid);
+        
+        // Create trail
+        const trailGeometry = new THREE.BufferGeometry();
+        const trailMaterial = new THREE.LineBasicMaterial({ color: 0x00e5ff });
+        const trail = new THREE.Line(trailGeometry, trailMaterial);
+        scene.add(trail);
+        const trailPoints = [];
+        const maxTrailPoints = 200;
+        
+        // Add stars in background
+        const starsGeometry = new THREE.BufferGeometry();
+        const starsMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.1 });
+        const starsVertices = [];
+        
+        for (let i = 0; i < 1000; i++) {
+            const x = (Math.random() - 0.5) * 200;
+            const y = (Math.random() - 0.5) * 200;
+            const z = (Math.random() - 0.5) * 200;
+            starsVertices.push(x, y, z);
+        }
+        
+        starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starsVertices, 3));
+        const starField = new THREE.Points(starsGeometry, starsMaterial);
+        scene.add(starField);
+        
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0x333333);
+        scene.add(ambientLight);
+        
+        const starLight = new THREE.PointLight(0xffffff, 2, 100);
+        star.add(starLight);
+        
+        // Camera position
+        camera.position.z = 25;
+        camera.position.y = 10;
+        camera.lookAt(0, 0, 0);
+        
+        // Physics variables
+        let asteroidVelocity = new THREE.Vector3(0, 3.5, 0);
+        const G = 0.2; // Gravitational constant
+        const starMass = 1000;
+        const asteroidMass = 1;
+        let time = 0;
+        let paused = false;
+        let showTrail = true;
+        
+        // UI Elements
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const trailBtn = document.getElementById('trailBtn');
+        
+        pauseBtn.addEventListener('click', () => {
+            paused = !paused;
+            pauseBtn.textContent = paused ? 'Resume' : 'Pause';
+        });
+        
+        resetBtn.addEventListener('click', () => {
+            asteroid.position.set(8, 0, 0);
+            asteroidVelocity.set(0, 3.5, 0);
+            trailPoints.length = 0;
+            updateTrail();
+            time = 0;
+        });
+        
+        trailBtn.addEventListener('click', () => {
+            showTrail = !showTrail;
+            trail.visible = showTrail;
+        });
+        
+        // Calvin Framework physics functions
+        function calculateCalvinForce(position) {
+            // Traditional gravitational force
+            const direction = new THREE.Vector3().subVectors(star.position, position);
+            const distance = direction.length();
+            const forceMagnitude = (G * starMass * asteroidMass) / (distance * distance);
+            
+            // Calvin Framework additions
+            const L = Math.log(distance); // Fractal governance parameter
+            const C_L = Math.exp(Math.log(3)/Math.log(2) * L); // Fractal governance term
+            
+            // Emergence operator (simplified for this simulation)
+            const emergence = 0.8 + 0.2 * Math.sin(time * 0.5);
+            
+            // Ethical constraint (prevent collision with star)
+            const v_net = distance > 3 ? 1 : 0.1 * (distance - 2);
+            
+            // Apply Calvin modifications
+            const calvinForce = forceMagnitude * emergence * C_L * v_net;
+            
+            // Update UI
+            document.getElementById('emergenceValue').textContent = emergence.toFixed(3);
+            document.getElementById('fractalValue').textContent = C_L.toFixed(3);
+            document.getElementById('vnetValue').textContent = v_net.toFixed(3);
+            document.getElementById('forceValue').textContent = calvinForce.toExponential(2);
+            
+            // Apply dark matter density effect
+            const darkMatterDensity = 0.02 * Math.exp(-distance/15);
+            document.getElementById('darkMatterValue').textContent = darkMatterDensity.toFixed(3);
+            
+            // Return force vector
+            return direction.normalize().multiplyScalar(calvinForce);
+        }
+        
+        // Update trail geometry
+        function updateTrail() {
+            trailPoints.push(asteroid.position.clone());
+            if (trailPoints.length > maxTrailPoints) {
+                trailPoints.shift();
+            }
+            
+            const positions = new Float32Array(trailPoints.length * 3);
+            trailPoints.forEach((point, i) => {
+                positions[i * 3] = point.x;
+                positions[i * 3 + 1] = point.y;
+                positions[i * 3 + 2] = point.z;
+            });
+            
+            trail.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            trail.geometry.attributes.position.needsUpdate = true;
+        }
+        
+        // Update UI with current data
+        function updateUI() {
+            document.getElementById('positionValue').textContent = 
+                `${asteroid.position.x.toFixed(2)}, ${asteroid.position.y.toFixed(2)}`;
+                
+            document.getElementById('velocityValue').textContent = 
+                `${asteroidVelocity.x.toFixed(2)}, ${asteroidVelocity.y.toFixed(2)}`;
+                
+            // Calculate acceleration
+            const force = calculateCalvinForce(asteroid.position);
+            const acceleration = force.divideScalar(asteroidMass);
+            document.getElementById('accelValue').textContent = 
+                `${acceleration.x.toFixed(2)}, ${acceleration.y.toFixed(2)}`;
+                
+            // Calculate distance from star
+            const distance = asteroid.position.distanceTo(star.position);
+            document.getElementById('distanceValue').textContent = (distance / 8).toFixed(2);
+            
+            // Calculate orbital period (simplified)
+            const period = 2 * Math.PI * Math.sqrt(Math.pow(distance, 3) / (G * starMass));
+            document.getElementById('periodValue').textContent = (period / 100).toFixed(1);
+            
+            // Update time
+            document.getElementById('timeValue').textContent = (time / 500).toFixed(1);
+        }
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (!paused) {
+                // Calculate force using Calvin Framework
+                const force = calculateCalvinForce(asteroid.position);
+                
+                // Apply force to velocity
+                const acceleration = force.divideScalar(asteroidMass);
+                asteroidVelocity.add(acceleration);
+                
+                // Update position
+                asteroid.position.add(asteroidVelocity.clone().multiplyScalar(0.05));
+                
+                // Update trail
+                updateTrail();
+                
+                // Update time
+                time += 1;
+            }
+            
+            // Update UI
+            updateUI();
+            
+            // Rotate star
+            star.rotation.y += 0.005;
+            
+            // Render scene
+            renderer.render(scene, camera);
+        }
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = document.getElementById('universe').offsetWidth / document.getElementById('universe').offsetHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(document.getElementById('universe').offsetWidth, document.getElementById('universe').offsetHeight);
+        });
+        
+        // Start animation
+        animate();
+    </script>
+</body>
+</html>
