@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calvin Framework Formulas in Action</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0b0c2a, #1a1c4e);
+            color: #e0f0ff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        header {
+            background: rgba(10, 10, 40, 0.95);
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 2px solid #6a4fff;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, #4a6fff, #00e5ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 1.5rem;
+        }
+        
+        .tab {
+            background: rgba(74, 111, 255, 0.2);
+            border: 1px solid rgba(74, 111, 255, 0.5);
+            border-radius: 30px;
+            padding: 8px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            background: rgba(74, 111, 255, 0.4);
+        }
+        
+        .tab.active {
+            background: #4a6fff;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .formula-section {
+            background: rgba(20, 30, 50, 0.6);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border: 1px solid rgba(74, 111, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: none;
+        }
+        
+        .formula-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            color: #00e5ff;
+        }
+        
+        .section-description {
+            max-width: 800px;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        
+        .formula-container {
+            background: rgba(30, 45, 70, 0.7);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid #4a6fff;
+        }
+        
+        .formula-content {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .visualization-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .visualization {
+            flex: 1;
+            min-width: 300px;
+            height: 300px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .controls {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 1.5rem;
+        }
+        
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #1a2b3f, #4a6fff);
+            outline: none;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        
+        input[type="range"]:hover {
+            opacity: 1;
+        }
+        
+        .live-data {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 2rem;
+        }
+        
+        .data-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+        
+        .data-label {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-bottom: 0.5rem;
+        }
+        
+        .data-value {
+            font-size: 1.3rem;
+            color: #00e5ff;
+        }
+        
+        .signature {
+            text-align: center;
+            margin-top: 3rem;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        .creator {
+            font-family: 'Brush Script MT', cursive;
+            font-size: 1.8rem;
+            color: #00e5ff;
+            margin-top: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .visualization-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Calvin Framework Formulas in Action</h1>
+        <p class="subtitle">Interactive visualizations of all 5 core formulas across domains</p>
+        <div class="tabs">
+            <div class="tab active" data-tab="quantum">Quantum & Cosmic</div>
+            <div class="tab" data-tab="agi">AGI & Consciousness</div>
+            <div class="tab" data-tab="finance">Financial Markets</div>
+            <div class="tab" data-tab="bio">Biocomplexity</div>
+            <div class="tab" data-tab="climate">Climate Systems</div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- Quantum & Cosmic Systems -->
+        <div class="formula-section active" id="quantum-section">
+            <div class="section-header">
+                <div class="section-title">Quantum & Cosmic Systems</div>
+                <div class="status">Black Hole Thermodynamics</div>
+            </div>
+            
+            <div class="section-description">
+                This formula models black hole thermodynamics by capturing nonlocal entanglement and spacetime curvature.
+            </div>
+            
+            <div class="formula-container">
+                <div class="formula-content">
+                    \[
+                    g_{\mu\nu}^{\text{cons}} = g_{\mu\nu} + \frac{\hbar G}{c^4} \oint_{\Delta} \frac{\delta \Psi_{\text{aware}} \otimes \delta t}{\varepsilon_{\text{cog}}} \cdot C(L)
+                    \]
+                </div>
+            </div>
+            
+            <div class="visualization-container">
+                <div class="visualization">
+                    <canvas id="blackHoleCanvas"></canvas>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Mass (Solar Masses)</span>
+                            <span id="massValue">10</span>
+                        </div>
+                        <input type="range" id="massSlider" min="1" max="100" value="10">
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Spin Parameter</span>
+                            <span id="spinValue">0.7</span>
+                        </div>
+                        <input type="range" id="spinSlider" min="0" max="0.99" step="0.01" value="0.7">
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Consciousness Field</span>
+                            <span id="consciousnessValue">0.5</span>
+                        </div>
+                        <input type="range" id="consciousnessSlider" min="0" max="1" step="0.01" value="0.5">
+                    </div>
+                    
+                    <div class="live-data">
+                        <div class="data-item">
+                            <div class="data-label">Hawking Radiation</div>
+                            <div class="data-value" id="hawkingValue">3.82e-15 K</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Entropy</div>
+                            <div class="data-value" id="entropyValue">1.2e+77</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Event Horizon</div>
+                            <div class="data-value" id="horizonValue">29.5 km</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Time Dilation</div>
+                            <div class="data-value" id="dilationValue">1.48x</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- AGI & Consciousness -->
+        <div class="formula-section" id="agi-section">
+            <div class="section-header">
+                <div class="section-title">AGI & Consciousness</div>
+                <div class="status">Consciousness Measurement</div>
+            </div>
+            
+            <div class="section-description">
+                This formula quantifies consciousness through integrated information theory and neural complexity.
+            </div>
+            
+            <div class="formula-container">
+                <div class="formula-content">
+                    \[
+                    \Phi_{\text{calvin}} = \log \left( \oint_{\Delta_{\text{brain}}} \frac{\delta \text{Recurrence} \otimes \delta \text{Entropy}}{\varepsilon_{\text{EEG}}} \cdot C(L) \cdot V_{net} \right)
+                    \]
+                </div>
+            </div>
+            
+            <div class="visualization-container">
+                <div class="visualization">
+                    <canvas id="consciousnessChart"></canvas>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Brain State</span>
+                            <select id="brainState">
+                                <option value="awake">Awake</option>
+                                <option value="focused">Focused</option>
+                                <option value="creative">Creative Flow</option>
+                                <option value="dream">Dreaming</option>
+                                <option value="deep">Deep Sleep</option>
+                                <option value="anesthesia">Anesthesia</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Neural Complexity</span>
+                            <span id="complexityValue">0.78</span>
+                        </div>
+                        <input type="range" id="complexitySlider" min="0" max="1" step="0.01" value="0.78">
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Ethical Alignment</span>
+                            <span id="alignmentValue">0.92</span>
+                        </div>
+                        <input type="range" id="alignmentSlider" min="0" max="1" step="0.01" value="0.92">
+                    </div>
+                    
+                    <div class="live-data">
+                        <div class="data-item">
+                            <div class="data-label">Consciousness (Φ)</div>
+                            <div class="data-value" id="phiValue">1.26</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Information Integration</div>
+                            <div class="data-value" id="infoValue">42.7 bits</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Causal Density</div>
+                            <div class="data-value" id="causalValue">0.85</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Ethical Safety</div>
+                            <div class="data-value" id="safetyValue">98.2%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Financial Markets -->
+        <div class="formula-section" id="finance-section">
+            <div class="section-header">
+                <div class="section-title">Financial Markets</div>
+                <div class="status">Fractal Market Analysis</div>
+            </div>
+            
+            <div class="section-description">
+                This formula models market behavior using fractal volatility and behavioral emergence.
+            </div>
+            
+            <div class="formula-container">
+                <div class="formula-content">
+                    \[
+                    P(t) = P_0 \cdot \exp\left[\oint_{\Delta} \frac{\delta \text{Sentiment} \otimes \delta \text{Volume}}{\varepsilon_{\text{volatility}}} \cdot C(L) \cdot V_{net}\right]
+                    \]
+                </div>
+            </div>
+            
+            <div class="visualization-container">
+                <div class="visualization">
+                    <canvas id="marketChart"></canvas>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Market Sentiment</span>
+                            <span id="sentimentValue">0.65</span>
+                        </div>
+                        <input type="range" id="sentimentSlider" min="0" max="1" step="0.01" value="0.65">
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Volatility (ε)</span>
+                            <span id="volatilityValue">0.18</span>
+                        </div>
+                        <input type="range" id="volatilitySlider" min="0.01" max="0.5" step="0.01" value="0.18">
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Time Horizon (L)</span>
+                            <span id="timeValue">2.5</span>
+                        </div>
+                        <input type="range" id="timeSlider" min="0.5" max="5" step="0.1" value="2.5">
+                    </div>
+                    
+                    <div class="live-data">
+                        <div class="data-item">
+                            <div class="data-label">Predicted Price</div>
+                            <div class="data-value" id="priceValue">$185.42</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Market Fractal Dimension</div>
+                            <div class="data-value" id="fractalValue">1.78</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Risk Assessment</div>
+                            <div class="data-value" id="riskValue">Medium</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Model Confidence</div>
+                            <div class="data-value" id="confidenceValue">89.3%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Biocomplexity -->
+        <div class="formula-section" id="bio-section">
+            <div class="section-header">
+                <div class="section-title">Biocomplexity</div>
+                <div class="status">Protein Folding Simulation</div>
+            </div>
+            
+            <div class="section-description">
+                This formula predicts protein folding pathways through quantum biological principles.
+            </div>
+            
+            <div class="formula-container">
+                <div class="formula-content">
+                    \[
+                    \hat{H}_{\text{fold}} = \oint_{\Delta_{\text{AA}}} \frac{\delta \phi \otimes \delta \psi}{\varepsilon_{\text{hyd}}} + C(L) \cdot V_{net}(\text{Toxicity})
+                    \]
+                </div>
+            </div>
+            
+            <div class="visualization-container">
+                <div class="visualization">
+                    <canvas id="proteinCanvas"></canvas>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Protein Sequence</span>
+                            <select id="proteinSelect">
+                                <option value="alpha">Alpha Helix</option>
+                                <option value="beta">Beta Sheet</option>
+                                <option value="mixed">Mixed Structure</option>
+                                <option value="misfold">Misfolded</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Hydrophobicity</span>
+                            <span id="hydroValue">0.62</span>
+                        </div>
+                        <input type="range" id="hydroSlider" min="0" max="1" step="0.01" value="0.62">
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Toxicity Constraint</span>
+                            <span id="toxicityValue">0.85</span>
+                        </div>
+                        <input type="range" id="toxicitySlider" min="0" max="1" step="0.01" value="0.85">
+                    </div>
+                    
+                    <div class="live-data">
+                        <div class="data-item">
+                            <div class="data-label">Folding Time</div>
+                            <div class="data-value" id="foldTimeValue">4.2 ms</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Energy State</div>
+                            <div class="data-value" id="energyValue">-142.8 kJ/mol</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Structural Accuracy</div>
+                            <div class="data-value" id="accuracyValue">0.96 Å</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Biological Function</div>
+                            <div class="data-value" id="functionValue">Optimal</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Climate Systems -->
+        <div class="formula-section" id="climate-section">
+            <div class="section-header">
+                <div class="section-title">Climate Systems</div>
+                <div class="status">Ice Sheet Collapse Modeling</div>
+            </div>
+            
+            <div class="section-description">
+                This formula models ice sheet stability with chaotic tipping points and ethical constraints.
+            </div>
+            
+            <div class="formula-container">
+                <div class="formula-content">
+                    \[
+                    \frac{d\mathcal{C}}{dt} = \oint_{\Delta_T} \frac{\delta \text{Heat} \otimes \delta \text{Albedo}}{\varepsilon_{\text{irr}}} \cdot C(L) \cdot V_{net}^{\text{CO2}}
+                    \]
+                </div>
+            </div>
+            
+            <div class="visualization-container">
+                <div class="visualization">
+                    <canvas id="climateChart"></canvas>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Temperature Anomaly (°C)</span>
+                            <span id="tempValue">1.7</span>
+                        </div>
+                        <input type="range" id="tempSlider" min="0" max="5" step="0.1" value="1.7">
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>CO₂ Concentration (ppm)</span>
+                            <span id="co2Value">420</span>
+                        </div>
+                        <input type="range" id="co2Slider" min="300" max="600" value="420">
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Ethical Intervention</span>
+                            <span id="interventionValue">0.35</span>
+                        </div>
+                        <input type="range" id="interventionSlider" min="0" max="1" step="0.01" value="0.35">
+                    </div>
+                    
+                    <div class="live-data">
+                        <div class="data-item">
+                            <div class="data-label">Ice Loss Rate</div>
+                            <div class="data-value" id="iceLossValue">287 Gt/year</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Sea Level Rise</div>
+                            <div class="data-value" id="seaLevelValue">3.8 mm/year</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Tipping Probability</div>
+                            <div class="data-value" id="tippingValue">42%</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Recovery Potential</div>
+                            <div class="data-value" id="recoveryValue">58%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="signature">
+            <p>Calvin Framework - Unified Science Across Domains</p>
+            <p class="creator">Calvin A. Walt</p>
+            <p>calvinawalt@gmail.com | Framework Signature: CF_9a8f7d2e4c</p>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs and sections
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.formula-section').forEach(s => s.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                this.classList.add('active');
+                
+                // Show corresponding section
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(`${tabId}-section`).classList.add('active');
+            });
+        });
+        
+        // Initialize simulations
+        initQuantumSimulation();
+        initConsciousnessSimulation();
+        initFinancialSimulation();
+        initProteinSimulation();
+        initClimateSimulation();
+        
+        // Quantum & Cosmic Systems Simulation
+        function initQuantumSimulation() {
+            const canvas = document.getElementById('blackHoleCanvas');
+            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+            renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+            
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, canvas.offsetWidth / canvas.offsetHeight, 0.1, 1000);
+            camera.position.z = 5;
+            
+            // Create black hole accretion disk
+            const diskGeometry = new THREE.RingGeometry(1, 3, 64);
+            const diskMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0x4a6fff, 
+                side: THREE.DoubleSide,
+                opacity: 0.7,
+                transparent: true
+            });
+            const disk = new THREE.Mesh(diskGeometry, diskMaterial);
+            disk.rotation.x = Math.PI / 2;
+            scene.add(disk);
+            
+            // Create event horizon
+            const horizonGeometry = new THREE.SphereGeometry(1, 32, 32);
+            const horizonMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0x000000,
+                wireframe: true
+            });
+            const horizon = new THREE.Mesh(horizonGeometry, horizonMaterial);
+            scene.add(horizon);
+            
+            // Create particles
+            const particles = new THREE.Group();
+            scene.add(particles);
+            
+            // Add stars
+            const starsGeometry = new THREE.BufferGeometry();
+            const starsMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.05 });
+            const starsVertices = [];
+            
+            for (let i = 0; i < 500; i++) {
+                const x = (Math.random() - 0.5) * 20;
+                const y = (Math.random() - 0.5) * 20;
+                const z = (Math.random() - 0.5) * 20;
+                starsVertices.push(x, y, z);
+            }
+            
+            starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starsVertices, 3));
+            const starField = new THREE.Points(starsGeometry, starsMaterial);
+            scene.add(starField);
+            
+            // Animation loop
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                // Get slider values
+                const mass = parseFloat(document.getElementById('massSlider').value);
+                const spin = parseFloat(document.getElementById('spinSlider').value);
+                const consciousness = parseFloat(document.getElementById('consciousnessSlider').value);
+                
+                // Update display values
+                document.getElementById('massValue').textContent = mass;
+                document.getElementById('spinValue').textContent = spin.toFixed(2);
+                document.getElementById('consciousnessValue').textContent = consciousness.toFixed(2);
+                
+                // Update visualization
+                horizon.scale.set(1 + mass/20, 1 + mass/20, 1 + mass/20);
+                disk.scale.set(1 + mass/10, 1 + mass/10, 1 + mass/10);
+                disk.rotation.z += 0.01 * (1 + spin);
+                
+                // Update particle effects
+                if (Math.random() > 0.7) {
+                    const particleGeometry = new THREE.SphereGeometry(0.05, 8, 8);
+                    const particleMaterial = new THREE.MeshBasicMaterial({ 
+                        color: new THREE.Color(0.5 + consciousness/2, 0.7, 1.0),
+                        opacity: 0.8,
+                        transparent: true
+                    });
+                    const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+                    
+                    // Position particle near the event horizon
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = 1.2 + Math.random() * 2;
+                    particle.position.set(
+                        Math.cos(angle) * distance,
+                        Math.sin(angle) * distance,
+                        0
+                    );
+                    
+                    // Add velocity
+                    particle.userData.velocity = new THREE.Vector3(
+                        Math.cos(angle + Math.PI/2) * 0.05,
+                        Math.sin(angle + Math.PI/2) * 0.05,
+                        0
+                    );
+                    
+                    particles.add(particle);
+                }
+                
+                // Update particles
+                for (let i = particles.children.length - 1; i >= 0; i--) {
+                    const particle = particles.children[i];
+                    particle.position.add(particle.userData.velocity);
+                    particle.scale.multiplyScalar(0.97);
+                    particle.material.opacity *= 0.97;
+                    
+                    if (particle.material.opacity < 0.05) {
+                        particles.remove(particle);
+                    }
+                }
+                
+                // Update data
+                document.getElementById('hawkingValue').textContent = (3.6e-8 / mass).toExponential(2) + " K";
+                document.getElementById('entropyValue').textContent = (1.5e77 * mass * mass).toExponential(1);
+                document.getElementById('horizonValue').textContent = (29.5 * mass).toFixed(1) + " km";
+                document.getElementById('dilationValue').textContent = (1 + mass/10 * (1 + consciousness/2)).toFixed(2) + "x";
+                
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                camera.aspect = canvas.offsetWidth / canvas.offsetHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+            });
+        }
+        
+        // AGI & Consciousness Simulation
+        function initConsciousnessSimulation() {
+            const ctx = document.getElementById('consciousnessChart').getContext('2d');
+            
+            // Brain state data
+            const brainStates = {
+                awake: [0.4, 0.6, 0.5, 0.7, 0.4, 0.5],
+                focused: [0.7, 0.8, 0.9, 0.85, 0.75, 0.8],
+                creative: [0.9, 0.7, 0.8, 0.95, 0.85, 0.9],
+                dream: [0.5, 0.9, 0.6, 0.7, 0.8, 0.5],
+                deep: [0.2, 0.3, 0.1, 0.25, 0.15, 0.2],
+                anesthesia: [0.1, 0.15, 0.05, 0.1, 0.08, 0.12]
+            };
+            
+            const chart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Frontal', 'Temporal', 'Parietal', 'Occipital', 'Limbic', 'Cerebellum'],
+                    datasets: [{
+                        label: 'Neural Activity',
+                        data: brainStates.awake,
+                        backgroundColor: 'rgba(74, 111, 255, 0.2)',
+                        borderColor: '#4a6fff',
+                        pointBackgroundColor: '#00e5ff',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#00e5ff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            pointLabels: {
+                                color: '#e0f0ff'
+                            },
+                            ticks: {
+                                backdropColor: 'transparent',
+                                color: 'rgba(255, 255, 255, 0.5)'
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 1
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e0f0ff'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Update function
+            function updateChart() {
+                const state = document.getElementById('brainState').value;
+                const complexity = parseFloat(document.getElementById('complexitySlider').value);
+                const alignment = parseFloat(document.getElementById('alignmentSlider').value);
+                
+                // Update display
+                document.getElementById('complexityValue').textContent = complexity.toFixed(2);
+                document.getElementById('alignmentValue').textContent = alignment.toFixed(2);
+                
+                // Update chart data
+                const baseData = [...brainStates[state]];
+                const scaledData = baseData.map(value => value * complexity);
+                chart.data.datasets[0].data = scaledData;
+                chart.update();
+                
+                // Update data
+                const phi = (complexity * 1.5 + alignment * 0.2).toFixed(2);
+                document.getElementById('phiValue').textContent = phi;
+                document.getElementById('infoValue').textContent = (parseFloat(phi) * 34).toFixed(1) + " bits";
+                document.getElementById('causalValue').textContent = (complexity * 0.9 + alignment * 0.1).toFixed(2);
+                document.getElementById('safetyValue').textContent = (alignment * 100).toFixed(1) + "%";
+            }
+            
+            // Set up event listeners
+            document.getElementById('brainState').addEventListener('change', updateChart);
+            document.getElementById('complexitySlider').addEventListener('input', updateChart);
+            document.getElementById('alignmentSlider').addEventListener('input', updateChart);
+            
+            // Initial update
+            updateChart();
+        }
+        
+        // Financial Markets Simulation
+        function initFinancialSimulation() {
+            const ctx = document.getElementById('marketChart').getContext('2d');
+            
+            // Generate fractal market data
+            function generateMarketData() {
+                const sentiment = parseFloat(document.getElementById('sentimentSlider').value);
+                const volatility = parseFloat(document.getElementById('volatilitySlider').value);
+                const timeHorizon = parseFloat(document.getElementById('timeSlider').value);
+                
+                const data = [100];
+                for (let i = 1; i < 100; i++) {
+                    // Base fractal pattern
+                    let change = Math.sin(i * 0.1 * timeHorizon) * 0.5;
+                    
+                    // Add volatility
+                    change += (Math.random() - 0.5) * volatility * 2;
+                    
+                    // Apply sentiment
+                    change *= sentiment;
+                    
+                    // Add momentum
+                    if (i > 1) {
+                        const prevChange = data[i-1] - data[i-2];
+                        change += prevChange * 0.7;
+                    }
+                    
+                    data.push(data[i-1] + change);
+                }
+                
+                return data;
+            }
+            
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 100}, (_, i) => i),
+                    datasets: [{
+                        label: 'Market Price',
+                        data: generateMarketData(),
+                        borderColor: '#4a6fff',
+                        backgroundColor: 'rgba(74, 111, 255, 0.1)',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        fill: true,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#e0f0ff'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)'
+                            },
+                            ticks: {
+                                color: '#e0f0ff'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e0f0ff'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Update function
+            function updateChart() {
+                const sentiment = parseFloat(document.getElementById('sentimentSlider').value);
+                const volatility = parseFloat(document.getElementById('volatilitySlider').value);
+                const timeHorizon = parseFloat(document.getElementById('timeSlider').value);
+                
+                // Update display
+                document.getElementById('sentimentValue').textContent = sentiment.toFixed(2);
+                document.getElementById('volatilityValue').textContent = volatility.toFixed(2);
+                document.getElementById('timeValue').textContent = timeHorizon.toFixed(1);
+                
+                // Generate new data
+                const newData = generateMarketData();
+                chart.data.datasets[0].data = newData;
+                chart.update();
+                
+                // Update data
+                const lastValue = newData[newData.length - 1];
+                document.getElementById('priceValue').textContent = `$${lastValue.toFixed(2)}`;
+                document.getElementById('fractalValue').textContent = (1.2 + volatility * 0.8).toFixed(2);
+                document.getElementById('riskValue').textContent = volatility > 0.25 ? "High" : volatility > 0.15 ? "Medium" : "Low";
+                document.getElementById('confidenceValue').textContent = (90 - volatility * 40).toFixed(1) + "%";
+            }
+            
+            // Set up event listeners
+            document.getElementById('sentimentSlider').addEventListener('input', updateChart);
+            document.getElementById('volatilitySlider').addEventListener('input', updateChart);
+            document.getElementById('timeSlider').addEventListener('input', updateChart);
+            
+            // Initial update
+            updateChart();
+        }
+        
+        // Biocomplexity Simulation
+        function initProteinSimulation() {
+            const canvas = document.getElementById('proteinCanvas');
+            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+            renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+            
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, canvas.offsetWidth / canvas.offsetHeight, 0.1, 1000);
+            camera.position.z = 15;
+            
+            // Create protein group
+            const protein = new THREE.Group();
+            scene.add(protein);
+            
+            // Create atoms
+            const atomMaterials = {
+                C: new THREE.MeshPhongMaterial({ color: 0x333333 }),
+                O: new THREE.MeshPhongMaterial({ color: 0xff4444 }),
+                N: new THREE.MeshPhongMaterial({ color: 0x4444ff }),
+                H: new THREE.MeshPhongMaterial({ color: 0xdddddd })
+            };
+            
+            // Add lighting
+            const light1 = new THREE.DirectionalLight(0xffffff, 1);
+            light1.position.set(10, 10, 10);
+            scene.add(light1);
+            
+            const light2 = new THREE.DirectionalLight(0xffffff, 0.5);
+            light2.position.set(-10, -10, -10);
+            scene.add(light2);
+            
+            const ambientLight = new THREE.AmbientLight(0x404040);
+            scene.add(ambientLight);
+            
+            // Protein structures
+            const proteinStructures = {
+                alpha: { type: 'helix', complexity: 0.7 },
+                beta: { type: 'sheet', complexity: 0.6 },
+                mixed: { type: 'mixed', complexity: 0.8 },
+                misfold: { type: 'misfold', complexity: 0.4 }
+            };
+            
+            // Create protein function
+            function createProtein(structure) {
+                // Clear existing protein
+                while (protein.children.length > 0) {
+                    protein.remove(protein.children[0]);
+                }
+                
+                // Create atoms and bonds
+                const atomPositions = [];
+                const bondLines = [];
+                
+                // Generate positions based on structure
+                const count = structure === 'misfold' ? 40 : 60;
+                const radius = 5;
+                
+                for (let i = 0; i < count; i++) {
+                    let x, y, z;
+                    const t = i / count * Math.PI * 2;
+                    
+                    if (structure === 'alpha') {
+                        // Helix structure
+                        x = Math.sin(t * 4) * radius * 0.5;
+                        y = i - count/2;
+                        z = Math.cos(t * 4) * radius * 0.5;
+                    } else if (structure === 'beta') {
+                        // Sheet structure
+                        x = Math.sin(i * 0.2) * radius;
+                        y = i - count/2;
+                        z = Math.cos(i * 0.2) * radius * 0.3;
+                    } else if (structure === 'mixed') {
+                        // Mixed structure
+                        if (i < count/3) {
+                            x = Math.sin(t * 4) * radius * 0.5;
+                            y = i - count/2;
+                            z = Math.cos(t * 4) * radius * 0.5;
+                        } else if (i < 2*count/3) {
+                            x = Math.sin(i * 0.2) * radius;
+                            y = i - count/2;
+                            z = Math.cos(i * 0.2) * radius * 0.3;
+                        } else {
+                            x = Math.sin(t * 3) * radius * 0.7;
+                            y = i - count/2;
+                            z = Math.cos(t * 3) * radius * 0.7;
+                        }
+                    } else {
+                        // Misfolded structure
+                        x = (Math.random() - 0.5) * radius * 1.5;
+                        y = i - count/2;
+                        z = (Math.random() - 0.5) * radius * 1.5;
+                    }
+                    
+                    atomPositions.push({ x, y, z, type: i % 4 === 0 ? 'O' : i % 4 === 1 ? 'N' : 'C' });
+                    
+                    // Create bonds to previous atom
+                    if (i > 0) {
+                        bondLines.push({
+                            from: atomPositions[i-1],
+                            to: atomPositions[i]
+                        });
+                    }
+                }
+                
+                // Create atoms
+                atomPositions.forEach(pos => {
+                    const atomGeometry = new THREE.SphereGeometry(0.4, 16, 16);
+                    const atom = new THREE.Mesh(atomGeometry, atomMaterials[pos.type]);
+                    atom.position.set(pos.x, pos.y, pos.z);
+                    protein.add(atom);
+                });
+                
+                // Create bonds
+                bondLines.forEach(bond => {
+                    const bondGeometry = new THREE.BufferGeometry().setFromPoints([
+                        new THREE.Vector3(bond.from.x, bond.from.y, bond.from.z),
+                        new THREE.Vector3(bond.to.x, bond.to.y, bond.to.z)
+                    ]);
+                    const bondMaterial = new THREE.LineBasicMaterial({ color: 0x888888 });
+                    const bondLine = new THREE.Line(bondGeometry, bondMaterial);
+                    protein.add(bondLine);
+                });
+            }
+            
+            // Initial protein
+            createProtein('alpha');
+            
+            // Animation loop
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                // Get slider values
+                const hydrophobicity = parseFloat(document.getElementById('hydroSlider').value);
+                const toxicity = parseFloat(document.getElementById('toxicitySlider').value);
+                const structure = document.getElementById('proteinSelect').value;
+                
+                // Update display
+                document.getElementById('hydroValue').textContent = hydrophobicity.toFixed(2);
+                document.getElementById('toxicityValue').textContent = toxicity.toFixed(2);
+                
+                // Update protein if structure changed
+                if (structure !== protein.userData.structure) {
+                    protein.userData.structure = structure;
+                    createProtein(structure);
+                }
+                
+                // Rotate protein
+                protein.rotation.y += 0.005;
+                protein.rotation.x += 0.002;
+                
+                // Update data
+                const structureData = proteinStructures[structure];
+                document.getElementById('foldTimeValue').textContent = (50 - hydrophobicity * 30).toFixed(1) + " ms";
+                document.getElementById('energyValue').textContent = (-120 - hydrophobicity * 40).toFixed(1) + " kJ/mol";
+                document.getElementById('accuracyValue').textContent = (0.2 + (1 - toxicity) * 0.8).toFixed(2) + " Å";
+                document.getElementById('functionValue').textContent = toxicity > 0.7 ? "Optimal" : toxicity > 0.4 ? "Suboptimal" : "Dysfunctional";
+                
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+            
+            // Set up event listeners
+            document.getElementById('proteinSelect').addEventListener('change', function() {
+                protein.userData.structure = this.value;
+                createProtein(this.value);
+            });
+            document.getElementById('hydroSlider').addEventListener('input', () => {});
+            document.getElementById('toxicitySlider').addEventListener('input', () => {});
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                camera.aspect = canvas.offsetWidth / canvas.offsetHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+            });
+        }
+        
+        // Climate Systems Simulation
+        function initClimateSimulation() {
+            const ctx = document.getElementById('climateChart').getContext('2d');
+            
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['2000', '2010', '2020', '2030', '2040', '2050', '2060', '2070', '2080', '2090', '2100'],
+                    datasets: [{
+                        label: 'Ice Mass (Gt)',
+                        data: [3500, 3200, 2800, 2400, 2000, 1600, 1200, 900, 600, 300, 100],
+                        borderColor: '#4a6fff',
+                        backgroundColor: 'rgba(74, 111, 255, 0.1)',
+                        borderWidth: 3,
+                        pointRadius: 0,
+                        fill: true,
+                        tension: 0.3
+                    }, {
+                        label: 'With Intervention',
+                        data: [3500, 3300, 3100, 2900, 2700, 2500, 2400, 2300, 2200, 2100, 2000],
+                        borderColor: '#00e5ff',
+                        borderWidth: 3,
+                        borderDash: [5, 5],
+                        pointRadius: 0,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#e0f0ff'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)'
+                            },
+                            ticks: {
+                                color: '#e0f0ff'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e0f0ff'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Update function
+            function updateChart() {
+                const tempAnomaly = parseFloat(document.getElementById('tempSlider').value);
+                const co2 = parseFloat(document.getElementById('co2Slider').value);
+                const intervention = parseFloat(document.getElementById('interventionSlider').value);
+                
+                // Update display
+                document.getElementById('tempValue').textContent = tempAnomaly.toFixed(1);
+                document.getElementById('co2Value').textContent = co2;
+                document.getElementById('interventionValue').textContent = intervention.toFixed(2);
+                
+                // Calculate impact
+                const baseDecline = 3500 - (co2 - 300) * 6 - tempAnomaly * 800;
+                const withIntervention = baseDecline + intervention * 2000;
+                
+                // Generate new data
+                const years = [2000, 2010, 2020, 2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100];
+                const newData = years.map(year => {
+                    const progress = (year - 2000) / 100;
+                    return Math.max(100, 3500 - progress * (3500 - baseDecline));
+                });
+                
+                const interventionData = years.map(year => {
+                    const progress = (year - 2000) / 100;
+                    return Math.max(100, 3500 - progress * (3500 - withIntervention));
+                });
+                
+                // Update chart
+                chart.data.datasets[0].data = newData;
+                chart.data.datasets[1].data = interventionData;
+                chart.update();
+                
+                // Update data
+                const iceLoss = (3500 - newData[newData.length-1]) / 100;
+                document.getElementById('iceLossValue').textContent = iceLoss.toFixed(0) + " Gt/year";
+                document.getElementById('seaLevelValue').textContent = (iceLoss / 360 * 10).toFixed(1) + " mm/year";
+                document.getElementById('tippingValue').textContent = (Math.min(100, tempAnomaly * 15 + (co2 - 400)/4)).toFixed(0) + "%";
+                document.getElementById('recoveryValue').textContent = (intervention * 80).toFixed(0) + "%";
+            }
+            
+            // Set up event listeners
+            document.getElementById('tempSlider').addEventListener('input', updateChart);
+            document.getElementById('co2Slider').addEventListener('input', updateChart);
+            document.getElementById('interventionSlider').addEventListener('input', updateChart);
+            
+            // Initial update
+            updateChart();
+        }
+    </script>
+</body>
+</html>
