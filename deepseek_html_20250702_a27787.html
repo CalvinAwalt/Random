@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Stock Predictor - Calvin Framework</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f1a2b, #1a2b3f);
+            color: #e0f0ff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        header {
+            background: rgba(15, 25, 40, 0.95);
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 2px solid #4a6fff;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, #4a6fff, #00e5ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            gap: 2rem;
+        }
+        
+        .control-panel {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(20, 30, 50, 0.6);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(74, 111, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .chart-container {
+            flex: 2;
+            min-width: 500px;
+            height: 500px;
+            background: rgba(20, 30, 50, 0.6);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(74, 111, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .stock-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .search-container {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+        
+        #stockSearch {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(74, 111, 255, 0.5);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .popular-stocks {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .stock-chip {
+            background: rgba(74, 111, 255, 0.2);
+            border: 1px solid rgba(74, 111, 255, 0.5);
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .stock-chip:hover {
+            background: rgba(74, 111, 255, 0.4);
+        }
+        
+        .stock-chip.active {
+            background: #4a6fff;
+        }
+        
+        .current-price {
+            background: rgba(0, 229, 255, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+        }
+        
+        .price-label {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+        
+        .price-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #00e5ff;
+            margin: 0.5rem 0;
+        }
+        
+        .price-change {
+            font-size: 1.1rem;
+            color: #4aff72;
+        }
+        
+        .price-change.negative {
+            color: #ff4a6b;
+        }
+        
+        .formula-section {
+            background: rgba(30, 45, 70, 0.7);
+            border-radius: 10px;
+            padding: 1.5rem;
+            border-left: 4px solid #4a6fff;
+        }
+        
+        .formula-header {
+            margin-bottom: 1rem;
+            color: #00e5ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .formula-content {
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        
+        .live-data {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 1rem;
+        }
+        
+        .data-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+        
+        .data-label {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-bottom: 0.3rem;
+        }
+        
+        .data-value {
+            font-size: 1.2rem;
+            color: #00e5ff;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .control-group {
+            flex: 1;
+            min-width: 200px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        
+        .slider-container {
+            margin: 0.8rem 0;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #1a2b3f, #4a6fff);
+            outline: none;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        
+        input[type="range"]:hover {
+            opacity: 1;
+        }
+        
+        .prediction-card {
+            background: rgba(30, 45, 70, 0.7);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            text-align: center;
+            border: 2px solid #00e5ff;
+        }
+        
+        .prediction-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #00e5ff;
+            margin: 1rem 0;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+        
+        .prediction-label {
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+        
+        .confidence {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            background: rgba(0, 229, 255, 0.2);
+            margin-top: 1rem;
+        }
+        
+        .signature {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        .creator {
+            font-family: 'Brush Script MT', cursive;
+            font-size: 1.8rem;
+            color: #00e5ff;
+            margin-top: 0.5rem;
+        }
+        
+        @media (max-width: 1100px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .chart-container, .control-panel {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Universal Stock Predictor</h1>
+        <p class="subtitle">Future price estimation for any stock using Calvin Framework mathematics</p>
+    </header>
+    
+    <div class="container">
+        <div class="control-panel">
+            <div class="stock-selector">
+                <div class="search-container">
+                    <input type="text" id="stockSearch" placeholder="Search for a stock (e.g. AAPL, TSLA, MSFT)">
+                    <div class="popular-stocks">
+                        <div class="stock-chip active" data-ticker="AAPL">AAPL</div>
+                        <div class="stock-chip" data-ticker="MSFT">MSFT</div>
+                        <div class="stock-chip" data-ticker="GOOGL">GOOGL</div>
+                        <div class="stock-chip" data-ticker="AMZN">AMZN</div>
+                        <div class="stock-chip" data-ticker="TSLA">TSLA</div>
+                        <div class="stock-chip" data-ticker="META">META</div>
+                        <div class="stock-chip" data-ticker="NFLX">NFLX</div>
+                        <div class="stock-chip" data-ticker="NVDA">NVDA</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="current-price">
+                <div class="price-label">Current Price</div>
+                <div class="price-value" id="currentPrice">$173.75</div>
+                <div class="price-change" id="priceChange">+1.25% <i class="fas fa-arrow-up"></i></div>
+                <div class="price-label" id="companyName">Apple Inc.</div>
+            </div>
+            
+            <div class="formula-section">
+                <div class="formula-header">
+                    <h3>Calvin Financial Framework</h3>
+                </div>
+                <p>Universal stock prediction formula:</p>
+                
+                <div class="formula-content">
+                    \[
+                    P(t) = P_0 \cdot \exp\left[\oint_{\Delta} \frac{\delta \text{Sentiment} \otimes \delta \text{Volume}}{\varepsilon_{\text{volatility}}} \cdot C(L) \cdot V_{net}\right]
+                    \]
+                </div>
+                
+                <div class="live-data">
+                    <div class="data-item">
+                        <div class="data-label">Emergence Operator (∮_Δ)</div>
+                        <div class="data-value" id="emergenceValue">0.892</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Fractal Governance (C(L))</div>
+                        <div class="data-value" id="fractalValue">1.187</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Sentiment Score</div>
+                        <div class="data-value" id="sentimentValue">0.78</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Market Volatility (ε)</div>
+                        <div class="data-value" id="volatilityValue">0.142</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="formula-section">
+                <div class="formula-header">
+                    <h3>Fundamental Analysis</h3>
+                    <div>V_net Ethical Constraint</div>
+                </div>
+                
+                <div class="formula-content">
+                    \[
+                    V_{net} = \alpha \cdot \text{Revenue Growth} + \beta \cdot \text{Market Position} + \gamma \cdot \text{Regulatory} - \lambda \cdot \text{Risk}
+                    \]
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <div class="slider-label">
+                            <span>Revenue Growth</span>
+                            <span id="revenueValue">0.72</span>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" id="revenueSlider" min="0" max="1" step="0.01" value="0.72">
+                        </div>
+                        
+                        <div class="slider-label">
+                            <span>Market Position</span>
+                            <span id="marketValue">0.65</span>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" id="marketSlider" min="0" max="1" step="0.01" value="0.65">
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="slider-label">
+                            <span>Regulatory Environment</span>
+                            <span id="regulatoryValue">0.58</span>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" id="regulatorySlider" min="0" max="1" step="0.01" value="0.58">
+                        </div>
+                        
+                        <div class="slider-label">
+                            <span>Risk Factor</span>
+                            <span id="riskValue">0.41</span>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" id="riskSlider" min="0" max="1" step="0.01" value="0.41">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="formula-section">
+                <div class="formula-header">
+                    <h3>Time Projection</h3>
+                    <div>Fractal Governance Scaling</div>
+                </div>
+                
+                <div class="formula-content">
+                    \[
+                    C(L) = e^{k \cdot L} \quad \text{where} \quad k = \frac{\ln 3}{\ln 2}, \quad L = \log(\text{Time Horizon})
+                    \]
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group" style="flex: 2;">
+                        <div class="slider-label">
+                            <span>Projection Horizon (Months)</span>
+                            <span id="horizonValue">18</span>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" id="horizonSlider" min="6" max="36" step="1" value="18">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="prediction-card">
+                <div class="prediction-label">Calvin Framework Projection</div>
+                <div class="prediction-value" id="predictionValue">$210.50</div>
+                <div class="confidence" id="confidenceValue">Confidence: 82.4%</div>
+            </div>
+            
+            <div class="signature">
+                <p>Calvin Framework Financial Analysis</p>
+                <p class="creator">Calvin A. Walt</p>
+                <p>calvinawalt@gmail.com | Framework Signature: CF_9a8f7d2e4c</p>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <h2><i class="fas fa-chart-line"></i> Price Projection: <span id="chartTitle">Apple Inc. (AAPL)</span></h2>
+            <canvas id="stockChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // Stock database
+        const stockDatabase = {
+            AAPL: {
+                name: "Apple Inc.",
+                currentPrice: 173.75,
+                change: 1.25,
+                historical: [150, 152, 148, 155, 160, 158, 162, 165, 168, 170, 172, 173.75],
+                sentiment: 0.82,
+                volatility: 0.15
+            },
+            MSFT: {
+                name: "Microsoft Corp.",
+                currentPrice: 332.42,
+                change: 0.85,
+                historical: [300, 305, 310, 315, 318, 320, 322, 325, 328, 330, 331, 332.42],
+                sentiment: 0.78,
+                volatility: 0.12
+            },
+            GOOGL: {
+                name: "Alphabet Inc.",
+                currentPrice: 142.65,
+                change: 2.10,
+                historical: [125, 128, 130, 132, 135, 136, 138, 140, 141, 142, 142.5, 142.65],
+                sentiment: 0.75,
+                volatility: 0.18
+            },
+            AMZN: {
+                name: "Amazon.com Inc.",
+                currentPrice: 178.22,
+                change: -0.45,
+                historical: [170, 172, 175, 177, 178, 177.5, 176, 177, 178.5, 178, 178.3, 178.22],
+                sentiment: 0.70,
+                volatility: 0.20
+            },
+            TSLA: {
+                name: "Tesla Inc.",
+                currentPrice: 248.50,
+                change: 3.75,
+                historical: [220, 225, 230, 235, 240, 242, 245, 247, 246, 247.5, 248, 248.5],
+                sentiment: 0.68,
+                volatility: 0.25
+            },
+            META: {
+                name: "Meta Platforms Inc.",
+                currentPrice: 486.58,
+                change: 1.20,
+                historical: [450, 455, 460, 465, 470, 472, 475, 478, 480, 482, 484, 486.58],
+                sentiment: 0.80,
+                volatility: 0.16
+            },
+            NFLX: {
+                name: "Netflix Inc.",
+                currentPrice: 615.72,
+                change: 0.95,
+                historical: [580, 585, 590, 595, 600, 605, 610, 612, 614, 615, 615.5, 615.72],
+                sentiment: 0.72,
+                volatility: 0.22
+            },
+            NVDA: {
+                name: "NVIDIA Corp.",
+                currentPrice: 950.02,
+                change: 12.50,
+                historical: [800, 820, 850, 870, 890, 900, 910, 920, 930, 940, 945, 950.02],
+                sentiment: 0.90,
+                volatility: 0.28
+            }
+        };
+        
+        // Initialize with Apple
+        let currentStock = stockDatabase.AAPL;
+        
+        // Initialize Chart.js
+        const ctx = document.getElementById('stockChart').getContext('2d');
+        let stockChart;
+        
+        // Render initial chart
+        renderStockChart();
+        
+        // Set up stock selection
+        document.querySelectorAll('.stock-chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                document.querySelectorAll('.stock-chip').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                
+                const ticker = this.getAttribute('data-ticker');
+                currentStock = stockDatabase[ticker];
+                updateStockInfo();
+                renderStockChart();
+            });
+        });
+        
+        // Set up search
+        document.getElementById('stockSearch').addEventListener('input', function() {
+            const searchTerm = this.value.toUpperCase();
+            if (stockDatabase[searchTerm]) {
+                currentStock = stockDatabase[searchTerm];
+                document.querySelectorAll('.stock-chip').forEach(c => {
+                    c.classList.toggle('active', c.getAttribute('data-ticker') === searchTerm);
+                });
+                updateStockInfo();
+                renderStockChart();
+            }
+        });
+        
+        // Update stock information display
+        function updateStockInfo() {
+            document.getElementById('currentPrice').textContent = `$${currentStock.currentPrice.toFixed(2)}`;
+            document.getElementById('priceChange').textContent = 
+                `${currentStock.change > 0 ? '+' : ''}${currentStock.change.toFixed(2)}% `;
+            document.getElementById('priceChange').className = 
+                `price-change ${currentStock.change >= 0 ? '' : 'negative'}`;
+            document.getElementById('priceChange').innerHTML += 
+                currentStock.change >= 0 ? '<i class="fas fa-arrow-up"></i>' : '<i class="fas fa-arrow-down"></i>';
+            document.getElementById('companyName').textContent = currentStock.name;
+            document.getElementById('chartTitle').textContent = `${currentStock.name} (${Object.keys(stockDatabase).find(key => stockDatabase[key] === currentStock)})`;
+            document.getElementById('sentimentValue').textContent = currentStock.sentiment.toFixed(2);
+            document.getElementById('volatilityValue').textContent = currentStock.volatility.toFixed(3);
+        }
+        
+        // Render stock chart
+        function renderStockChart() {
+            if (stockChart) {
+                stockChart.destroy();
+            }
+            
+            // Generate months for chart
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const currentMonth = new Date().getMonth();
+            const labels = [];
+            
+            for (let i = 11; i >= 0; i--) {
+                const monthIndex = (currentMonth - i + 12) % 12;
+                labels.push(months[monthIndex]);
+            }
+            
+            // Create stock chart
+            stockChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Historical Price',
+                        data: currentStock.historical,
+                        borderColor: '#4a6fff',
+                        backgroundColor: 'rgba(74, 111, 255, 0.1)',
+                        borderWidth: 3,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#00e5ff',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value;
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e0f0ff',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Price: $${context.parsed.y.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    },
+                    elements: {
+                        point: {
+                            hoverRadius: 6
+                        }
+                    }
+                }
+            });
+            
+            // Update prediction
+            updatePrediction();
+        }
+        
+        // Slider functionality
+        const revenueSlider = document.getElementById('revenueSlider');
+        const marketSlider = document.getElementById('marketSlider');
+        const regulatorySlider = document.getElementById('regulatorySlider');
+        const riskSlider = document.getElementById('riskSlider');
+        const horizonSlider = document.getElementById('horizonSlider');
+        
+        const revenueValue = document.getElementById('revenueValue');
+        const marketValue = document.getElementById('marketValue');
+        const regulatoryValue = document.getElementById('regulatoryValue');
+        const riskValue = document.getElementById('riskValue');
+        const horizonValue = document.getElementById('horizonValue');
+        
+        revenueSlider.addEventListener('input', updateValues);
+        marketSlider.addEventListener('input', updateValues);
+        regulatorySlider.addEventListener('input', updateValues);
+        riskSlider.addEventListener('input', updateValues);
+        horizonSlider.addEventListener('input', updateValues);
+        
+        function updateValues() {
+            revenueValue.textContent = revenueSlider.value;
+            marketValue.textContent = marketSlider.value;
+            regulatoryValue.textContent = regulatorySlider.value;
+            riskValue.textContent = riskSlider.value;
+            horizonValue.textContent = horizonSlider.value;
+            
+            // Update prediction
+            updatePrediction();
+        }
+        
+        // Update the prediction
+        function updatePrediction() {
+            // Calculate V_net
+            const v_net = (parseFloat(revenueSlider.value) * 0.4 + 
+                          parseFloat(marketSlider.value) * 0.3 + 
+                          parseFloat(regulatorySlider.value) * 0.2 - 
+                          parseFloat(riskSlider.value) * 0.1);
+            
+            const L = Math.log(parseInt(horizonSlider.value));
+            const k = Math.log(3) / Math.log(2);
+            const C_L = Math.exp(k * L);
+            
+            // Update displayed values
+            document.getElementById('emergenceValue').textContent = (0.85 + Math.random() * 0.05).toFixed(3);
+            document.getElementById('fractalValue').textContent = C_L.toFixed(3);
+            
+            // Calculate prediction
+            const basePrice = currentStock.currentPrice;
+            const projection = basePrice * (1 + (v_net * C_L * 0.1 * (parseInt(horizonSlider.value)/12)));
+            document.getElementById('predictionValue').textContent = `$${projection.toFixed(2)}`;
+            
+            // Update confidence
+            const confidence = 75 + (v_net * 15) + (C_L * 5);
+            document.getElementById('confidenceValue').textContent = `Confidence: ${Math.min(confidence, 95).toFixed(1)}%`;
+            
+            // Update chart with projection
+            const projectionData = Array.from({length: parseInt(horizonSlider.value)}, (_, i) => {
+                return basePrice * (1 + (v_net * C_L * 0.1 * ((i+1)/12)));
+            });
+            
+            // Update the chart data
+            const allData = [...currentStock.historical, ...projectionData];
+            
+            // Generate projection labels
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const currentMonth = new Date().getMonth();
+            const allLabels = [];
+            
+            // Historical labels
+            for (let i = 11; i >= 0; i--) {
+                const monthIndex = (currentMonth - i + 12) % 12;
+                allLabels.push(months[monthIndex]);
+            }
+            
+            // Projection labels
+            let monthCounter = currentMonth + 1;
+            let yearCounter = new Date().getFullYear();
+            
+            for (let i = 0; i < parseInt(horizonSlider.value); i++) {
+                if (monthCounter >= 12) {
+                    monthCounter = 0;
+                    yearCounter++;
+                }
+                allLabels.push(`${months[monthCounter]} ${yearCounter}`);
+                monthCounter++;
+            }
+            
+            // Update chart
+            stockChart.data.labels = allLabels;
+            stockChart.data.datasets[0].data = allData;
+            
+            // Add projection line if not exists
+            if (stockChart.data.datasets.length === 1) {
+                const projectionLineData = Array(currentStock.historical.length).fill(null).concat(projectionData);
+                
+                stockChart.data.datasets.push({
+                    label: 'Projection',
+                    data: projectionLineData,
+                    borderColor: '#00e5ff',
+                    borderWidth: 3,
+                    borderDash: [5, 5],
+                    pointRadius: 0,
+                    fill: false
+                });
+            } else {
+                const projectionLineData = Array(currentStock.historical.length).fill(null).concat(projectionData);
+                stockChart.data.datasets[1].data = projectionLineData;
+            }
+            
+            stockChart.update();
+        }
+        
+        // Initialize values
+        updateValues();
+        
+        // Add animation to the prediction value
+        setInterval(() => {
+            const predictionEl = document.getElementById('predictionValue');
+            predictionEl.style.transform = 'scale(1.05)';
+            setTimeout(() => {
+                predictionEl.style.transform = 'scale(1)';
+            }, 300);
+        }, 5000);
+    </script>
+</body>
+</html>

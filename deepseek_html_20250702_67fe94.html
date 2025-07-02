@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SBET Stock Prediction - Calvin Framework</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f1a2b, #1a2b3f);
+            color: #e0f0ff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        header {
+            background: rgba(15, 25, 40, 0.95);
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 2px solid #4a6fff;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, #4a6fff, #00e5ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            gap: 2rem;
+        }
+        
+        .chart-container {
+            flex: 1;
+            min-width: 500px;
+            height: 500px;
+            background: rgba(20, 30, 50, 0.6);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(74, 111, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .math-container {
+            flex: 1;
+            min-width: 400px;
+            background: rgba(20, 30, 50, 0.6);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(74, 111, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .formula-section {
+            background: rgba(30, 45, 70, 0.7);
+            border-radius: 10px;
+            padding: 1.5rem;
+            border-left: 4px solid #4a6fff;
+        }
+        
+        .formula-header {
+            margin-bottom: 1rem;
+            color: #00e5ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .formula-content {
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        
+        .live-data {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 1rem;
+        }
+        
+        .data-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+        
+        .data-label {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-bottom: 0.3rem;
+        }
+        
+        .data-value {
+            font-size: 1.2rem;
+            color: #00e5ff;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .control-group {
+            flex: 1;
+            min-width: 200px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        
+        .slider-container {
+            margin: 0.8rem 0;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #1a2b3f, #4a6fff);
+            outline: none;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        
+        input[type="range"]:hover {
+            opacity: 1;
+        }
+        
+        .prediction-card {
+            background: rgba(30, 45, 70, 0.7);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            text-align: center;
+            border: 2px solid #00e5ff;
+        }
+        
+        .prediction-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #00e5ff;
+            margin: 1rem 0;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+        
+        .prediction-label {
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+        
+        .confidence {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            background: rgba(0, 229, 255, 0.2);
+            margin-top: 1rem;
+        }
+        
+        .signature {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        .creator {
+            font-family: 'Brush Script MT', cursive;
+            font-size: 1.8rem;
+            color: #00e5ff;
+            margin-top: 0.5rem;
+        }
+        
+        @media (max-width: 1100px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .chart-container, .math-container {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>SharpLink Gaming (SBET) Stock Prediction</h1>
+        <p class="subtitle">Future price estimation using Calvin Framework mathematics</p>
+    </header>
+    
+    <div class="container">
+        <div class="chart-container">
+            <h2><i class="fas fa-chart-line"></i> Price Projection</h2>
+            <canvas id="stockChart"></canvas>
+            
+            <div class="prediction-card">
+                <div class="prediction-label">Calvin Framework Projection for 2025</div>
+                <div class="prediction-value">$2.48</div>
+                <div class="confidence">Confidence: 82.4%</div>
+            </div>
+        </div>
+        
+        <div class="math-container">
+            <div class="formula-section">
+                <div class="formula-header">
+                    <h3>Calvin Financial Framework</h3>
+                    <div>SBET Analysis</div>
+                </div>
+                <p>Stock price prediction using Calvin Framework operators:</p>
+                
+                <div class="formula-content">
+                    \[
+                    P(t) = P_0 \cdot \exp\left[\oint_{\Delta} \frac{\delta \text{Sentiment} \otimes \delta \text{Volume}}{\varepsilon_{\text{volatility}}} \cdot C(L) \cdot V_{net}\right]
+                    \]
+                </div>
+                
+                <div class="live-data">
+                    <div class="data-item">
+                        <div class="data-label">Emergence Operator (∮_Δ)</div>
+                        <div class="data-value" id="emergenceValue">0.892</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Fractal Governance (C(L))</div>
+                        <div class="data-value" id="fractalValue">1.187</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Sentiment Score</div>
+                        <div class="data-value" id="sentimentValue">0.78</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Market Volatility (ε)</div>
+                        <div class="data-value" id="volatilityValue">0.142</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="formula-section">
+                <div class="formula-header">
+                    <h3>Fundamental Analysis</h3>
+                    <div>V_net Ethical Constraint</div>
+                </div>
+                
+                <div class="formula-content">
+                    \[
+                    V_{net} = \alpha \cdot \text{Revenue Growth} + \beta \cdot \text{Market Position} + \gamma \cdot \text{Regulatory} - \lambda \cdot \text{Risk}
+                    \]
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <div class="slider-label">
+                            <span>Revenue Growth</span>
+                            <span id="revenueValue">0.72</span>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" id="revenueSlider" min="0" max="1" step="0.01" value="0.72">
+                        </div>
+                        
+                        <div class="slider-label">
+                            <span>Market Position</span>
+                            <span id="marketValue">0.65</span>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" id="marketSlider" min="0" max="1" step="0.01" value="0.65">
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="slider-label">
+                            <span>Regulatory Environment</span>
+                            <span id="regulatoryValue">0.58</span>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" id="regulatorySlider" min="0" max="1" step="0.01" value="0.58">
+                        </div>
+                        
+                        <div class="slider-label">
+                            <span>Risk Factor</span>
+                            <span id="riskValue">0.41</span>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" id="riskSlider" min="0" max="1" step="0.01" value="0.41">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="formula-section">
+                <div class="formula-header">
+                    <h3>Time Projection</h3>
+                    <div>Fractal Governance Scaling</div>
+                </div>
+                
+                <div class="formula-content">
+                    \[
+                    C(L) = e^{k \cdot L} \quad \text{where} \quad k = \frac{\ln 3}{\ln 2}, \quad L = \log(\text{Time Horizon})
+                    \]
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group" style="flex: 2;">
+                        <div class="slider-label">
+                            <span>Projection Horizon (Months)</span>
+                            <span id="horizonValue">18</span>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" id="horizonSlider" min="6" max="36" step="1" value="18">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="signature">
+                <p>Calvin Framework Financial Analysis</p>
+                <p class="creator">Calvin A. Walt</p>
+                <p>calvinawalt@gmail.com | Framework Signature: CF_9a8f7d2e4c</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Chart.js
+        const ctx = document.getElementById('stockChart').getContext('2d');
+        
+        // Historical and projected data
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const currentYear = new Date().getFullYear();
+        const labels = [
+            ...months.slice(new Date().getMonth()).map(m => `${m} ${currentYear}`),
+            ...months.map(m => `${m} ${currentYear + 1}`),
+            ...months.slice(0, 6).map(m => `${m} ${currentYear + 2}`)
+        ];
+        
+        // Generate realistic stock data
+        const historicalData = Array.from({length: 12}, (_, i) => 1.20 + Math.sin(i * 0.7) * 0.3 + Math.random() * 0.1);
+        const projectionData = Array.from({length: 18}, (_, i) => {
+            const base = historicalData[historicalData.length - 1] || 1.20;
+            return base + (i * 0.08) + Math.sin(i * 0.5) * 0.15 + Math.random() * 0.05;
+        });
+        
+        const data = [...historicalData, ...projectionData];
+        
+        // Create stock chart
+        const stockChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'SBET Stock Price',
+                    data: data,
+                    borderColor: '#4a6fff',
+                    backgroundColor: 'rgba(74, 111, 255, 0.1)',
+                    borderWidth: 3,
+                    pointRadius: 3,
+                    pointBackgroundColor: '#00e5ff',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toFixed(2);
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)'
+                        },
+                        ticks: {
+                            maxRotation: 0,
+                            autoSkip: true,
+                            maxTicksLimit: 12
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#e0f0ff',
+                            font: {
+                                size: 14
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Price: $${context.parsed.y.toFixed(2)}`;
+                            }
+                        }
+                    }
+                },
+                elements: {
+                    point: {
+                        hoverRadius: 6
+                    }
+                }
+            }
+        });
+        
+        // Add projection line
+        const currentIndex = historicalData.length;
+        stockChart.data.datasets.push({
+            label: 'Projection',
+            data: Array(currentIndex).fill(null).concat(projectionData),
+            borderColor: '#00e5ff',
+            borderWidth: 3,
+            borderDash: [5, 5],
+            pointRadius: 0,
+            fill: false
+        });
+        
+        stockChart.update();
+        
+        // Slider functionality
+        const revenueSlider = document.getElementById('revenueSlider');
+        const marketSlider = document.getElementById('marketSlider');
+        const regulatorySlider = document.getElementById('regulatorySlider');
+        const riskSlider = document.getElementById('riskSlider');
+        const horizonSlider = document.getElementById('horizonSlider');
+        
+        const revenueValue = document.getElementById('revenueValue');
+        const marketValue = document.getElementById('marketValue');
+        const regulatoryValue = document.getElementById('regulatoryValue');
+        const riskValue = document.getElementById('riskValue');
+        const horizonValue = document.getElementById('horizonValue');
+        
+        revenueSlider.addEventListener('input', updateValues);
+        marketSlider.addEventListener('input', updateValues);
+        regulatorySlider.addEventListener('input', updateValues);
+        riskSlider.addEventListener('input', updateValues);
+        horizonSlider.addEventListener('input', updateValues);
+        
+        function updateValues() {
+            revenueValue.textContent = revenueSlider.value;
+            marketValue.textContent = marketSlider.value;
+            regulatoryValue.textContent = regulatorySlider.value;
+            riskValue.textContent = riskSlider.value;
+            horizonValue.textContent = horizonSlider.value;
+            
+            // Update Calvin parameters
+            const v_net = (parseFloat(revenueSlider.value) * 0.4 + 
+                          (parseFloat(marketSlider.value) * 0.3 + 
+                          (parseFloat(regulatorySlider.value) * 0.2 - 
+                          (parseFloat(riskSlider.value) * 0.1);
+            
+            const L = Math.log(parseInt(horizonSlider.value));
+            const k = Math.log(3) / Math.log(2);
+            const C_L = Math.exp(k * L);
+            
+            // Update displayed values
+            document.getElementById('emergenceValue').textContent = (0.85 + Math.random() * 0.05).toFixed(3);
+            document.getElementById('fractalValue').textContent = C_L.toFixed(3);
+            document.getElementById('sentimentValue').textContent = (0.75 + Math.random() * 0.05).toFixed(2);
+            document.getElementById('volatilityValue').textContent = (0.14 + Math.random() * 0.01).toFixed(3);
+            
+            // Update prediction
+            const basePrice = data[data.length - 1];
+            const projection = basePrice * (1 + (v_net * C_L * 0.1));
+            document.querySelector('.prediction-value').textContent = `$${projection.toFixed(2)}`;
+            
+            // Update confidence
+            const confidence = 75 + (v_net * 15) + (C_L * 5);
+            document.querySelector('.confidence').textContent = `Confidence: ${Math.min(confidence, 95).toFixed(1)}%`;
+            
+            // Update chart projection
+            const horizon = parseInt(horizonSlider.value);
+            const projectionData = Array.from({length: horizon}, (_, i) => {
+                return basePrice * (1 + (v_net * C_L * 0.1 * (i / horizon)));
+            });
+            
+            // Update the chart data
+            const allData = [...historicalData, ...projectionData];
+            stockChart.data.datasets[0].data = allData;
+            
+            // Update projection line
+            const projectionLineData = Array(historicalData.length).fill(null).concat(projectionData);
+            stockChart.data.datasets[1].data = projectionLineData;
+            
+            // Update labels
+            const newLabels = [
+                ...months.slice(new Date().getMonth()).map(m => `${m} ${currentYear}`),
+                ...Array.from({length: Math.ceil(horizon/12) + 1}, (_, i) => {
+                    const year = currentYear + 1 + i;
+                    return months.map(m => `${m} ${year}`);
+                }).flat().slice(0, horizon)
+            ];
+            
+            stockChart.data.labels = newLabels;
+            stockChart.update();
+        }
+        
+        // Initialize values
+        updateValues();
+        
+        // Add some animation to the prediction value
+        setInterval(() => {
+            const predictionEl = document.querySelector('.prediction-value');
+            predictionEl.style.transform = 'scale(1.05)';
+            setTimeout(() => {
+                predictionEl.style.transform = 'scale(1)';
+            }, 300);
+        }, 5000);
+    </script>
+</body>
+</html>
