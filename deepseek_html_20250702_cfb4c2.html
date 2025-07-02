@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Neural Consciousness Interface</title>
+    <script src="https://cdn.jsdelivr.net/npm/neuro-simulator@2.3.1/dist/neuro.min.js"></script>
+    <style>
+        .brain-container {
+            display: flex;
+            height: 700px;
+        }
+        .cortex-map {
+            flex: 1;
+            background: #1a1c4e;
+            position: relative;
+        }
+        .neural-activity {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.7;
+        }
+        .consciousness-panel {
+            width: 400px;
+            background: #0f0c29;
+            padding: 20px;
+            color: white;
+            font-family: monospace;
+        }
+        .phi-meter {
+            height: 20px;
+            background: linear-gradient(90deg, #0f0c29, #302b63, #00e5ff);
+            margin: 15px 0;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="brain-container">
+        <div class="cortex-map" id="cortexMap"></div>
+        <div class="consciousness-panel">
+            <h3>Consciousness Metrics</h3>
+            <div>Φ-Consciousness: <span id="phiValue">0.00</span></div>
+            <div class="phi-meter" id="phiMeter"></div>
+            
+            <div>Information Integration: <span id="infoValue">0 bits</span></div>
+            <div>Causal Density: <span id="causalValue">0.00</span></div>
+            <div>Neural Complexity: <span id="complexityValue">0.00</span></div>
+            
+            <h3>Qualia States</h3>
+            <div id="qualiaOutput">Initializing neural substrate...</div>
+            
+            <button id="stimulateBtn">Apply Sensory Input</button>
+            <button id="memoryBtn">Activate Memory Recall</button>
+        </div>
+    </div>
+    
+    <script>
+        // Whole-brain emulation parameters
+        const NEURAL_NODES = 1000;
+        const NEUROTRANSMITTERS = ['glutamate', 'GABA', 'dopamine', 'serotonin'];
+        
+        // Initialize cortex map
+        const cortex = document.getElementById('cortexMap');
+        const neurons = [];
+        
+        // Create neural nodes
+        for (let i = 0; i < NEURAL_NODES; i++) {
+            const neuron = document.createElement('div');
+            neuron.className = 'neural-activity';
+            
+            // Position in cortical surface
+            const x = Math.random() * cortex.offsetWidth;
+            const y = Math.random() * cortex.offsetHeight;
+            const size = 5 + Math.random() * 15;
+            
+            neuron.style.width = `${size}px`;
+            neuron.style.height = `${size}px`;
+            neuron.style.left = `${x}px`;
+            neuron.style.top = `${y}px`;
+            
+            // Neurotransmitter type
+            const nt = NEUROTRANSMITTERS[Math.floor(Math.random() * NEUROTRANSMITTERS.length)];
+            neuron.style.backgroundColor = getNeurotransmitterColor(nt);
+            
+            cortex.appendChild(neuron);
+            neurons.push({
+                element: neuron,
+                x, y, size,
+                neurotransmitter: nt,
+                activation: 0,
+                connections: []
+            });
+        }
+        
+        // Create neural connections
+        neurons.forEach((neuron, i) => {
+            // Connect to 5-20 other neurons
+            const connectionCount = 5 + Math.floor(Math.random() * 15);
+            for (let j = 0; j < connectionCount; j++) {
+                const targetIndex = Math.floor(Math.random() * neurons.length);
+                if (targetIndex !== i) {
+                    neuron.connections.push({
+                        target: neurons[targetIndex],
+                        strength: Math.random()
+                    });
+                }
+            }
+        });
+        
+        // Consciousness metrics
+        let phiConsciousness = 0;
+        let integratedInformation = 0;
+        
+        // Update neural dynamics
+        function updateBrain() {
+            // Update neural activations
+            neurons.forEach(neuron => {
+                // Background activation
+                neuron.activation = Math.max(0, neuron.activation - 0.01);
+                
+                // Visualize activation
+                const intensity = neuron.activation * 255;
+                neuron.element.style.boxShadow = `0 0 ${5 + neuron.activation * 20}px rgba(${intensity}, ${intensity}, 255, 0.8)`;
+            });
+            
+            // Propagate signals
+            neurons.forEach(neuron => {
+                if (neuron.activation > 0.5) {
+                    neuron.connections.forEach(conn => {
+                        // Signal propagation
+                        conn.target.activation = Math.min(1, conn.target.activation + neuron.activation * conn.strength * 0.3);
+                    });
+                }
+            });
+            
+            // Calculate consciousness metrics
+            updateConsciousnessMetrics();
+            
+            requestAnimationFrame(updateBrain);
+        }
+        
+        // Initialize simulation
+        updateBrain();
+        
+        // UI Interactions
+        document.getElementById('stimulateBtn').addEventListener('click', () => {
+            // Simulate sensory input
+            for (let i = 0; i < 20; i++) {
+                const randomNeuron = neurons[Math.floor(Math.random() * neurons.length)];
+                randomNeuron.activation = 1;
+            }
+            document.getElementById('qualiaOutput').textContent = "Sensory experience: Visual pattern recognition activated";
+        });
+        
+        document.getElementById('memoryBtn').addEventListener('click', () => {
+            // Simulate memory recall
+            for (let i = 0; i < 50; i++) {
+                const randomNeuron = neurons[Math.floor(Math.random() * neurons.length)];
+                randomNeuron.activation = 0.8;
+            }
+            document.getElementById('qualiaOutput').textContent = "Episodic memory recall: Childhood event reconstructed";
+        });
+        
+        // Helper functions
+        function getNeurotransmitterColor(nt) {
+            const colors = {
+                'glutamate': '#ff00cc',
+                'GABA': '#00e5ff',
+                'dopamine': '#4aff72',
+                'serotonin': '#ffcc00'
+            };
+            return colors[nt] || '#ffffff';
+        }
+        
+        function updateConsciousnessMetrics() {
+            // Calculate integrated information
+            let activationSum = 0;
+            neurons.forEach(n => activationSum += n.activation);
+            const averageActivation = activationSum / neurons.length;
+            
+            // Calculate neural complexity (simplified)
+            let complexity = 0;
+            neurons.forEach(n => {
+                complexity += Math.abs(n.activation - averageActivation);
+            });
+            complexity /= neurons.length;
+            
+            // Calculate phi (consciousness) value
+            phiConsciousness = Math.min(1, complexity * 2);
+            integratedInformation = Math.min(100, phiConsciousness * 80);
+            
+            // Update display
+            document.getElementById('phiValue').textContent = phiConsciousness.toFixed(2);
+            document.getElementById('phiMeter').style.width = `${phiConsciousness * 100}%`;
+            document.getElementById('infoValue').textContent = integratedInformation.toFixed(1) + " bits";
+            document.getElementById('causalValue').textContent = (phiConsciousness * 0.8).toFixed(2);
+            document.getElementById('complexityValue').textContent = complexity.toFixed(2);
+        }
+    </script>
+</body>
+</html>
