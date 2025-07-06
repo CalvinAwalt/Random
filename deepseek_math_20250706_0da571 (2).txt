@@ -1,0 +1,1 @@
+C(L_n) = C_0 e^{kL_n}  \text{ where } k = \frac{\ln 3}{\ln 2} \approx 1.58496

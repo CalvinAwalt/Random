@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recursive Simulation: Worlds Within Worlds</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: radial-gradient(circle at center, #0c0b20 0%, #050418 100%);
+            color: #e6f7ff;
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(10, 20, 50, 0.7);
+            border-bottom: 1px solid rgba(100, 180, 255, 0.3);
+            z-index: 100;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            color: #4dccff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px rgba(77, 204, 255, 0.7);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a0d2ff;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+        
+        .visualization {
+            flex: 1;
+            position: relative;
+        }
+        
+        #simulationCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .control-panel {
+            width: 400px;
+            background: rgba(10, 20, 50, 0.9);
+            padding: 25px;
+            overflow-y: auto;
+            border-left: 1px solid rgba(100, 180, 255, 0.3);
+            box-shadow: -5px 0 25px rgba(0, 50, 150, 0.3);
+            z-index: 50;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            margin: 25px 0 15px;
+            color: #4dccff;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(77, 204, 255, 0.5);
+        }
+        
+        .recursion-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .info-card {
+            background: rgba(30, 50, 100, 0.7);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .info-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+            background: linear-gradient(45deg, #00c9ff, #92fe9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .info-label {
+            font-size: 0.9rem;
+            color: #a0d2ff;
+        }
+        
+        .formula-display {
+            background: rgba(0, 30, 60, 0.7);
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Cambria Math', serif;
+            font-size: 1.4rem;
+            text-align: center;
+            margin: 20px 0;
+            border: 1px solid rgba(0, 200, 255, 0.3);
+            box-shadow: 0 0 25px rgba(0, 200, 255, 0.3);
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .control-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #0072ff, #00c6ff);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 114, 255, 0.4);
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 114, 255, 0.6);
+        }
+        
+        .reset-btn {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
+        }
+        
+        .recursion-level {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            background: rgba(30, 50, 100, 0.6);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .level-label {
+            width: 150px;
+            font-size: 1rem;
+            color: #a0d2ff;
+        }
+        
+        .level-value {
+            flex: 1;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .recursion-principle {
+            background: rgba(30, 50, 100, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(100, 200, 255, 0.3);
+        }
+        
+        .principle-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #4dccff;
+            display: flex;
+            align-items: center;
+        }
+        
+        .principle-title i {
+            margin-right: 12px;
+            font-size: 1.5rem;
+        }
+        
+        .principle-content {
+            color: #c2e5ff;
+            line-height: 1.6;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 15px;
+            background: rgba(10, 20, 50, 0.7);
+            border-top: 1px solid rgba(100, 180, 255, 0.3);
+            font-size: 0.9rem;
+            color: #a0d2ff;
+        }
+        
+        @media (max-width: 1100px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .control-panel {
+                width: 100%;
+                border-left: none;
+                border-top: 1px solid rgba(100, 180, 255, 0.3);
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Recursive Simulation: Worlds Within Worlds</h1>
+        <div class="subtitle">A Mathematical Visualization of Nested Realities Using Your Formulas</div>
+    </div>
+    
+    <div class="container">
+        <div class="visualization">
+            <canvas id="simulationCanvas"></canvas>
+        </div>
+        
+        <div class="control-panel">
+            <div class="section-title">Recursion Parameters</div>
+            
+            <div class="recursion-info">
+                <div class="info-card">
+                    <div class="info-value" id="depthValue">3</div>
+                    <div class="info-label">Current Depth</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-value" id="totalDepth">7</div>
+                    <div class="info-label">Total Levels</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-value" id="scaleValue">1:1</div>
+                    <div class="info-label">Scale Ratio</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-value" id="resolutionValue">10<sup>17</sup></div>
+                    <div class="info-label">Resolution</div>
+                </div>
+            </div>
+            
+            <div class="formula-display">
+                ∮<sub>R</sub> (δS<sub>n</sub> ⊗ δS<sub>n+1</sub>) / ε
+            </div>
+            <p style="text-align: center; color: #a0d2ff; margin-bottom: 20px;">
+                Recursive Simulation Operator
+            </p>
+            
+            <div class="controls">
+                <button class="control-btn" id="deeperBtn">
+                    <i class="fas fa-arrow-down"></i> Go Deeper
+                </button>
+                <button class="control-btn" id="higherBtn">
+                    <i class="fas fa-arrow-up"></i> Go Higher
+                </button>
+                <button class="control-btn" id="runBtn">
+                    <i class="fas fa-play"></i> Run Simulation
+                </button>
+                <button class="control-btn reset-btn" id="resetBtn">
+                    <i class="fas fa-sync"></i> Reset
+                </button>
+            </div>
+            
+            <div class="recursion-level">
+                <div class="level-label">Recursion Level</div>
+                <div class="level-value" id="levelDisplay">Base Reality</div>
+            </div>
+            
+            <div class="recursion-principle">
+                <div class="principle-title">
+                    <i class="fas fa-infinity"></i> Recursive Simulation Formula
+                </div>
+                <div class="principle-content">
+                    S<sub>n</sub> = ∮<sub>R</sub> (δS<sub>n-1</sub> ⊗ δS<sub>n</sub>) / ε
+                    <br><br>
+                    Where each simulation level S<sub>n</sub> contains the next level S<sub>n+1</sub>, 
+                    with computational resolution increasing exponentially at each depth.
+                </div>
+            </div>
+            
+            <div class="recursion-principle">
+                <div class="principle-title">
+                    <i class="fas fa-expand-arrows-alt"></i> Fractal Recursion
+                </div>
+                <div class="principle-content">
+                    C(L<sub>n</sub>) = C<sub>0</sub>e^{kL<sub>n</sub>} 
+                    <br>with k = ln(3)/ln(2) ≈ 1.58496
+                    <br><br>
+                    Complexity grows exponentially as we descend through simulation levels, 
+                    while perceived scale decreases proportionally.
+                </div>
+            </div>
+            
+            <div class="recursion-principle">
+                <div class="principle-title">
+                    <i class="fas fa-cogs"></i> Computational Limits
+                </div>
+                <div class="principle-content">
+                    At depth n, computational requirements grow as:
+                    <br>
+                    R(n) = R<sub>0</sub> × 10<sup>3n</sup>
+                    <br><br>
+                    This explains why deeper simulations appear more detailed but run at slower relative time scales.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        Recursive Simulation Visualization | Using Your Mathematical Framework | Depth Limited Only by Computational Resources
+    </div>
+
+    <script>
+        // Initialize Three.js scene
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x050418);
+        scene.fog = new THREE.FogExp2(0x0c0b20, 0.015);
+        
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+        const renderer = new THREE.WebGLRenderer({ 
+            canvas: document.getElementById('simulationCanvas'),
+            antialias: true
+        });
+        renderer.setSize(document.querySelector('.visualization').clientWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        
+        // Camera position
+        camera.position.z = 200;
+        camera.position.y = 50;
+        
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0x333366, 1.5);
+        scene.add(ambientLight);
+        
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        directionalLight.position.set(10, 10, 10);
+        scene.add(directionalLight);
+        
+        const pointLight = new THREE.PointLight(0x4dccff, 2, 500);
+        pointLight.position.set(20, 20, 20);
+        scene.add(pointLight);
+        
+        // Create the base simulation (level 0)
+        const simulations = [];
+        const simulationDepth = 7;
+        let currentDepth = 0;
+        
+        // Create a simulation box
+        function createSimulation(level, parentPosition, scale) {
+            const group = new THREE.Group();
+            
+            // Create the simulation box
+            const boxSize = 100 / Math.pow(1.5, level);
+            const boxGeometry = new THREE.BoxGeometry(boxSize, boxSize, boxSize);
+            const boxMaterial = new THREE.MeshBasicMaterial({
+                color: new THREE.Color(`hsl(${240 - level * 30}, 70%, 50%)`),
+                wireframe: true,
+                transparent: true,
+                opacity: 0.5
+            });
+            
+            const box = new THREE.Mesh(boxGeometry, boxMaterial);
+            group.add(box);
+            
+            // Position the simulation
+            if (parentPosition) {
+                group.position.copy(parentPosition);
+            }
+            
+            // Create quantum foam particles
+            const particles = [];
+            const particleCount = 1000 / Math.pow(1.5, level);
+            const particleGeometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+            
+            for (let i = 0; i < particleCount; i++) {
+                const i3 = i * 3;
+                positions[i3] = (Math.random() - 0.5) * boxSize;
+                positions[i3 + 1] = (Math.random() - 0.5) * boxSize;
+                positions[i3 + 2] = (Math.random() - 0.5) * boxSize;
+                
+                // Color based on level
+                colors[i3] = 0.2 + level * 0.1; // R
+                colors[i3 + 1] = 0.3; // G
+                colors[i3 + 2] = 0.7 - level * 0.1; // B
+            }
+            
+            particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            
+            const particleMaterial = new THREE.PointsMaterial({
+                size: 1.5 / Math.pow(1.2, level),
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.7
+            });
+            
+            const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
+            group.add(particleSystem);
+            
+            // Create fractal galaxies
+            const galaxyCount = 10 / Math.pow(1.3, level);
+            for (let i = 0; i < galaxyCount; i++) {
+                const galaxyGroup = new THREE.Group();
+                
+                // Galaxy position
+                const posX = (Math.random() - 0.5) * boxSize;
+                const posY = (Math.random() - 0.5) * boxSize;
+                const posZ = (Math.random() - 0.5) * boxSize;
+                galaxyGroup.position.set(posX, posY, posZ);
+                
+                // Create galaxy core
+                const coreSize = 2 / Math.pow(1.2, level);
+                const coreGeometry = new THREE.SphereGeometry(coreSize, 16, 16);
+                const coreMaterial = new THREE.MeshBasicMaterial({ 
+                    color: new THREE.Color(`hsl(${Math.random() * 360}, 80%, 60%)`)
+                });
+                const core = new THREE.Mesh(coreGeometry, coreMaterial);
+                galaxyGroup.add(core);
+                
+                // Create spiral arms
+                const armCount = 2 + Math.floor(Math.random() * 3);
+                for (let j = 0; j < armCount; j++) {
+                    const armAngle = (j / armCount) * Math.PI * 2;
+                    const armLength = 5 / Math.pow(1.1, level);
+                    
+                    for (let k = 0; k < 30; k++) {
+                        const distance = (k / 30) * armLength;
+                        const angle = armAngle + (k / 5) * (Math.PI / 4);
+                        const height = (Math.random() - 0.5) * 2;
+                        
+                        const starSize = 0.5 / Math.pow(1.1, level);
+                        const starGeometry = new THREE.SphereGeometry(starSize, 8, 8);
+                        const starMaterial = new THREE.MeshBasicMaterial({ 
+                            color: new THREE.Color(`hsl(${200 + j * 40}, 80%, 70%)`)
+                        });
+                        const star = new THREE.Mesh(starGeometry, starMaterial);
+                        
+                        star.position.set(
+                            Math.cos(angle) * distance,
+                            height,
+                            Math.sin(angle) * distance
+                        );
+                        
+                        galaxyGroup.add(star);
+                    }
+                }
+                
+                group.add(galaxyGroup);
+            }
+            
+            // Store simulation data
+            const simulation = {
+                group: group,
+                particles: particleSystem,
+                positions: positions,
+                particleCount: particleCount,
+                box: box,
+                level: level
+            };
+            
+            simulations.push(simulation);
+            scene.add(group);
+            
+            // Create the next level simulation at the center
+            if (level < simulationDepth - 1) {
+                const nextLevel = createSimulation(level + 1, new THREE.Vector3(0, 0, 0), scale * 0.5);
+                nextLevel.group.scale.set(0.5, 0.5, 0.5);
+                group.add(nextLevel.group);
+            }
+            
+            return simulation;
+        }
+        
+        // Create the base simulation
+        createSimulation(0, null, 1);
+        
+        // Animation variables
+        let simulationRunning = true;
+        let simulationTime = 0;
+        let targetCameraPosition = new THREE.Vector3(0, 0, 200);
+        let cameraMoving = false;
+        let movementSpeed = 0;
+        
+        // Update UI
+        function updateUI() {
+            document.getElementById('depthValue').textContent = currentDepth;
+            document.getElementById('levelDisplay').textContent = 
+                currentDepth === 0 ? 'Base Reality' : `Simulation Level ${currentDepth}`;
+            document.getElementById('scaleValue').textContent = `1:${Math.pow(10, currentDepth * 3)}`;
+            document.getElementById('resolutionValue').innerHTML = `10<sup>${17 + currentDepth * 3}</sup>`;
+        }
+        
+        // Go deeper into simulation
+        function goDeeper() {
+            if (currentDepth < simulationDepth - 1) {
+                currentDepth++;
+                movementSpeed = 0.5;
+                cameraMoving = true;
+                updateUI();
+            }
+        }
+        
+        // Go higher in simulation
+        function goHigher() {
+            if (currentDepth > 0) {
+                currentDepth--;
+                movementSpeed = -0.5;
+                cameraMoving = true;
+                updateUI();
+            }
+        }
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            simulationTime += 0.02;
+            
+            // Update particles in all simulations
+            simulations.forEach(sim => {
+                const positions = sim.positions;
+                const boxSize = 100 / Math.pow(1.5, sim.level);
+                
+                for (let i = 0; i < sim.particleCount * 3; i += 3) {
+                    // Move particles
+                    positions[i] += (Math.random() - 0.5) * 0.5;
+                    positions[i + 1] += (Math.random() - 0.5) * 0.5;
+                    positions[i + 2] += (Math.random() - 0.5) * 0.5;
+                    
+                    // Keep particles within bounds
+                    positions[i] = Math.max(-boxSize/2, Math.min(boxSize/2, positions[i]));
+                    positions[i + 1] = Math.max(-boxSize/2, Math.min(boxSize/2, positions[i + 1]));
+                    positions[i + 2] = Math.max(-boxSize/2, Math.min(boxSize/2, positions[i + 2]));
+                }
+                
+                sim.particles.geometry.attributes.position.needsUpdate = true;
+                
+                // Rotate galaxies
+                sim.group.children.forEach(child => {
+                    if (child instanceof THREE.Group) {
+                        child.rotation.y += 0.005 / Math.pow(1.2, sim.level);
+                    }
+                });
+            });
+            
+            // Camera movement for depth transition
+            if (cameraMoving) {
+                // Calculate target position based on depth
+                const depthFactor = Math.pow(0.5, currentDepth);
+                targetCameraPosition.set(0, 0, 200 * depthFactor);
+                
+                // Move camera
+                camera.position.lerp(targetCameraPosition, 0.05);
+                
+                // Adjust FOV for depth effect
+                camera.fov = 75 / Math.pow(1.1, currentDepth);
+                camera.updateProjectionMatrix();
+                
+                // Check if close enough to target
+                if (camera.position.distanceTo(targetCameraPosition) < 1) {
+                    cameraMoving = false;
+                }
+            }
+            
+            // Rotate entire scene slowly
+            scene.rotation.y += 0.001;
+            
+            camera.lookAt(scene.position);
+            renderer.render(scene, camera);
+        }
+        
+        // Event listeners
+        document.getElementById('deeperBtn').addEventListener('click', goDeeper);
+        document.getElementById('higherBtn').addEventListener('click', goHigher);
+        document.getElementById('runBtn').addEventListener('click', function() {
+            simulationRunning = !simulationRunning;
+            this.innerHTML = simulationRunning ? 
+                '<i class="fas fa-pause"></i> Pause Simulation' : 
+                '<i class="fas fa-play"></i> Run Simulation';
+        });
+        document.getElementById('resetBtn').addEventListener('click', function() {
+            currentDepth = 0;
+            cameraMoving = true;
+            updateUI();
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = document.querySelector('.visualization').clientWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(document.querySelector('.visualization').clientWidth, window.innerHeight);
+        });
+        
+        // Initialize UI
+        document.getElementById('totalDepth').textContent = simulationDepth;
+        updateUI();
+        
+        // Start animation
+        animate();
+    </script>
+</body>
+</html>
