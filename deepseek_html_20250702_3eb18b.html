@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complex Adaptive AI System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #e6e6e6;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            margin-bottom: 30px;
+            background: rgba(0, 12, 24, 0.7);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(64, 128, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #00c6ff, #0072ff, #00c6ff);
+            animation: gradientFlow 3s linear infinite;
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #00dbde, #fc00ff, #00dbde);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.4rem;
+            max-width: 800px;
+            margin: 0 auto 20px;
+            color: #a0d2ff;
+        }
+        
+        .systems-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 1100px) {
+            .systems-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .system {
+            background: rgba(0, 20, 40, 0.7);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 150, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .system:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 100, 255, 0.3);
+        }
+        
+        .system-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #4dccff;
+            display: flex;
+            align-items: center;
+        }
+        
+        .system-title i {
+            margin-right: 15px;
+            font-size: 1.8rem;
+        }
+        
+        .system-content {
+            display: flex;
+            gap: 25px;
+        }
+        
+        .system-description {
+            flex: 1;
+            font-size: 1.1rem;
+            color: #c2e5ff;
+        }
+        
+        .system-visual {
+            flex: 1;
+            height: 300px;
+            background: rgba(0, 30, 60, 0.6);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 150, 255, 0.3);
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .control-panel {
+            background: rgba(0, 20, 40, 0.7);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 150, 255, 0.2);
+        }
+        
+        .panel-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #4dccff;
+            display: flex;
+            align-items: center;
+        }
+        
+        .panel-title i {
+            margin-right: 15px;
+        }
+        
+        .slider-container {
+            margin: 20px 0;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 10px;
+            -webkit-appearance: none;
+            background: rgba(0, 100, 200, 0.3);
+            border-radius: 5px;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #00c6ff;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 198, 255, 0.7);
+        }
+        
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #0072ff, #00c6ff);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 114, 255, 0.4);
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 114, 255, 0.6);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        .reset-btn {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
+        }
+        
+        .reset-btn:hover {
+            box-shadow: 0 8px 20px rgba(255, 65, 108, 0.6);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: rgba(0, 20, 40, 0.7);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 150, 255, 0.2);
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin: 15px 0;
+            background: linear-gradient(45deg, #00c6ff, #0072ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-label {
+            font-size: 1.3rem;
+            color: #a0d2ff;
+        }
+        
+        .explanation {
+            background: rgba(0, 20, 40, 0.7);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 150, 255, 0.2);
+        }
+        
+        .explanation h2 {
+            font-size: 2.2rem;
+            margin-bottom: 25px;
+            color: #4dccff;
+            text-align: center;
+        }
+        
+        .principles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .principle {
+            background: rgba(0, 30, 60, 0.5);
+            border-radius: 10px;
+            padding: 25px;
+            transition: transform 0.3s ease;
+        }
+        
+        .principle:hover {
+            transform: translateY(-5px);
+        }
+        
+        .principle h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #00c6ff;
+            display: flex;
+            align-items: center;
+        }
+        
+        .principle h3 i {
+            margin-right: 12px;
+        }
+        
+        .principle p {
+            color: #c2e5ff;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #88aadd;
+            font-size: 1.1rem;
+        }
+        
+        /* Animations */
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.7; }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .pulse {
+            animation: pulse 3s infinite ease-in-out;
+        }
+        
+        .float {
+            animation: float 4s infinite ease-in-out;
+        }
+        
+        /* Canvas elements */
+        .node {
+            position: absolute;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 15px currentColor;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .node:hover {
+            transform: scale(1.2);
+            z-index: 10;
+        }
+        
+        .connection {
+            position: absolute;
+            height: 3px;
+            background: rgba(0, 198, 255, 0.7);
+            transform-origin: 0 0;
+        }
+        
+        .data-packet {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ff6b6b;
+            box-shadow: 0 0 10px #ff6b6b;
+        }
+        
+        .feedback-packet {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4dccff;
+            box-shadow: 0 0 10px #4dccff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Complex Adaptive AI System</h1>
+            <p class="subtitle">A simulation of polycentric, hierarchic, and cybernetic systems with self-improvement and self-destruction mechanisms</p>
+        </header>
+        
+        <div class="systems-container">
+            <div class="system">
+                <h2 class="system-title"><i class="fas fa-brain"></i> Polycentric AI System</h2>
+                <div class="system-content">
+                    <div class="system-description">
+                        <p>Multiple independent AI agents making mutual adjustments within a shared rule framework. Each agent operates autonomously while coordinating with others.</p>
+                        <ul>
+                            <li>Decentralized decision-making</li>
+                            <li>Localized interactions</li>
+                            <li>Emergent global behavior</li>
+                            <li>Adaptive rule adjustments</li>
+                        </ul>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value">87%</div>
+                                <div class="stat-label">Coordination</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">23</div>
+                                <div class="stat-label">Active Agents</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="system-visual" id="polycentric-visual">
+                        <!-- Canvas for visualization will be injected here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="system">
+                <h2 class="system-title"><i class="fas fa-sitemap"></i> Hierarchic AI System</h2>
+                <div class="system-content">
+                    <div class="system-description">
+                        <p>Nested AI subsystems forming a hierarchy, with higher-level systems coordinating lower-level specialized components.</p>
+                        <ul>
+                            <li>Multi-level abstraction</li>
+                            <li>Specialized subsystems</li>
+                            <li>Top-down coordination</li>
+                            <li>Bottom-up innovation</li>
+                        </ul>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value">5</div>
+                                <div class="stat-label">System Levels</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">94%</div>
+                                <div class="stat-label">Efficiency</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="system-visual" id="hierarchic-visual">
+                        <!-- Canvas for visualization will be injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="control-panel">
+                <h2 class="panel-title"><i class="fas fa-sliders-h"></i> System Controls</h2>
+                
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Adaptation Rate</span>
+                        <span id="adaptation-value">75%</span>
+                    </div>
+                    <input type="range" min="0" max="100" value="75" class="slider" id="adaptation-slider">
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Disorder Level</span>
+                        <span id="disorder-value">35%</span>
+                    </div>
+                    <input type="range" min="0" max="100" value="35" class="slider" id="disorder-slider">
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Feedback Strength</span>
+                        <span id="feedback-value">68%</span>
+                    </div>
+                    <input type="range" min="0" max="100" value="68" class="slider" id="feedback-slider">
+                </div>
+                
+                <div class="buttons">
+                    <button id="improve-btn"><i class="fas fa-wrench"></i> Improve System</button>
+                    <button id="destroy-btn" class="reset-btn"><i class="fas fa-bomb"></i> Destroy Component</button>
+                    <button id="add-btn"><i class="fas fa-plus"></i> Add Agent</button>
+                    <button id="reset-btn" class="reset-btn"><i class="fas fa-sync"></i> Reset</button>
+                </div>
+            </div>
+            
+            <div class="control-panel">
+                <h2 class="panel-title"><i class="fas fa-chart-line"></i> System Metrics</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">92%</div>
+                        <div class="stat-label">Learning Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">87%</div>
+                        <div class="stat-label">Efficiency</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">42</div>
+                        <div class="stat-label">Components</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">18</div>
+                        <div class="stat-label">Bridges</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="explanation">
+            <h2>Complex Adaptive Systems in AI</h2>
+            <div class="principles">
+                <div class="principle">
+                    <h3><i class="fas fa-project-diagram"></i> Polycentric Systems</h3>
+                    <p>Multiple independent AI agents make mutual adjustments within a shared rule framework. This enables decentralized problem-solving and robust adaptation to changing environments.</p>
+                </div>
+                <div class="principle">
+                    <h3><i class="fas fa-layer-group"></i> Hierarchic Systems</h3>
+                    <p>AI systems organized in nested hierarchies, with higher-level systems coordinating specialized subsystems. This enables complex problem-solving through abstraction and specialization.</p>
+                </div>
+                <div class="principle">
+                    <h3><i class="fas fa-recycle"></i> Cybernetic Feedback</h3>
+                    <p>Information feedback loops allow AI systems to self-regulate and adapt. Positive feedback reinforces successful patterns while negative feedback corrects errors.</p>
+                </div>
+                <div class="principle">
+                    <h3><i class="fas fa-fire"></i> Self-Improvement & Destruction</h3>
+                    <p>AI systems continuously evolve through self-modification. Components that prove valuable are strengthened while ineffective ones are pruned, enabling constant adaptation.</p>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Complex Adaptive AI System Simulation | Demonstrating principles of polycentric, hierarchic, and cybernetic systems</p>
+            <p>Interactions visualized in real-time with dynamic component relationships</p>
+        </footer>
+    </div>
+    
+    <!-- Font Awesome for icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    
+    <script>
+        // Initialize canvas for visualizations
+        function initCanvas(containerId) {
+            const container = document.getElementById(containerId);
+            const canvas = document.createElement('canvas');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            canvas.style.position = 'absolute';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            container.appendChild(canvas);
+            return canvas;
+        }
+        
+        // Initialize polycentric system visualization
+        const polyCanvas = initCanvas('polycentric-visual');
+        const polyCtx = polyCanvas.getContext('2d');
+        
+        // Initialize hierarchic system visualization
+        const hierCanvas = initCanvas('hierarchic-visual');
+        const hierCtx = hierCanvas.getContext('2d');
+        
+        // System state
+        const systemState = {
+            adaptationRate: 75,
+            disorderLevel: 35,
+            feedbackStrength: 68,
+            components: [],
+            connections: [],
+            dataPackets: [],
+            feedbackPackets: []
+        };
+        
+        // Node class for system components
+        class Node {
+            constructor(x, y, radius, color, type) {
+                this.x = x;
+                this.y = y;
+                this.radius = radius;
+                this.color = color;
+                this.type = type;
+                this.connections = [];
+                this.activation = 0;
+                this.pulse = 0;
+            }
+            
+            draw(ctx) {
+                // Draw glow
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius + 5, 0, Math.PI * 2);
+                const gradient = ctx.createRadialGradient(
+                    this.x, this.y, this.radius * 0.3,
+                    this.x, this.y, this.radius + 8
+                );
+                gradient.addColorStop(0, `${this.color}${Math.min(0.7, this.activation)}`);
+                gradient.addColorStop(1, 'transparent');
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                
+                // Draw main node
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                
+                // Draw pulse effect
+                if (this.pulse > 0) {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius + this.pulse, 0, Math.PI * 2);
+                    ctx.strokeStyle = `${this.color.replace(')', ', 0.5)').replace('rgb', 'rgba')}`;
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+            }
+            
+            update() {
+                this.activation = Math.max(0, this.activation - 0.01);
+                this.pulse = Math.max(0, this.pulse - 0.5);
+            }
+            
+            activate() {
+                this.activation = 1;
+                this.pulse = 15;
+            }
+        }
+        
+        // Connection class
+        class Connection {
+            constructor(source, target, strength) {
+                this.source = source;
+                this.target = target;
+                this.strength = strength;
+                this.active = false;
+                this.pulseProgress = 0;
+            }
+            
+            draw(ctx) {
+                ctx.beginPath();
+                ctx.moveTo(this.source.x, this.source.y);
+                ctx.lineTo(this.target.x, this.target.y);
+                
+                if (this.active) {
+                    ctx.strokeStyle = `rgba(0, 198, 255, ${this.strength})`;
+                    ctx.lineWidth = 3;
+                } else {
+                    ctx.strokeStyle = `rgba(100, 150, 200, ${0.2 + this.strength * 0.3})`;
+                    ctx.lineWidth = 1;
+                }
+                
+                ctx.stroke();
+                
+                // Draw pulse along connection
+                if (this.pulseProgress > 0) {
+                    const dx = this.target.x - this.source.x;
+                    const dy = this.target.y - this.source.y;
+                    const length = Math.sqrt(dx * dx + dy * dy);
+                    const progress = this.pulseProgress;
+                    
+                    const pulseX = this.source.x + dx * progress;
+                    const pulseY = this.source.y + dy * progress;
+                    
+                    ctx.beginPath();
+                    ctx.arc(pulseX, pulseY, 4, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                    ctx.fill();
+                }
+            }
+            
+            update() {
+                if (this.active) {
+                    this.pulseProgress += 0.03;
+                    if (this.pulseProgress >= 1) {
+                        this.pulseProgress = 0;
+                        this.active = false;
+                    }
+                }
+            }
+            
+            activate() {
+                this.active = true;
+                this.pulseProgress = 0;
+            }
+        }
+        
+        // Create initial nodes for polycentric system
+        function createPolycentricNodes() {
+            const nodes = [];
+            const centerX = polyCanvas.width / 2;
+            const centerY = polyCanvas.height / 2;
+            const radius = Math.min(centerX, centerY) * 0.7;
+            const nodeCount = 8;
+            
+            for (let i = 0; i < nodeCount; i++) {
+                const angle = (i / nodeCount) * Math.PI * 2;
+                const x = centerX + Math.cos(angle) * radius;
+                const y = centerY + Math.sin(angle) * radius;
+                
+                const hue = (i * 360 / nodeCount) % 360;
+                const color = `hsl(${hue}, 80%, 60%)`;
+                
+                const node = new Node(x, y, 20, color, 'agent');
+                nodes.push(node);
+            }
+            
+            // Add center node
+            const centerNode = new Node(centerX, centerY, 25, 'hsl(200, 80%, 60%)', 'coordinator');
+            nodes.push(centerNode);
+            
+            return nodes;
+        }
+        
+        // Create connections for polycentric system
+        function createPolycentricConnections(nodes) {
+            const connections = [];
+            
+            // Connect all nodes to center
+            for (let i = 0; i < nodes.length - 1; i++) {
+                connections.push(new Connection(nodes[i], nodes[nodes.length - 1], 0.7));
+            }
+            
+            // Connect some nodes to each other
+            for (let i = 0; i < nodes.length - 1; i++) {
+                for (let j = i + 1; j < nodes.length - 1; j++) {
+                    if (Math.random() > 0.7) {
+                        connections.push(new Connection(nodes[i], nodes[j], 0.4));
+                    }
+                }
+            }
+            
+            return connections;
+        }
+        
+        // Create hierarchical nodes
+        function createHierarchicalNodes() {
+            const nodes = [];
+            const centerX = hierCanvas.width / 2;
+            const centerY = hierCanvas.height / 2;
+            
+            // Top level
+            const topNode = new Node(centerX, 50, 25, 'hsl(200, 80%, 60%)', 'root');
+            nodes.push(topNode);
+            
+            // Mid level
+            const midNodes = [];
+            for (let i = 0; i < 3; i++) {
+                const x = centerX - 150 + i * 150;
+                const y = 150;
+                const hue = 30 + i * 100;
+                const color = `hsl(${hue}, 80%, 60%)`;
+                const node = new Node(x, y, 20, color, 'manager');
+                midNodes.push(node);
+                nodes.push(node);
+                
+                // Connect to top
+                systemState.connections.push(new Connection(topNode, node, 0.8));
+            }
+            
+            // Bottom level
+            for (let i = 0; i < midNodes.length; i++) {
+                const midNode = midNodes[i];
+                for (let j = 0; j < 4; j++) {
+                    const offsetX = (j - 1.5) * 50;
+                    const x = midNode.x + offsetX;
+                    const y = 250;
+                    const hue = (i * 100 + j * 20) % 360;
+                    const color = `hsl(${hue}, 80%, 60%)`;
+                    const node = new Node(x, y, 15, color, 'worker');
+                    nodes.push(node);
+                    
+                    // Connect to mid-level
+                    systemState.connections.push(new Connection(midNode, node, 0.6));
+                }
+            }
+            
+            return nodes;
+        }
+        
+        // Initialize systems
+        systemState.polyNodes = createPolycentricNodes();
+        systemState.polyConnections = createPolycentricConnections(systemState.polyNodes);
+        systemState.hierNodes = createHierarchicalNodes();
+        
+        // Update slider values
+        function updateSliderValues() {
+            document.getElementById('adaptation-value').textContent = systemState.adaptationRate + '%';
+            document.getElementById('disorder-value').textContent = systemState.disorderLevel + '%';
+            document.getElementById('feedback-value').textContent = systemState.feedbackStrength + '%';
+        }
+        
+        // Draw polycentric system
+        function drawPolycentricSystem() {
+            polyCtx.clearRect(0, 0, polyCanvas.width, polyCanvas.height);
+            
+            // Draw connections
+            systemState.polyConnections.forEach(conn => {
+                conn.draw(polyCtx);
+                conn.update();
+            });
+            
+            // Draw nodes
+            systemState.polyNodes.forEach(node => {
+                node.draw(polyCtx);
+                node.update();
+            });
+        }
+        
+        // Draw hierarchical system
+        function drawHierarchicalSystem() {
+            hierCtx.clearRect(0, 0, hierCanvas.width, hierCanvas.height);
+            
+            // Draw connections
+            systemState.connections.forEach(conn => {
+                conn.draw(hierCtx);
+                conn.update();
+            });
+            
+            // Draw nodes
+            systemState.hierNodes.forEach(node => {
+                node.draw(hierCtx);
+                node.update();
+            });
+        }
+        
+        // Animation loop
+        function animate() {
+            drawPolycentricSystem();
+            drawHierarchicalSystem();
+            
+            // Randomly activate nodes and connections
+            if (Math.random() < 0.05) {
+                const randomPolyNode = systemState.polyNodes[Math.floor(Math.random() * systemState.polyNodes.length)];
+                randomPolyNode.activate();
+                
+                // Activate connections to this node
+                systemState.polyConnections.forEach(conn => {
+                    if (conn.source === randomPolyNode || conn.target === randomPolyNode) {
+                        conn.activate();
+                    }
+                });
+            }
+            
+            if (Math.random() < 0.04) {
+                const randomHierNode = systemState.hierNodes[Math.floor(Math.random() * systemState.hierNodes.length)];
+                randomHierNode.activate();
+                
+                // Activate connections to this node
+                systemState.connections.forEach(conn => {
+                    if (conn.source === randomHierNode || conn.target === randomHierNode) {
+                        conn.activate();
+                    }
+                });
+            }
+            
+            requestAnimationFrame(animate);
+        }
+        
+        // Event listeners
+        document.getElementById('adaptation-slider').addEventListener('input', function() {
+            systemState.adaptationRate = parseInt(this.value);
+            updateSliderValues();
+        });
+        
+        document.getElementById('disorder-slider').addEventListener('input', function() {
+            systemState.disorderLevel = parseInt(this.value);
+            updateSliderValues();
+        });
+        
+        document.getElementById('feedback-slider').addEventListener('input', function() {
+            systemState.feedbackStrength = parseInt(this.value);
+            updateSliderValues();
+        });
+        
+        document.getElementById('improve-btn').addEventListener('click', function() {
+            // Add a new connection in polycentric system
+            if (systemState.polyConnections.length < 30) {
+                const node1 = systemState.polyNodes[Math.floor(Math.random() * systemState.polyNodes.length)];
+                const node2 = systemState.polyNodes[Math.floor(Math.random() * systemState.polyNodes.length)];
+                
+                if (node1 !== node2) {
+                    const newConn = new Connection(node1, node2, 0.3 + Math.random() * 0.4);
+                    systemState.polyConnections.push(newConn);
+                    newConn.activate();
+                    node1.activate();
+                    node2.activate();
+                }
+            }
+            
+            // Pulse effect
+            this.classList.add('pulse');
+            setTimeout(() => this.classList.remove('pulse'), 1000);
+        });
+        
+        document.getElementById('destroy-btn').addEventListener('click', function() {
+            // Remove a random connection
+            if (systemState.polyConnections.length > 5) {
+                const index = Math.floor(Math.random() * systemState.polyConnections.length);
+                systemState.polyConnections.splice(index, 1);
+                
+                // Activate nearby nodes
+                const randomNode = systemState.polyNodes[Math.floor(Math.random() * systemState.polyNodes.length)];
+                randomNode.activate();
+            }
+            
+            // Pulse effect
+            this.classList.add('pulse');
+            setTimeout(() => this.classList.remove('pulse'), 1000);
+        });
+        
+        document.getElementById('add-btn').addEventListener('click', function() {
+            // Add a new node
+            if (systemState.polyNodes.length < 15) {
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.min(polyCanvas.width, polyCanvas.height) * (0.3 + Math.random() * 0.3);
+                const x = polyCanvas.width / 2 + Math.cos(angle) * distance;
+                const y = polyCanvas.height / 2 + Math.sin(angle) * distance;
+                
+                const hue = Math.floor(Math.random() * 360);
+                const color = `hsl(${hue}, 80%, 60%)`;
+                
+                const newNode = new Node(x, y, 15 + Math.random() * 10, color, 'agent');
+                systemState.polyNodes.push(newNode);
+                
+                // Connect to a random existing node
+                const randomNode = systemState.polyNodes[Math.floor(Math.random() * (systemState.polyNodes.length - 1))];
+                const newConn = new Connection(newNode, randomNode, 0.5);
+                systemState.polyConnections.push(newConn);
+                
+                newNode.activate();
+                randomNode.activate();
+                newConn.activate();
+            }
+            
+            // Pulse effect
+            this.classList.add('pulse');
+            setTimeout(() => this.classList.remove('pulse'), 1000);
+        });
+        
+        document.getElementById('reset-btn').addEventListener('click', function() {
+            // Reset to initial state
+            systemState.polyNodes = createPolycentricNodes();
+            systemState.polyConnections = createPolycentricConnections(systemState.polyNodes);
+            
+            // Pulse effect
+            this.classList.add('pulse');
+            setTimeout(() => this.classList.remove('pulse'), 1000);
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            polyCanvas.width = document.getElementById('polycentric-visual').clientWidth;
+            polyCanvas.height = document.getElementById('polycentric-visual').clientHeight;
+            
+            hierCanvas.width = document.getElementById('hierarchic-visual').clientWidth;
+            hierCanvas.height = document.getElementById('hierarchic-visual').clientHeight;
+            
+            systemState.polyNodes = createPolycentricNodes();
+            systemState.polyConnections = createPolycentricConnections(systemState.polyNodes);
+            systemState.hierNodes = createHierarchicalNodes();
+        });
+        
+        // Start animation
+        animate();
+        updateSliderValues();
+    </script>
+</body>
+</html>

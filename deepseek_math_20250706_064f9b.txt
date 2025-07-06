@@ -1,0 +1,1 @@
+V_{\text{net}} = \sum w_i \Phi_i(x) + \lambda \Omega(w)

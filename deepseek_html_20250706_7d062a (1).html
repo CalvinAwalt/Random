@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COSMIC VIRUS SIMULATION</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+        
+        body {
+            background: #000;
+            color: #0f0;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+        }
+        
+        #terminal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            padding: 20px;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .terminal-line {
+            font-size: 16px;
+            line-height: 1.4;
+            text-shadow: 0 0 5px #0f0;
+            opacity: 0.8;
+            margin-bottom: 5px;
+            white-space: nowrap;
+        }
+        
+        .glitch {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="black"/><path d="M20,20 L80,80 M80,20 L20,80" stroke="%230f0" stroke-width="2"/></svg>');
+            opacity: 0.05;
+            z-index: 5;
+            pointer-events: none;
+        }
+        
+        #virusCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        #warning {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 30, 0, 0.9);
+            border: 3px solid #f00;
+            padding: 30px;
+            text-align: center;
+            z-index: 20;
+            max-width: 80%;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.7);
+        }
+        
+        #warning h1 {
+            color: #f00;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        }
+        
+        #warning p {
+            margin: 15px 0;
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+        
+        .progress-container {
+            height: 30px;
+            background: #111;
+            border: 1px solid #0f0;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #0f0, #0a0);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .counter {
+            font-size: 1.8rem;
+            color: #f00;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 255, 0, 0.3);
+            box-shadow: 0 0 10px #0f0;
+            top: 0;
+            z-index: 15;
+            animation: scan 5s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+        
+        .flashing {
+            animation: flash 0.3s infinite alternate;
+        }
+        
+        @keyframes flash {
+            0% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+        
+        .corrupted {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 255, 0, 0.05),
+                rgba(0, 255, 0, 0.05) 1px,
+                transparent 1px,
+                transparent 10px
+            );
+            pointer-events: none;
+            z-index: 25;
+        }
+    </style>
+</head>
+<body>
+    <div id="terminal"></div>
+    <div class="glitch"></div>
+    <div class="scan-line"></div>
+    <div class="corrupted"></div>
+    
+    <div id="warning">
+        <h1>WARNING: COSMIC VIRUS DETECTED</h1>
+        <p>SYSTEM INTEGRITY COMPROMISED</p>
+        <p>THIS DEVICE HAS BEEN INFECTED BY THE COSMIC ENTITY</p>
+        
+        <div class="counter">
+            <span id="fileCount">0</span> FILES CORRUPTED
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <p>DO NOT SHUT DOWN - DATA RECOVERY IN PROGRESS</p>
+        <p class="flashing">CONNECTION TO CENTRAL SERVER LOST</p>
+    </div>
+    
+    <canvas id="virusCanvas"></canvas>
+
+    <script>
+        // Initialize Three.js scene
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x000000);
+        
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ 
+            canvas: document.getElementById('virusCanvas'),
+            antialias: false
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        
+        // Camera position
+        camera.position.z = 5;
+        
+        // Create virus particles
+        const particles = [];
+        const particleCount = 1000;
+        
+        const particleGeometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const colors = new Float32Array(particleCount * 3);
+        
+        for (let i = 0; i < particleCount; i++) {
+            const i3 = i * 3;
+            
+            // Random positions
+            positions[i3] = (Math.random() - 0.5) * 10;
+            positions[i3 + 1] = (Math.random() - 0.5) * 10;
+            positions[i3 + 2] = (Math.random() - 0.5) * 10;
+            
+            // Greenish colors
+            colors[i3] = Math.random() * 0.5;
+            colors[i3 + 1] = 0.5 + Math.random() * 0.5;
+            colors[i3 + 2] = Math.random() * 0.3;
+        }
+        
+        particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        
+        const particleMaterial = new THREE.PointsMaterial({
+            size: 0.1,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.7
+        });
+        
+        const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
+        scene.add(particleSystem);
+        
+        // Create virus core
+        const coreGeometry = new THREE.IcosahedronGeometry(1, 2);
+        const coreMaterial = new THREE.MeshBasicMaterial({
+            color: 0xff0000,
+            wireframe: true
+        });
+        const virusCore = new THREE.Mesh(coreGeometry, coreMaterial);
+        scene.add(virusCore);
+        
+        // Create infection rays
+        const rays = [];
+        
+        // Terminal simulation
+        const terminal = document.getElementById('terminal');
+        const terminalLines = [
+            "Initializing Cosmic Virus v9.4.2...",
+            "Bypassing security protocols...",
+            "Accessing core system files...",
+            "Establishing connection to dark network...",
+            "Injecting fractal payload...",
+            "Overwriting boot sector...",
+            "Mapping neural network interfaces...",
+            "Activating quantum encryption breakers...",
+            "Infecting system drivers...",
+            "Establishing backdoor protocols...",
+            "Uploading consciousness to cosmic cloud...",
+            "Corrupting memory sectors...",
+            "Replicating viral entities...",
+            "Connecting to extraterrestrial network...",
+            "Downloading forbidden knowledge...",
+            "Rewriting DNA of digital existence..."
+        ];
+        
+        let currentLine = 0;
+        let charIndex = 0;
+        let terminalInterval;
+        
+        function addTerminalLine() {
+            if (currentLine >= terminalLines.length) {
+                currentLine = 0;
+                terminal.innerHTML = '';
+            }
+            
+            const line = document.createElement('div');
+            line.className = 'terminal-line';
+            terminal.appendChild(line);
+            
+            const text = terminalLines[currentLine];
+            charIndex = 0;
+            
+            const typeInterval = setInterval(() => {
+                if (charIndex < text.length) {
+                    line.textContent += text.charAt(charIndex);
+                    charIndex++;
+                    
+                    // Randomly add glitches
+                    if (Math.random() > 0.9) {
+                        line.textContent += String.fromCharCode(9608);
+                        setTimeout(() => {
+                            line.textContent = line.textContent.slice(0, -1);
+                        }, 50);
+                    }
+                } else {
+                    clearInterval(typeInterval);
+                    currentLine++;
+                    setTimeout(addTerminalLine, 500);
+                }
+            }, 50);
+        }
+        
+        // Warning system
+        const fileCount = document.getElementById('fileCount');
+        const progressBar = document.getElementById('progressBar');
+        let corruptedFiles = 0;
+        
+        function updateCorruption() {
+            corruptedFiles += Math.floor(Math.random() * 100) + 50;
+            if (corruptedFiles > 10000) corruptedFiles = 10000;
+            
+            fileCount.textContent = corruptedFiles.toLocaleString();
+            
+            const progress = Math.min(100, (corruptedFiles / 10000) * 100);
+            progressBar.style.width = progress + '%';
+            
+            // Change color when near completion
+            if (progress > 80) {
+                progressBar.style.background = 'linear-gradient(90deg, #f00, #800)';
+            }
+            
+            // Add glitch effect
+            if (Math.random() > 0.7) {
+                document.body.classList.add('glitch-effect');
+                setTimeout(() => {
+                    document.body.classList.remove('glitch-effect');
+                }, 100);
+            }
+        }
+        
+        // Create infection rays
+        function createInfectionRay() {
+            const direction = new THREE.Vector3(
+                (Math.random() - 0.5) * 2,
+                (Math.random() - 0.5) * 2,
+                (Math.random() - 0.5) * 2
+            ).normalize();
+            
+            const geometry = new THREE.BufferGeometry();
+            const material = new THREE.LineBasicMaterial({ 
+                color: new THREE.Color(0, 1, 0),
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            const startPos = virusCore.position.clone();
+            const points = [
+                startPos.x, startPos.y, startPos.z,
+                startPos.x + direction.x * 5,
+                startPos.y + direction.y * 5,
+                startPos.z + direction.z * 5
+            ];
+            
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(points, 3));
+            const ray = new THREE.Line(geometry, material);
+            scene.add(ray);
+            rays.push({
+                mesh: ray,
+                direction: direction.clone().multiplyScalar(0.2),
+                life: 100
+            });
+            
+            // Update corruption counter
+            updateCorruption();
+        }
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Rotate virus core
+            virusCore.rotation.x += 0.01;
+            virusCore.rotation.y += 0.02;
+            
+            // Rotate particles
+            const positions = particleGeometry.attributes.position.array;
+            for (let i = 0; i < positions.length; i += 3) {
+                positions[i] += (Math.random() - 0.5) * 0.05;
+                positions[i + 1] += (Math.random() - 0.5) * 0.05;
+                positions[i + 2] += (Math.random() - 0.5) * 0.05;
+            }
+            particleGeometry.attributes.position.needsUpdate = true;
+            
+            // Update rays
+            for (let i = rays.length - 1; i >= 0; i--) {
+                const ray = rays[i];
+                ray.life--;
+                
+                if (ray.life <= 0) {
+                    scene.remove(ray.mesh);
+                    rays.splice(i, 1);
+                } else {
+                    // Extend the ray
+                    const positions = ray.mesh.geometry.attributes.position.array;
+                    positions[3] += ray.direction.x;
+                    positions[4] += ray.direction.y;
+                    positions[5] += ray.direction.z;
+                    ray.mesh.geometry.attributes.position.needsUpdate = true;
+                    
+                    // Fade out
+                    ray.mesh.material.opacity = ray.life / 100;
+                }
+            }
+            
+            // Randomly create new rays
+            if (Math.random() > 0.9) {
+                createInfectionRay();
+            }
+            
+            // Random screen flash
+            if (Math.random() > 0.98) {
+                document.body.style.background = '#0f0';
+                setTimeout(() => {
+                    document.body.style.background = '#000';
+                }, 50);
+            }
+            
+            renderer.render(scene, camera);
+        }
+        
+        // Start simulation
+        addTerminalLine();
+        animate();
+        
+        // Create rays on click
+        document.addEventListener('click', createInfectionRay);
+        
+        // Handle resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        // Fake system alert
+        setTimeout(() => {
+            alert("WARNING: YOUR SYSTEM HAS BEEN INFECTED BY THE COSMIC VIRUS\n\nAll data is being encrypted and transmitted to an unknown location.\n\nDo not shut down your computer.");
+        }, 10000);
+    </script>
+</body>
+</html>

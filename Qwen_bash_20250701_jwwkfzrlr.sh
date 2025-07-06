@@ -1,0 +1,1 @@
+mkdir -p frontend/src/components frontend/src/styles frontend/public

@@ -1,0 +1,1 @@
+\oint_{\infty} (\delta U \otimes \delta M \otimes \delta Q) / \varepsilon

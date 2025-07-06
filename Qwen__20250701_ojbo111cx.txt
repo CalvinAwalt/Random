@@ -1,0 +1,38 @@
+cosmicmind/
+├── frontend/
+│   ├── public/
+│   │   └── index.html
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── NeuralVisualizer.tsx
+│   │   │   ├── MetricsPanel.tsx
+│   │   │   ├── ControlPanel.tsx
+│   │   │   └── ModuleSection.tsx
+│   │   ├── App.tsx
+│   │   ├── main.tsx
+│   │   └── styles/
+│   │       └── global.css
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── vite.config.ts
+│
+├── backend/
+│   ├── ai_core/
+│   │   ├── __init__.py
+│   │   ├── quantum_net.py
+│   │   ├── self_modifier.py
+│   │   ├── ethics_engine.py
+│   │   └── governance_engine.py
+│   ├── api/
+│   │   ├── __init__.py
+│   │   ├── routes.py
+│   │   └── ws_manager.py
+│   ├── data/
+│   │   └── synthetic_data.py
+│   ├── config.py
+│   ├── main.py
+│   ├── requirements.txt
+│   └── Dockerfile
+│
+├── shared/
+│

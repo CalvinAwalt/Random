@@ -1,0 +1,29 @@
+// WebSocket connection
+const ws = new WebSocket('ws://localhost:8000/ws');
+
+// Listen for messages
+ws.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    
+    if (data.type === 'metrics_update') {
+        document.getElementById('intelligence').textContent = data.intelligence.toFixed(2);
+        document.getElementById('ethical').textContent = `${Math.floor(data.ethical * 100)}%`;
+        document.getElementById('complexity').textContent = `${Math.floor(data.complexity / 1000)}K`;
+        document.getElementById('energy').textContent = `${Math.floor(data.energy * 100)}%`;
+    }
+};
+
+// Send command to backend
+function sendCommand(command) {
+    if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ command }));
+    } else {
+        setTimeout(() => sendCommand(command), 100);
+    }
+}
+
+// Attach event listeners
+document.getElementById('learnControl').addEventListener('click', () => sendCommand('accelerate_learning'));
+document.getElementById('optimizeControl').addEventListener('click', () => sendCommand('self_optimize'));
+document.getElementById('ethicalControl').addEventListener('click', () => sendCommand('validate_ethics'));
+document.getElementById('transformControl').addEventListener('click', () => sendCommand('transform_architecture'));

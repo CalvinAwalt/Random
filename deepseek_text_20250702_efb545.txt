@@ -1,0 +1,1 @@
+FractalGov_C(L)=C₀e^{kL}_k=1.58496

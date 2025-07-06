@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Universe Simulation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone.js/14.8.49/Tone.min.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: radial-gradient(circle, #000022, #000000);
+            color: #e0f0ff;
+            min-height: 100vh;
+            overflow: hidden;
+            line-height: 1.6;
+        }
+        
+        .universe-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: radial-gradient(circle at center, #000044 0%, #000000 70%);
+        }
+        
+        #stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .header-container {
+            position: relative;
+            z-index: 10;
+            padding: 1.5rem;
+            text-align: center;
+            background: rgba(10, 10, 30, 0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid #00FF00;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, #6a4fff, #00e5ff, #4aff72);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            max-width: 800px;
+            margin: 0 auto;
+            background: linear-gradient(90deg, #e0f0ff, #a0b0ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .creator {
+            margin-top: 0.5rem;
+            color: #00e5ff;
+            font-size: 0.9rem;
+        }
+        
+        .main-container {
+            display: flex;
+            max-width: 2000px;
+            margin: 0 auto;
+            height: calc(100vh - 140px);
+        }
+        
+        .simulation-panel {
+            flex: 3;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #cosmicCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .control-panel {
+            flex: 1;
+            min-width: 400px;
+            background: rgba(15, 15, 35, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 1.2rem;
+            overflow-y: auto;
+            border-left: 2px solid #00FF00;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .panel-section {
+            background: rgba(30, 30, 60, 0.6);
+            border-radius: 15px;
+            padding: 1.2rem;
+            margin-bottom: 1.2rem;
+            border: 1px solid rgba(0, 255, 0, 0.3);
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            color: #00e5ff;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            color: #6a4fff;
+        }
+        
+        .formula {
+            font-size: 1rem;
+            margin: 0.8rem 0;
+            padding: 0.8rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            font-family: monospace;
+        }
+        
+        .control-group {
+            margin-bottom: 1rem;
+        }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.4rem;
+            color: #a0b0ff;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #1a1c4e, #6a4fff);
+            outline: none;
+        }
+        
+        .data-display {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 0.8rem;
+        }
+        
+        .data-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.7rem;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+        
+        .data-label {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-bottom: 0.2rem;
+        }
+        
+        .data-value {
+            font-size: 1.1rem;
+            color: #00e5ff;
+        }
+        
+        .quantum-states {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 0.8rem;
+        }
+        
+        .state-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            background: rgba(74, 111, 255, 0.2);
+            border: 1px solid #4a6fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #e0f0ff;
+        }
+        
+        .state-btn.active {
+            background: #4a6fff;
+        }
+        
+        .chart-container {
+            height: 180px;
+            margin-top: 0.8rem;
+        }
+        
+        .simulation-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 1.2rem;
+        }
+        
+        .control-btn {
+            flex: 1;
+            padding: 0.7rem;
+            border-radius: 8px;
+            background: rgba(106, 79, 255, 0.5);
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .control-btn:hover {
+            background: rgba(106, 79, 255, 0.8);
+            transform: translateY(-2px);
+        }
+        
+        .control-btn.active {
+            background: #00e5ff;
+            color: #0a0a1a;
+        }
+        
+        .signature {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 0.8rem;
+            border-top: 1px solid rgba(106, 79, 255, 0.3);
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+        
+        .creator-name {
+            font-family: 'Brush Script MT', cursive;
+            font-size: 1.7rem;
+            color: #00e5ff;
+            margin: 0.4rem 0;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            background: rgba(15, 15, 35, 0.9);
+            border-left: 4px solid #00FF00;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            transform: translateX(120%);
+            transition: transform 0.5s ease;
+            z-index: 1000;
+            max-width: 300px;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .audio-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(15, 15, 35, 0.8);
+            border: 1px solid #00FF00;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 0 12px rgba(0, 255, 0, 0.5);
+        }
+        
+        .audio-control i {
+            font-size: 1.3rem;
+            color: #00FF00;
+        }
+        
+        .time-display {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(15, 15, 35, 0.7);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #6a4fff;
+            font-family: monospace;
+            font-size: 1.1rem;
+            z-index: 100;
+        }
+        
+        .galaxy-label {
+            position: absolute;
+            color: #a0b0ff;
+            font-size: 0.7rem;
+            pointer-events: none;
+            text-shadow: 0 0 5px rgba(0,0,0,0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="universe-bg"></div>
+    <div id="stars"></div>
+    
+    <div class="notification" id="notification">
+        Universe simulation initialized. Time: 0 years
+    </div>
+    
+    <div class="audio-control" id="audioControl">
+        <i class="fas fa-volume-up"></i>
+    </div>
+    
+    <div class="time-display" id="timeDisplay">
+        Time: 0 years
+    </div>
+    
+    <div class="header-container">
+        <h1>Cosmic Universe Simulation</h1>
+        <p class="subtitle">Galaxy Formation × Cosmic Expansion × Dark Matter</p>
+        <p class="creator">Interactive Universe Model v1.0</p>
+    </div>
+    
+    <div class="main-container">
+        <div class="simulation-panel">
+            <canvas id="cosmicCanvas"></canvas>
+        </div>
+        
+        <div class="control-panel">
+            <!-- Universe Parameters -->
+            <div class="panel-section">
+                <div class="section-title">
+                    <i class="fas fa-atom"></i>
+                    <span>Universe Parameters</span>
+                </div>
+                
+                <div class="formula">
+                    \[
+                    H_0 = \sqrt{\frac{8\pi G}{3}\rho} 
+                    \]
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Dark Matter</span>
+                        <span id="darkMatterValue">0.85</span>
+                    </div>
+                    <input type="range" id="darkMatterSlider" min="0" max="1" step="0.01" value="0.85">
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Dark Energy</span>
+                        <span id="darkEnergyValue">0.72</span>
+                    </div>
+                    <input type="range" id="darkEnergySlider" min="0" max="1" step="0.01" value="0.72">
+                </div>
+                
+                <div class="data-display">
+                    <div class="data-item">
+                        <div class="data-label">Expansion Rate</div>
+                        <div class="data-value" id="expansionValue">67.4 km/s/Mpc</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Age</div>
+                        <div class="data-value" id="ageValue">13.8 Gyr</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Galaxy Formation -->
+            <div class="panel-section">
+                <div class="section-title">
+                    <i class="fas fa-stars"></i>
+                    <span>Galaxy Formation</span>
+                </div>
+                
+                <div class="formula">
+                    \[
+                    \frac{dM}{dt} = \rho_{gas} \times v_{coll} \times A
+                    \]
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Star Formation</span>
+                        <span id="starFormationValue">0.68</span>
+                    </div>
+                    <input type="range" id="starFormationSlider" min="0" max="1" step="0.01" value="0.68">
+                </div>
+                
+                <div class="quantum-states">
+                    <div class="state-btn active" data-state="elliptical">Elliptical</div>
+                    <div class="state-btn" data-state="spiral">Spiral</div>
+                    <div class="state-btn" data-state="irregular">Irregular</div>
+                </div>
+                
+                <div class="data-display">
+                    <div class="data-item">
+                        <div class="data-label">Galaxies</div>
+                        <div class="data-value" id="galaxyCountValue">2.0e12</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Stars</div>
+                        <div class="data-value" id="starCountValue">1.0e24</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cosmic Timeline -->
+            <div class="panel-section">
+                <div class="section-title">
+                    <i class="fas fa-hourglass-half"></i>
+                    <span>Cosmic Timeline</span>
+                </div>
+                
+                <div class="formula">
+                    \[
+                    t = \frac{1}{H_0}\int_0^1 \frac{da}{\sqrt{\Omega_{m}a^{-3} + \Omega_{\Lambda}}
+                    \]
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Time Scale</span>
+                        <span id="timeScaleValue">1x</span>
+                    </div>
+                    <input type="range" id="timeScaleSlider" min="0" max="2" step="0.1" value="1">
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="timelineChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Simulation Control -->
+            <div class="panel-section">
+                <div class="section-title">
+                    <i class="fas fa-play-circle"></i>
+                    <span>Simulation Control</span>
+                </div>
+                
+                <div class="simulation-controls">
+                    <button class="control-btn" id="startBtn">Start</button>
+                    <button class="control-btn" id="pauseBtn">Pause</button>
+                    <button class="control-btn active" id="resetBtn">Reset</button>
+                </div>
+                
+                <div class="data-display">
+                    <div class="data-item">
+                        <div class="data-label">Current Time</div>
+                        <div class="data-value" id="currentTimeValue">0</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Scale Factor</div>
+                        <div class="data-value" id="scaleValue">1.0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="signature">
+                <p>Cosmic Universe Simulation - ΛCDM Model</p>
+                <p class="creator-name">Astrophysics Simulator</p>
+                <p>Based on standard cosmological model</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create starfield background
+        const starsContainer = document.getElementById('stars');
+        const starsCount = 1500;
+        
+        for (let i = 0; i < starsCount; i++) {
+            const star = document.createElement('div');
+            star.style.position = 'absolute';
+            star.style.width = `${Math.random() * 3}px`;
+            star.style.height = star.style.width;
+            star.style.backgroundColor = 'white';
+            star.style.borderRadius = '50%';
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.opacity = Math.random() * 0.8 + 0.2;
+            star.style.animation = `twinkle ${Math.random() * 5 + 3}s infinite alternate`;
+            starsContainer.appendChild(star);
+        }
+        
+        // Add CSS for twinkling animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes twinkle {
+                0% { opacity: 0.2; }
+                100% { opacity: ${Math.random() * 0.5 + 0.5}; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Audio context management
+        let audioEnabled = false;
+        const audioControl = document.getElementById('audioControl');
+        
+        audioControl.addEventListener('click', function() {
+            audioEnabled = !audioEnabled;
+            this.querySelector('i').className = audioEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+        });
+        
+        // Notification system
+        const notification = document.getElementById('notification');
+        
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Initialize Three.js
+        const canvas = document.getElementById('cosmicCanvas');
+        const renderer = new THREE.WebGLRenderer({ 
+            canvas, 
+            antialias: true, 
+            alpha: true,
+            powerPreference: "high-performance"
+        });
+        renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(60, canvas.offsetWidth / canvas.offsetHeight, 0.1, 100000);
+        camera.position.z = 2000;
+        
+        // Create universe simulation parameters
+        const universeParams = {
+            darkMatter: 0.85,
+            darkEnergy: 0.72,
+            starFormationRate: 0.68,
+            galaxyType: 'elliptical',
+            time: 0,
+            scaleFactor: 1.0,
+            expansionRate: 67.4,
+            running: false,
+            timeScale: 1
+        };
+        
+        // Create galaxy clusters
+        const galaxies = new THREE.Group();
+        scene.add(galaxies);
+        
+        // Create galaxy labels container
+        const galaxyLabels = document.createElement('div');
+        galaxyLabels.style.position = 'absolute';
+        galaxyLabels.style.top = '0';
+        galaxyLabels.style.left = '0';
+        galaxyLabels.style.width = '100%';
+        galaxyLabels.style.height = '100%';
+        galaxyLabels.style.pointerEvents = 'none';
+        document.querySelector('.simulation-panel').appendChild(galaxyLabels);
+        
+        // Galaxy names
+        const galaxyNames = [
+            "Andromeda", "Triangulum", "Whirlpool", "Sombrero", "Pinwheel",
+            "Centaurus A", "Bode's", "Cartwheel", "Sunflower", "Black Eye",
+            "Cigar", "Tadpole", "Hoag's Object", "Butterfly", "Fireworks"
+        ];
+        
+        // Create 100 galaxies
+        const galaxyCount = 100;
+        for (let i = 0; i < galaxyCount; i++) {
+            const galaxyGeometry = new THREE.SphereGeometry(20, 12, 12);
+            const galaxyMaterial = new THREE.MeshBasicMaterial({
+                color: new THREE.Color(Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.3, Math.random() * 0.5 + 0.5),
+                transparent: true,
+                opacity: 0.9
+            });
+            
+            const galaxy = new THREE.Mesh(galaxyGeometry, galaxyMaterial);
+            
+            // Position in a cosmological structure formation pattern
+            const clusterSize = 500;
+            const clusterCount = 5;
+            const clusterIndex = Math.floor(Math.random() * clusterCount);
+            const angle = Math.random() * Math.PI * 2;
+            const radius = clusterIndex * 1000 + Math.random() * clusterSize;
+            const height = (Math.random() - 0.5) * 300;
+            
+            galaxy.position.x = Math.cos(angle) * radius;
+            galaxy.position.y = height;
+            galaxy.position.z = Math.sin(angle) * radius;
+            
+            // Store original position for expansion calculations
+            galaxy.userData = {
+                originalPosition: new THREE.Vector3(galaxy.position.x, galaxy.position.y, galaxy.position.z),
+                name: galaxyNames[Math.floor(Math.random() * galaxyNames.length)] + " " + (i+1)
+            };
+            
+            // Create galaxy label
+            const label = document.createElement('div');
+            label.className = 'galaxy-label';
+            label.textContent = galaxy.userData.name;
+            galaxyLabels.appendChild(label);
+            galaxy.userData.label = label;
+            
+            galaxies.add(galaxy);
+        }
+        
+        // Create stars in the galaxies
+        const stars = new THREE.Group();
+        scene.add(stars);
+        
+        // Create cosmic background radiation
+        const cbrParticles = new THREE.Group();
+        scene.add(cbrParticles);
+        
+        // Create CMB particles
+        const cmbCount = 2000;
+        for (let i = 0; i < cmbCount; i++) {
+            const geometry = new THREE.SphereGeometry(1, 6, 6);
+            const material = new THREE.MeshBasicMaterial({
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.05
+            });
+            
+            const particle = new THREE.Mesh(geometry, material);
+            
+            // Position uniformly in space
+            particle.position.set(
+                (Math.random() - 0.5) * 5000,
+                (Math.random() - 0.5) * 5000,
+                (Math.random() - 0.5) * 5000
+            );
+            
+            cbrParticles.add(particle);
+        }
+        
+        // Create timeline chart
+        const ctx = document.getElementById('timelineChart').getContext('2d');
+        const timelineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Big Bang', 'Recombination', 'Galaxy Formation', 'Present'],
+                datasets: [{
+                    label: 'Scale Factor',
+                    data: [0.001, 0.01, 0.1, 1.0],
+                    borderColor: '#6a4fff',
+                    backgroundColor: 'rgba(106, 79, 255, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        display: true,
+                        min: 0,
+                        grid: {
+                            color: 'rgba(255,255,255,0.1)'
+                        },
+                        ticks: {
+                            color: '#a0b0ff'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255,255,255,0.1)'
+                        },
+                        ticks: {
+                            color: '#a0b0ff'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (universeParams.running) {
+                // Advance time based on time scale
+                universeParams.time += universeParams.timeScale * 1000000; // 1 million years per frame
+                
+                // Update time display
+                document.getElementById('currentTimeValue').textContent = formatTime(universeParams.time);
+                document.getElementById('timeDisplay').textContent = `Time: ${formatTime(universeParams.time)}`;
+                
+                // Apply expansion
+                const expansionFactor = 1 + universeParams.darkEnergy * 0.0001;
+                universeParams.scaleFactor *= expansionFactor;
+                
+                // Update scale display
+                document.getElementById('scaleValue').textContent = universeParams.scaleFactor.toFixed(4);
+                
+                // Update galaxy positions
+                galaxies.children.forEach(galaxy => {
+                    // Apply expansion (Hubble flow)
+                    const originalPos = galaxy.userData.originalPosition;
+                    galaxy.position.x = originalPos.x * universeParams.scaleFactor;
+                    galaxy.position.y = originalPos.y * universeParams.scaleFactor;
+                    galaxy.position.z = originalPos.z * universeParams.scaleFactor;
+                    
+                    // Rotate galaxies
+                    galaxy.rotation.y += 0.001;
+                    
+                    // Update label position
+                    updateGalaxyLabelPosition(galaxy);
+                });
+                
+                // Rotate the entire galaxy group
+                galaxies.rotation.y += 0.0001;
+            }
+            
+            // Render scene
+            renderer.render(scene, camera);
+        }
+        
+        // Format time for display
+        function formatTime(time) {
+            if (time < 1000000) {
+                return Math.round(time) + ' years';
+            } else if (time < 1000000000) {
+                return (time / 1000000).toFixed(1) + ' million years';
+            } else {
+                return (time / 1000000000).toFixed(1) + ' billion years';
+            }
+        }
+        
+        // Update galaxy label position
+        function updateGalaxyLabelPosition(galaxy) {
+            const vector = new THREE.Vector3();
+            vector.setFromMatrixPosition(galaxy.matrixWorld);
+            vector.project(camera);
+            
+            const x = (vector.x * 0.5 + 0.5) * canvas.offsetWidth;
+            const y = (-vector.y * 0.5 + 0.5) * canvas.offsetHeight;
+            
+            if (vector.z > 0 && vector.z < 1) {
+                galaxy.userData.label.style.display = 'block';
+                galaxy.userData.label.style.left = `${x}px`;
+                galaxy.userData.label.style.top = `${y}px`;
+            } else {
+                galaxy.userData.label.style.display = 'none';
+            }
+        }
+        
+        // Initialize UI interactions
+        document.querySelectorAll('.state-btn').forEach(state => {
+            state.addEventListener('click', function() {
+                document.querySelectorAll('.state-btn').forEach(s => s.classList.remove('active'));
+                this.classList.add('active');
+                universeParams.galaxyType = this.getAttribute('data-state');
+                showNotification(`Galaxy type changed to: ${universeParams.galaxyType}`);
+            });
+        });
+        
+        document.getElementById('startBtn').addEventListener('click', function() {
+            universeParams.running = true;
+            this.classList.add('active');
+            document.getElementById('pauseBtn').classList.remove('active');
+            showNotification('Simulation started');
+        });
+        
+        document.getElementById('pauseBtn').addEventListener('click', function() {
+            universeParams.running = false;
+            this.classList.add('active');
+            document.getElementById('startBtn').classList.remove('active');
+            showNotification('Simulation paused');
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', function() {
+            universeParams.running = false;
+            universeParams.time = 0;
+            universeParams.scaleFactor = 1.0;
+            document.getElementById('currentTimeValue').textContent = '0';
+            document.getElementById('scaleValue').textContent = '1.0';
+            document.getElementById('timeDisplay').textContent = 'Time: 0 years';
+            document.getElementById('startBtn').classList.remove('active');
+            document.getElementById('pauseBtn').classList.remove('active');
+            this.classList.add('active');
+            showNotification('Simulation reset');
+        });
+        
+        // Initialize all sliders
+        const sliders = [
+            'darkMatterSlider', 'darkEnergySlider', 'starFormationSlider', 'timeScaleSlider'
+        ];
+        
+        sliders.forEach(sliderId => {
+            const slider = document.getElementById(sliderId);
+            slider.addEventListener('input', () => {
+                const valueSpan = document.getElementById(sliderId.replace('Slider', 'Value'));
+                valueSpan.textContent = parseFloat(slider.value).toFixed(2);
+                
+                // Update parameters
+                if (sliderId === 'darkMatterSlider') {
+                    universeParams.darkMatter = parseFloat(slider.value);
+                } else if (sliderId === 'darkEnergySlider') {
+                    universeParams.darkEnergy = parseFloat(slider.value);
+                } else if (sliderId === 'starFormationSlider') {
+                    universeParams.starFormationRate = parseFloat(slider.value);
+                } else if (sliderId === 'timeScaleSlider') {
+                    universeParams.timeScale = parseFloat(slider.value);
+                }
+            });
+        });
+        
+        // Position galaxy labels initially
+        function positionGalaxyLabels() {
+            galaxies.children.forEach(galaxy => {
+                updateGalaxyLabelPosition(galaxy);
+            });
+        }
+        
+        // Start simulation
+        animate();
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = canvas.offsetWidth / canvas.offsetHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+            positionGalaxyLabels();
+        });
+        
+        // Initial notification
+        setTimeout(() => {
+            showNotification('Universe simulation initialized. Press Start to begin cosmic evolution.');
+            positionGalaxyLabels();
+        }, 1000);
+    </script>
+</body>
+</html>

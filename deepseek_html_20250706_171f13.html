@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Explorer: Beyond the Observable Universe</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: radial-gradient(circle at center, #0c0b20 0%, #050418 100%);
+            color: #e6f7ff;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            height: 100vh;
+        }
+        
+        @media (max-width: 1100px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .visualization {
+            position: relative;
+        }
+        
+        #universeCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .control-panel {
+            background: rgba(10, 20, 50, 0.9);
+            padding: 25px;
+            overflow-y: auto;
+            border-left: 1px solid rgba(100, 180, 255, 0.3);
+            box-shadow: -5px 0 25px rgba(0, 50, 150, 0.3);
+        }
+        
+        .panel-title {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: #4dccff;
+            text-align: center;
+            border-bottom: 2px solid rgba(77, 204, 255, 0.5);
+            padding-bottom: 15px;
+        }
+        
+        .formula-display {
+            background: rgba(0, 30, 60, 0.7);
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Cambria Math', serif;
+            font-size: 1.4rem;
+            text-align: center;
+            margin: 20px 0;
+            border: 1px solid rgba(0, 200, 255, 0.3);
+            box-shadow: 0 0 25px rgba(0, 200, 255, 0.3);
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .control-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #0072ff, #00c6ff);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 114, 255, 0.4);
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 114, 255, 0.6);
+        }
+        
+        .control-btn:active {
+            transform: translateY(1px);
+        }
+        
+        .reset-btn {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
+        }
+        
+        .metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .metric-card {
+            background: rgba(30, 50, 100, 0.7);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 10px 0;
+            background: linear-gradient(45deg, #00c9ff, #92fe9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: #a0d2ff;
+        }
+        
+        .chart-container {
+            height: 250px;
+            margin: 25px 0;
+        }
+        
+        .cosmic-principle {
+            background: rgba(30, 50, 100, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(100, 200, 255, 0.3);
+        }
+        
+        .principle-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #4dccff;
+            display: flex;
+            align-items: center;
+        }
+        
+        .principle-title i {
+            margin-right: 12px;
+            font-size: 1.5rem;
+        }
+        
+        .principle-content {
+            color: #c2e5ff;
+            line-height: 1.6;
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.7; }
+        }
+        
+        .pulse {
+            animation: pulse 3s infinite ease-in-out;
+        }
+        
+        .universe-boundary {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            border: 2px dashed rgba(77, 204, 255, 0.5);
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .control-panel {
+                border-left: none;
+                border-top: 1px solid rgba(100, 180, 255, 0.3);
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="visualization">
+            <canvas id="universeCanvas"></canvas>
+            <div class="universe-boundary"></div>
+        </div>
+        
+        <div class="control-panel">
+            <h2 class="panel-title">Beyond the Cosmic Horizon</h2>
+            
+            <div class="formula-display">
+                ∮<sub>∞</sub> (δU ⊗ δM ⊗ δQ) / ε
+            </div>
+            
+            <p style="text-align: center; color: #a0d2ff; margin-bottom: 20px;">
+                Simulating hypothetical structures beyond the observable universe
+            </p>
+            
+            <div class="controls">
+                <button class="control-btn" id="exploreBtn">
+                    <i class="fas fa-rocket"></i> Explore Beyond
+                </button>
+                <button class="control-btn reset-btn" id="resetBtn">
+                    <i class="fas fa-sync"></i> Reset
+                </button>
+                <button class="control-btn" id="multiverseBtn">
+                    <i class="fas fa-sitemap"></i> Multiverse View
+                </button>
+                <button class="control-btn" id="quantumBtn">
+                    <i class="fas fa-atom"></i> Quantum Foam
+                </button>
+            </div>
+            
+            <div class="metrics">
+                <div class="metric-card">
+                    <div class="metric-value" id="mappedValue">0.0%</div>
+                    <div class="metric-label">Beyond Mapped</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="structuresValue">∞</div>
+                    <div class="metric-label">Hypothetical Structures</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="darkEnergyValue">72%</div>
+                    <div class="metric-label">Dark Energy</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="dimensionsValue">11</div>
+                    <div class="metric-label">Dimensions</div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="cosmicChart"></canvas>
+            </div>
+            
+            <div class="cosmic-principle">
+                <div class="principle-title">
+                    <i class="fas fa-project-diagram"></i> Multiverse Hypothesis
+                </div>
+                <div class="principle-content">
+                    Beyond our observable universe may exist an infinite multiverse with bubble universes governed by different physical laws: 
+                    δU (Universe Constants), δM (Multiverse Topology), and δQ (Quantum Fluctuations).
+                </div>
+            </div>
+            
+            <div class="cosmic-principle">
+                <div class="principle-title">
+                    <i class="fas fa-expand-arrows-alt"></i> Fractal Cosmology
+                </div>
+                <div class="principle-content">
+                    The cosmic structure follows fractal distribution at all scales: F(r) ∝ r<sup>-D</sup> where D ≈ 2.7. 
+                    This suggests the universe may be part of an infinite fractal hierarchy extending beyond observation.
+                </div>
+            </div>
+            
+            <div class="cosmic-principle">
+                <div class="principle-title">
+                    <i class="fas fa-cogs"></i> Quantum Foam
+                </div>
+                <div class="principle-content">
+                    At the Planck scale (10<sup>-35</sup> m), spacetime may be composed of quantum foam: 
+                    Δx Δt ≥ ħG/c<sup>4</sup>. At cosmic boundaries, this foam could manifest as topological fluctuations.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Three.js scene
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x050418);
+        scene.fog = new THREE.FogExp2(0x0c0b20, 0.015);
+        
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 3000);
+        const renderer = new THREE.WebGLRenderer({ 
+            canvas: document.getElementById('universeCanvas'),
+            antialias: true
+        });
+        renderer.setSize(document.querySelector('.visualization').clientWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        
+        // Camera position
+        camera.position.z = 150;
+        camera.position.y = 50;
+        
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0x333366, 1.5);
+        scene.add(ambientLight);
+        
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        directionalLight.position.set(10, 10, 10);
+        scene.add(directionalLight);
+        
+        const pointLight = new THREE.PointLight(0x4dccff, 2, 300);
+        pointLight.position.set(20, 20, 20);
+        scene.add(pointLight);
+        
+        // Create known universe (inside the boundary)
+        const knownUniverse = new THREE.Group();
+        scene.add(knownUniverse);
+        
+        // Create stars for known universe
+        const stars = [];
+        const starCount = 1000;
+        
+        for (let i = 0; i < starCount; i++) {
+            const geometry = new THREE.SphereGeometry(0.1 + Math.random() * 0.5, 8, 8);
+            const material = new THREE.MeshBasicMaterial({ 
+                color: new THREE.Color(`hsl(${Math.random() * 60 + 200}, 80%, ${70 + Math.random() * 30}%)`)
+            });
+            const star = new THREE.Mesh(geometry, material);
+            
+            // Position within known universe boundary (radius 100)
+            const radius = Math.random() * 80;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            
+            star.position.set(
+                radius * Math.sin(phi) * Math.cos(theta),
+                radius * Math.sin(phi) * Math.sin(theta),
+                radius * Math.cos(phi)
+            );
+            
+            knownUniverse.add(star);
+            stars.push(star);
+        }
+        
+        // Create galaxies for known universe
+        const galaxies = [];
+        const galaxyCount = 30;
+        
+        for (let i = 0; i < galaxyCount; i++) {
+            const galaxyGroup = new THREE.Group();
+            
+            // Galaxy position within known universe
+            const radius = Math.random() * 70;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            
+            galaxyGroup.position.set(
+                radius * Math.sin(phi) * Math.cos(theta),
+                radius * Math.sin(phi) * Math.sin(theta),
+                radius * Math.cos(phi)
+            );
+            
+            // Create galaxy core
+            const coreGeometry = new THREE.SphereGeometry(1, 16, 16);
+            const coreMaterial = new THREE.MeshBasicMaterial({ 
+                color: new THREE.Color(`hsl(${Math.random() * 360}, 80%, 60%)`),
+                emissive: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 20%)`)
+            });
+            const core = new THREE.Mesh(coreGeometry, coreMaterial);
+            galaxyGroup.add(core);
+            
+            // Create spiral arms
+            const armCount = 2 + Math.floor(Math.random() * 3);
+            for (let j = 0; j < armCount; j++) {
+                const armAngle = (j / armCount) * Math.PI * 2;
+                const armLength = 5 + Math.random() * 3;
+                
+                for (let k = 0; k < 30; k++) {
+                    const distance = (k / 30) * armLength;
+                    const angle = armAngle + (k / 5) * (Math.PI / 4);
+                    const height = (Math.random() - 0.5) * 2;
+                    
+                    const starGeometry = new THREE.SphereGeometry(0.2 + Math.random() * 0.3, 8, 8);
+                    const starMaterial = new THREE.MeshBasicMaterial({ 
+                        color: new THREE.Color(`hsl(${200 + j * 40}, 80%, ${70 + Math.random() * 30}%)`)
+                    });
+                    const star = new THREE.Mesh(starGeometry, starMaterial);
+                    
+                    star.position.set(
+                        Math.cos(angle) * distance,
+                        height,
+                        Math.sin(angle) * distance
+                    );
+                    
+                    galaxyGroup.add(star);
+                }
+            }
+            
+            knownUniverse.add(galaxyGroup);
+            galaxies.push(galaxyGroup);
+        }
+        
+        // Create cosmic boundary (edge of observable universe)
+        const boundaryGeometry = new THREE.SphereGeometry(100, 32, 32);
+        const boundaryMaterial = new THREE.MeshBasicMaterial({
+            color: 0x4dccff,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.2
+        });
+        const cosmicBoundary = new THREE.Mesh(boundaryGeometry, boundaryMaterial);
+        scene.add(cosmicBoundary);
+        
+        // Create fractal multiverse structures beyond the boundary
+        const multiverse = new THREE.Group();
+        scene.add(multiverse);
+        
+        // Fractal parameters
+        const fractalLevels = 4;
+        const fractalScale = 0.5;
+        const fractalRotation = Math.PI / 4;
+        
+        // Recursive function to create fractal structures
+        function createFractal(parent, level, position, scale) {
+            if (level <= 0) return;
+            
+            // Create a universe bubble
+            const bubbleGeometry = new THREE.SphereGeometry(scale * 20, 16, 16);
+            const bubbleMaterial = new THREE.MeshBasicMaterial({
+                color: new THREE.Color(`hsl(${280 + level * 20}, 70%, 50%)`),
+                wireframe: true,
+                transparent: true,
+                opacity: 0.3 + level * 0.1
+            });
+            const bubble = new THREE.Mesh(bubbleGeometry, bubbleMaterial);
+            bubble.position.copy(position);
+            parent.add(bubble);
+            
+            // Create quantum foam particles inside the bubble
+            for (let i = 0; i < 50; i++) {
+                const particleGeometry = new THREE.SphereGeometry(0.1 + Math.random() * scale * 2, 8, 8);
+                const particleMaterial = new THREE.MeshBasicMaterial({
+                    color: new THREE.Color(`hsl(${200 + Math.random() * 60}, 80%, 70%)`),
+                    transparent: true,
+                    opacity: 0.5
+                });
+                const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+                
+                const radius = Math.random() * scale * 15;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
+                
+                particle.position.set(
+                    position.x + radius * Math.sin(phi) * Math.cos(theta),
+                    position.y + radius * Math.sin(phi) * Math.sin(theta),
+                    position.z + radius * Math.cos(phi)
+                );
+                
+                parent.add(particle);
+            }
+            
+            // Create child fractals
+            const childCount = 3 + Math.floor(Math.random() * 3);
+            for (let i = 0; i < childCount; i++) {
+                const angle = (i / childCount) * Math.PI * 2;
+                const distance = 50 * scale;
+                
+                const childPosition = new THREE.Vector3(
+                    position.x + Math.cos(angle) * distance,
+                    position.y + Math.sin(angle) * distance,
+                    position.z
+                );
+                
+                createFractal(parent, level - 1, childPosition, scale * fractalScale);
+            }
+        }
+        
+        // Create root fractal structures
+        for (let i = 0; i < 8; i++) {
+            const angle = (i / 8) * Math.PI * 2;
+            const distance = 150 + Math.random() * 100;
+            
+            const position = new THREE.Vector3(
+                Math.cos(angle) * distance,
+                Math.sin(angle) * distance,
+                (Math.random() - 0.5) * 200
+            );
+            
+            createFractal(multiverse, fractalLevels, position, 1.0);
+        }
+        
+        // Create cosmic filaments connecting multiverse structures
+        const filaments = [];
+        
+        function createFilament(start, end) {
+            const curve = new THREE.LineCurve3(start, end);
+            const geometry = new THREE.TubeGeometry(curve, 20, 0.5, 8, false);
+            const material = new THREE.MeshBasicMaterial({
+                color: new THREE.Color(`hsl(${220 + Math.random() * 40}, 80%, 60%)`),
+                transparent: true,
+                opacity: 0.3
+            });
+            const filament = new THREE.Mesh(geometry, material);
+            scene.add(filament);
+            filaments.push(filament);
+        }
+        
+        // Create connections between fractal structures
+        multiverse.children.forEach((bubble, index) => {
+            if (index < multiverse.children.length - 1) {
+                createFilament(
+                    bubble.position, 
+                    multiverse.children[index + 1].position
+                );
+            }
+            
+            // Connect to the center
+            createFilament(
+                bubble.position,
+                new THREE.Vector3(0, 0, 0)
+            );
+        });
+        
+        // Create quantum foam particles at cosmic boundaries
+        const quantumFoam = [];
+        const foamCount = 1000;
+        
+        for (let i = 0; i < foamCount; i++) {
+            const geometry = new THREE.SphereGeometry(0.1 + Math.random() * 0.5, 8, 8);
+            const material = new THREE.MeshBasicMaterial({ 
+                color: new THREE.Color(`hsl(${Math.random() * 360}, 80%, ${50 + Math.random() * 40}%)`),
+                transparent: true,
+                opacity: 0.3
+            });
+            const particle = new THREE.Mesh(geometry, material);
+            
+            // Position near cosmic boundary or in fractal structures
+            let radius;
+            if (Math.random() > 0.7) {
+                // Near cosmic boundary
+                radius = 100 + Math.random() * 50;
+            } else {
+                // In fractal structures
+                radius = 150 + Math.random() * 200;
+            }
+            
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            
+            particle.position.set(
+                radius * Math.sin(phi) * Math.cos(theta),
+                radius * Math.sin(phi) * Math.sin(theta),
+                radius * Math.cos(phi)
+            );
+            
+            scene.add(particle);
+            quantumFoam.push({
+                mesh: particle,
+                velocity: new THREE.Vector3(
+                    (Math.random() - 0.5) * 0.2,
+                    (Math.random() - 0.5) * 0.2,
+                    (Math.random() - 0.5) * 0.2
+                )
+            });
+        }
+        
+        // Initialize Chart.js
+        const ctx = document.getElementById('cosmicChart').getContext('2d');
+        const cosmicChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['Multiverse Bubbles', 'Cosmic Filaments', 'Quantum Foam', 'Fractal Structures', 'Dark Matter', 'Exotic Energy'],
+                datasets: [{
+                    label: 'Hypothetical Structures',
+                    data: [15, 20, 30, 25, 35, 40],
+                    backgroundColor: 'rgba(159, 90, 253, 0.2)',
+                    borderColor: '#9f5afd',
+                    pointBackgroundColor: '#9f5afd',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#9f5afd'
+                }]
+            },
+            options: {
+                scales: {
+                    r: {
+                        angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        pointLabels: { color: '#a0d2ff' },
+                        ticks: { 
+                            display: false,
+                            stepSize: 20
+                        },
+                        min: 0,
+                        max: 100
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+        
+        // Animation variables
+        let explorationActive = false;
+        let explorationTime = 0;
+        let mappedPercent = 0;
+        let structuresDetected = 0;
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Rotate known universe
+            knownUniverse.rotation.y += 0.001;
+            
+            // Rotate fractal multiverse structures
+            multiverse.rotation.y += 0.0005;
+            multiverse.rotation.x += 0.0003;
+            
+            // Pulsate cosmic boundary
+            cosmicBoundary.material.opacity = 0.2 + Math.sin(explorationTime * 0.05) * 0.1;
+            
+            // Exploration effects
+            if (explorationActive) {
+                explorationTime += 0.1;
+                
+                // Create new exploration rays
+                if (Math.random() > 0.7) {
+                    createExplorationRay();
+                }
+                
+                // Update metrics
+                mappedPercent = Math.min(100, mappedPercent + 0.1);
+                structuresDetected += 0.2;
+                
+                document.getElementById('mappedValue').textContent = mappedPercent.toFixed(1) + '%';
+                document.getElementById('structuresValue').textContent = Math.floor(structuresDetected) + 'B';
+                
+                // Update chart
+                cosmicChart.data.datasets[0].data = cosmicChart.data.datasets[0].data.map(
+                    value => Math.min(100, value + Math.random() * 0.5)
+                );
+                cosmicChart.update();
+            }
+            
+            // Update quantum foam particles
+            quantumFoam.forEach(particle => {
+                particle.mesh.position.add(particle.velocity);
+                
+                // Add some random motion
+                particle.velocity.add(new THREE.Vector3(
+                    (Math.random() - 0.5) * 0.01,
+                    (Math.random() - 0.5) * 0.01,
+                    (Math.random() - 0.5) * 0.01
+                ));
+                
+                // Limit speed
+                particle.velocity.clampLength(0, 0.5);
+                
+                // Pulsate opacity
+                particle.mesh.material.opacity = 0.3 + Math.sin(explorationTime * 0.1 + particle.mesh.id) * 0.2;
+            });
+            
+            // Camera movement
+            camera.position.x = 150 * Math.sin(explorationTime * 0.01);
+            camera.position.z = 150 * Math.cos(explorationTime * 0.01);
+            camera.position.y = 50 + Math.sin(explorationTime * 0.005) * 20;
+            camera.lookAt(scene.position);
+            
+            renderer.render(scene, camera);
+        }
+        
+        // Create an exploration ray
+        function createExplorationRay() {
+            const direction = new THREE.Vector3(
+                (Math.random() - 0.5) * 2,
+                (Math.random() - 0.5) * 2,
+                (Math.random() - 0.5) * 2
+            ).normalize();
+            
+            // Start from the cosmic boundary
+            const startPos = direction.clone().multiplyScalar(100);
+            
+            const geometry = new THREE.BufferGeometry();
+            const material = new THREE.LineBasicMaterial({ 
+                color: new THREE.Color(`hsl(${280 + Math.random() * 40}, 80%, 70%)`),
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            const points = [];
+            points.push(startPos.x, startPos.y, startPos.z);
+            points.push(startPos.x + direction.x * 50, startPos.y + direction.y * 50, startPos.z + direction.z * 50);
+            
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(points, 3));
+            const ray = new THREE.Line(geometry, material);
+            scene.add(ray);
+            
+            // Store ray for animation
+            setTimeout(() => {
+                scene.remove(ray);
+            }, 1000);
+        }
+        
+        // Multiverse view
+        function multiverseView() {
+            // Enhance multiverse structures
+            multiverse.children.forEach(bubble => {
+                bubble.material.opacity = 0.8;
+                bubble.material.color = new THREE.Color(`hsl(${280}, 100%, 70%)`);
+            });
+            
+            // Enhance filaments
+            filaments.forEach(filament => {
+                filament.material.opacity = 0.7;
+                filament.material.color = new THREE.Color(`hsl(220, 100%, 80%)`);
+            });
+            
+            // Update metrics
+            document.getElementById('dimensionsValue').textContent = '11+';
+        }
+        
+        // Quantum foam view
+        function quantumView() {
+            // Enhance quantum foam
+            quantumFoam.forEach(particle => {
+                particle.mesh.material.opacity = 0.8;
+                particle.mesh.scale.set(2, 2, 2);
+            });
+            
+            // Create quantum effect
+            for (let i = 0; i < 50; i++) {
+                createExplorationRay();
+            }
+            
+            // Update metrics
+            document.getElementById('darkEnergyValue').textContent = '72%+';
+        }
+        
+        // Reset view
+        function resetView() {
+            explorationActive = false;
+            mappedPercent = 0;
+            structuresDetected = 0;
+            
+            document.getElementById('mappedValue').textContent = mappedPercent.toFixed(1) + '%';
+            document.getElementById('structuresValue').textContent = '∞';
+            document.getElementById('darkEnergyValue').textContent = '72%';
+            document.getElementById('dimensionsValue').textContent = '11';
+            
+            // Reset chart
+            cosmicChart.data.datasets[0].data = [15, 20, 30, 25, 35, 40];
+            cosmicChart.update();
+            
+            // Reset multiverse structures
+            multiverse.children.forEach(bubble => {
+                bubble.material.opacity = 0.3;
+                bubble.material.color = new THREE.Color(`hsl(280, 70%, 50%)`);
+            });
+            
+            // Reset filaments
+            filaments.forEach(filament => {
+                filament.material.opacity = 0.3;
+                filament.material.color = new THREE.Color(`hsl(220, 80%, 60%)`);
+            });
+            
+            // Reset quantum foam
+            quantumFoam.forEach(particle => {
+                particle.mesh.material.opacity = 0.3;
+                particle.mesh.scale.set(1, 1, 1);
+            });
+        }
+        
+        // Event listeners
+        document.getElementById('exploreBtn').addEventListener('click', function() {
+            explorationActive = !explorationActive;
+            this.innerHTML = explorationActive ? 
+                '<i class="fas fa-pause"></i> Pause Exploration' : 
+                '<i class="fas fa-rocket"></i> Explore Beyond';
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', resetView);
+        document.getElementById('multiverseBtn').addEventListener('click', multiverseView);
+        document.getElementById('quantumBtn').addEventListener('click', quantumView);
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = document.querySelector('.visualization').clientWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(document.querySelector('.visualization').clientWidth, window.innerHeight);
+        });
+        
+        // Start animation
+        animate();
+    </script>
+</body>
+</html>

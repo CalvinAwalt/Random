@@ -1,0 +1,1 @@
+C(L) = C_0 e^{kL} \quad \text{where} \quad k = \frac{\ln 3}{\ln 2}

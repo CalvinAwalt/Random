@@ -1,0 +1,13 @@
+cosmicmind/
+├── public/
+│   └── index.html
+├── src/
+│   └── main.js
+├── backend/
+│   ├── main.py
+│   ├── quantum_net.py
+│   ├── ethics_engine.py
+│   ├── governance_engine.py
+│   └── requirements.txt
+├── package.json
+└── README.md

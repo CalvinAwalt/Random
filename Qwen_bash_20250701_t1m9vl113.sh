@@ -1,0 +1,1 @@
+mkdir -p backend/ai_core backend/api backend/data

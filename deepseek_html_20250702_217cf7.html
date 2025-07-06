@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CosmicMind: Advanced Adaptive AI System</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: radial-gradient(circle at center, #0c0b20 0%, #050418 100%);
+            color: #e6f7ff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 3.8rem;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #00c9ff, #92fe9d, #ff7e5f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            max-width: 800px;
+            margin: 0 auto 25px;
+            color: #a0d2ff;
+            line-height: 1.6;
+        }
+        
+        .system-overview {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+            height: 70vh;
+        }
+        
+        @media (max-width: 1100px) {
+            .system-overview {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+        }
+        
+        .visualization {
+            background: rgba(15, 20, 50, 0.6);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 15px 35px rgba(0, 50, 150, 0.2);
+            border: 1px solid rgba(100, 180, 255, 0.2);
+        }
+        
+        #aiCanvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .dashboard {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .metrics {
+            background: rgba(15, 25, 60, 0.7);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(100, 150, 255, 0.3);
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .metric-card {
+            background: rgba(30, 50, 100, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 10px 0;
+            background: linear-gradient(45deg, #00c9ff, #92fe9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .metric-label {
+            font-size: 1.1rem;
+            color: #a0d2ff;
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .control {
+            background: rgba(40, 60, 120, 0.7);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(100, 200, 255, 0.3);
+        }
+        
+        .control:hover {
+            transform: translateY(-5px);
+            background: rgba(50, 80, 150, 0.8);
+            box-shadow: 0 10px 25px rgba(0, 150, 255, 0.3);
+        }
+        
+        .control i {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #4dccff;
+        }
+        
+        .modules {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+        
+        .module {
+            background: rgba(15, 25, 60, 0.7);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(100, 150, 255, 0.3);
+            transition: all 0.4s ease;
+        }
+        
+        .module:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 100, 255, 0.4);
+        }
+        
+        .module h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #4dccff;
+            display: flex;
+            align-items: center;
+        }
+        
+        .module h2 i {
+            margin-right: 15px;
+        }
+        
+        .formula {
+            background: rgba(0, 30, 60, 0.6);
+            padding: 15px;
+            border-radius: 12px;
+            font-family: 'Cambria Math', serif;
+            font-size: 1.4rem;
+            text-align: center;
+            margin: 20px 0;
+            border: 1px solid rgba(0, 200, 255, 0.3);
+            box-shadow: 0 0 25px rgba(0, 200, 255, 0.3);
+        }
+        
+        .chart-container {
+            height: 200px;
+            margin-top: 20px;
+        }
+        
+        .explanation {
+            margin-top: 20px;
+            line-height: 1.7;
+            color: #c2e5ff;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 50px;
+            border-top: 1px solid rgba(100, 150, 255, 0.2);
+            color: #88aadd;
+            font-size: 1.1rem;
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.7; }
+        }
+        
+        .pulse {
+            animation: pulse 3s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .float {
+            animation: float 6s infinite ease-in-out;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .metric-value {
+                font-size: 2rem;
+            }
+            
+            .formula {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>CosmicMind: Adaptive AI System</h1>
+            <p class="subtitle">Integrating Emergence Consensus, Fractal Governance & Ethical Validation with Self-Modifying Architecture</p>
+        </header>
+        
+        <div class="system-overview">
+            <div class="visualization">
+                <canvas id="aiCanvas"></canvas>
+            </div>
+            
+            <div class="dashboard">
+                <div class="metrics">
+                    <h2><i class="fas fa-chart-line"></i> System Metrics</h2>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-value" id="intelligence">0.92</div>
+                            <div class="metric-label">Intelligence Index</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="ethical">98%</div>
+                            <div class="metric-label">Ethical Compliance</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="complexity">42K</div>
+                            <div class="metric-label">Neural Connections</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="energy">33%</div>
+                            <div class="metric-label">Energy Efficiency</div>
+                        </div>
+                    </div>
+                    
+                    <div class="controls">
+                        <div class="control" id="learnControl">
+                            <i class="fas fa-brain"></i>
+                            <div>Accelerate Learning</div>
+                        </div>
+                        <div class="control" id="optimizeControl">
+                            <i class="fas fa-sync-alt"></i>
+                            <div>Self-Optimize</div>
+                        </div>
+                        <div class="control" id="ethicalControl">
+                            <i class="fas fa-scale-balanced"></i>
+                            <div>Ethical Validation</div>
+                        </div>
+                        <div class="control" id="transformControl">
+                            <i class="fas fa-atom"></i>
+                            <div>Transform Architecture</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="metrics">
+                    <h2><i class="fas fa-cogs"></i> System Controls</h2>
+                    <div class="formula">
+                        V<sub>net</sub> = ΣwᵢΦᵢ(x) + λΩ(w)
+                    </div>
+                    <div class="controls">
+                        <div class="control" id="adaptControl">
+                            <i class="fas fa-robot"></i>
+                            <div>Adaptive Mode</div>
+                        </div>
+                        <div class="control" id="quantumControl">
+                            <i class="fas fa-lock"></i>
+                            <div>Quantum Security</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modules">
+            <div class="module">
+                <h2><i class="fas fa-project-diagram"></i> Emergence Consensus</h2>
+                <div class="formula">
+                    ∮<sub>Δ</sub> (δR ⊗ δB ⊗ δG) / ε
+                </div>
+                <div class="chart-container">
+                    <canvas id="consensusChart"></canvas>
+                </div>
+                <div class="explanation">
+                    Quantum-resistant consensus requiring agreement across 3 distinct validation planes. 
+                    Security is guaranteed by the tensor product operation across δR (Red), δB (Blue), 
+                    and δG (Green) validation dimensions.
+                </div>
+            </div>
+            
+            <div class="module">
+                <h2><i class="fas fa-sitemap"></i> Fractal Governance</h2>
+                <div class="formula">
+                    C(L) = C₀e<sup>kL</sup>, k = ln(3)/ln(2)
+                </div>
+                <div class="chart-container">
+                    <canvas id="governanceChart"></canvas>
+                </div>
+                <div class="explanation">
+                    Nested governance layers enabling exponential scalability. Each layer can operate 
+                    independently while contributing to the whole. The fractal structure enables 
+                    O(e<sup>kL</sup>) efficiency, vastly superior to traditional O(e<sup>L</sup>) systems.
+                </div>
+            </div>
+            
+            <div class="module">
+                <h2><i class="fas fa-microchip"></i> Self-Modifying Architecture</h2>
+                <div class="formula">
+                    dS/dt = -kS, k = ln(3)/ln(2)
+                </div>
+                <div class="chart-container">
+                    <canvas id="architectureChart"></canvas>
+                </div>
+                <div class="explanation">
+                    The system continuously evolves its own architecture through controlled 
+                    self-modification. Components that prove valuable are strengthened while 
+                    ineffective ones are pruned, enabling constant adaptation to new challenges.
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>CosmicMind Adaptive AI System | Integrating Emergence Consensus, Fractal Governance & Ethical Validation</p>
+            <p>All systems operational. Current learning rate: 1.42 exaflops/sec</p>
+        </footer>
+    </div>
+
+    <script>
+        // Initialize Three.js scene
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ 
+            canvas: document.getElementById('aiCanvas'),
+            antialias: true,
+            alpha: true
+        });
+        
+        // Set renderer size
+        const container = document.querySelector('.visualization');
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        
+        // Add lighting
+        const ambientLight = new THREE.AmbientLight(0x333366);
+        scene.add(ambientLight);
+        
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(5, 5, 5);
+        scene.add(directionalLight);
+        
+        const pointLight = new THREE.PointLight(0x4dccff, 1, 100);
+        pointLight.position.set(10, 10, 10);
+        scene.add(pointLight);
+        
+        // Create central AI core
+        const coreGeometry = new THREE.IcosahedronGeometry(2, 3);
+        const coreMaterial = new THREE.MeshPhongMaterial({ 
+            color: 0x00c9ff,
+            emissive: 0x0044ff,
+            shininess: 100,
+            wireframe: false,
+            transparent: true,
+            opacity: 0.9
+        });
+        const core = new THREE.Mesh(coreGeometry, coreMaterial);
+        scene.add(core);
+        
+        // Create neural network structure
+        const nodes = [];
+        const connections = [];
+        const nodeCount = 50;
+        
+        for (let i = 0; i < nodeCount; i++) {
+            // Position nodes in a sphere around the core
+            const phi = Math.acos(-1 + (2 * i) / nodeCount);
+            const theta = Math.sqrt(nodeCount * Math.PI) * phi;
+            
+            const radius = 5 + Math.random() * 3;
+            const x = radius * Math.sin(phi) * Math.cos(theta);
+            const y = radius * Math.sin(phi) * Math.sin(theta);
+            const z = radius * Math.cos(phi);
+            
+            const nodeGeometry = new THREE.SphereGeometry(0.2 + Math.random() * 0.3, 8, 8);
+            const hue = i / nodeCount * 360;
+            const nodeMaterial = new THREE.MeshPhongMaterial({ 
+                color: new THREE.Color(`hsl(${hue}, 80%, 60%)`),
+                emissive: new THREE.Color(`hsl(${hue}, 100%, 20%)`),
+                shininess: 50
+            });
+            
+            const node = new THREE.Mesh(nodeGeometry, nodeMaterial);
+            node.position.set(x, y, z);
+            node.originalPosition = node.position.clone();
+            node.velocity = new THREE.Vector3(
+                (Math.random() - 0.5) * 0.02,
+                (Math.random() - 0.5) * 0.02,
+                (Math.random() - 0.5) * 0.02
+            );
+            scene.add(node);
+            nodes.push(node);
+            
+            // Create connections between nodes
+            if (i > 0 && Math.random() > 0.7) {
+                const targetIndex = Math.floor(Math.random() * i);
+                createConnection(node, nodes[targetIndex]);
+            }
+        }
+        
+        // Create connection function
+        function createConnection(nodeA, nodeB) {
+            const points = [];
+            points.push(nodeA.position.clone());
+            
+            // Add a midpoint for curved connections
+            const midpoint = new THREE.Vector3().lerpVectors(
+                nodeA.position, 
+                nodeB.position, 
+                0.5
+            );
+            
+            // Add some curvature
+            midpoint.x += (Math.random() - 0.5) * 1.5;
+            midpoint.y += (Math.random() - 0.5) * 1.5;
+            midpoint.z += (Math.random() - 0.5) * 1.5;
+            
+            points.push(midpoint);
+            points.push(nodeB.position.clone());
+            
+            const curve = new THREE.CatmullRomCurve3(points);
+            const tubeGeometry = new THREE.TubeGeometry(curve, 20, 0.03, 8, false);
+            const connectionMaterial = new THREE.MeshBasicMaterial({
+                color: 0x4dccff,
+                transparent: true,
+                opacity: 0.5
+            });
+            
+            const connection = new THREE.Mesh(tubeGeometry, connectionMaterial);
+            scene.add(connection);
+            connections.push({
+                mesh: connection,
+                nodeA: nodeA,
+                nodeB: nodeB,
+                curve: curve
+            });
+        }
+        
+        // Create quantum validation planes
+        const planes = [];
+        const planeColors = [0xff6b6b, 0x4dccff, 0x92fe9d];
+        
+        for (let i = 0; i < 3; i++) {
+            const planeGeometry = new THREE.PlaneGeometry(15, 15);
+            const planeMaterial = new THREE.MeshBasicMaterial({
+                color: planeColors[i],
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.1,
+                wireframe: true
+            });
+            
+            const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+            
+            // Position planes at 120° angles
+            const angle = (i * 120 * Math.PI) / 180;
+            plane.rotation.x = Math.PI / 2;
+            plane.position.x = 8 * Math.cos(angle);
+            plane.position.z = 8 * Math.sin(angle);
+            
+            scene.add(plane);
+            planes.push(plane);
+        }
+        
+        // Position camera
+        camera.position.z = 15;
+        camera.position.y = 5;
+        
+        // Add orbital controls
+        let mouseX = 0;
+        let mouseY = 0;
+        let targetX = 0;
+        let targetY = 0;
+        const windowHalfX = window.innerWidth / 2;
+        const windowHalfY = window.innerHeight / 2;
+        
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX - windowHalfX) / 100;
+            mouseY = (event.clientY - windowHalfY) / 100;
+        });
+        
+        // Animation variables
+        let time = 0;
+        const energyParticles = [];
+        
+        // Create energy particles
+        for (let i = 0; i < 100; i++) {
+            const particleGeometry = new THREE.SphereGeometry(0.05, 8, 8);
+            const particleMaterial = new THREE.MeshBasicMaterial({
+                color: new THREE.Color(`hsl(${Math.random() * 360}, 80%, 70%)`)
+            });
+            
+            const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+            
+            // Position particles randomly
+            const phi = Math.random() * Math.PI * 2;
+            const theta = Math.random() * Math.PI;
+            const radius = 3 + Math.random() * 5;
+            
+            particle.position.set(
+                radius * Math.sin(theta) * Math.cos(phi),
+                radius * Math.sin(theta) * Math.sin(phi),
+                radius * Math.cos(theta)
+            );
+            
+            particle.velocity = new THREE.Vector3(
+                (Math.random() - 0.5) * 0.02,
+                (Math.random() - 0.5) * 0.02,
+                (Math.random() - 0.5) * 0.02
+            );
+            
+            scene.add(particle);
+            energyParticles.push(particle);
+        }
+        
+        // Create charts
+        const ctx1 = document.getElementById('consensusChart').getContext('2d');
+        const consensusChart = new Chart(ctx1, {
+            type: 'radar',
+            data: {
+                labels: ['δR Validation', 'δB Validation', 'δG Validation', 'Security', 'Efficiency', 'Decentralization'],
+                datasets: [{
+                    label: 'Consensus Metrics',
+                    data: [92, 88, 90, 97, 85, 94],
+                    backgroundColor: 'rgba(77, 204, 255, 0.2)',
+                    borderColor: '#4dccff',
+                    pointBackgroundColor: '#4dccff',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#4dccff'
+                }]
+            },
+            options: {
+                scales: {
+                    r: {
+                        angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        pointLabels: { color: '#a0d2ff' },
+                        ticks: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+        
+        const ctx2 = document.getElementById('governanceChart').getContext('2d');
+        const governanceChart = new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: ['Layer 1', 'Layer 2', 'Layer 3', 'Layer 4', 'Layer 5', 'Layer 6'],
+                datasets: [{
+                    label: 'Governance Efficiency',
+                    data: [10, 30, 90, 270, 810, 2430],
+                    backgroundColor: 'rgba(146, 254, 157, 0.2)',
+                    borderColor: '#92fe9d',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        ticks: { color: '#a0d2ff' }
+                    },
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        ticks: { color: '#a0d2ff' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+        
+        const ctx3 = document.getElementById('architectureChart').getContext('2d');
+        const architectureChart = new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: ['Neural Nodes', 'Connections', 'Processing', 'Memory', 'Learning'],
+                datasets: [{
+                    label: 'Architecture Metrics',
+                    data: [42, 128, 95, 88, 92],
+                    backgroundColor: [
+                        'rgba(255, 107, 107, 0.7)',
+                        'rgba(77, 204, 255, 0.7)',
+                        'rgba(146, 254, 157, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(153, 102, 255, 0.7)'
+                    ]
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        ticks: { color: '#a0d2ff' }
+                    },
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        ticks: { color: '#a0d2ff' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+        
+        // Animation loop
+        function animate() {
+            time += 0.01;
+            
+            // Update core
+            core.rotation.x = time * 0.2;
+            core.rotation.y = time * 0.3;
+            
+            // Update nodes
+            nodes.forEach(node => {
+                // Move nodes with velocity
+                node.position.add(node.velocity);
+                
+                // Add some attraction to original position
+                const direction = new THREE.Vector3().subVectors(
+                    node.originalPosition, node.position
+                ).multiplyScalar(0.005);
+                
+                node.velocity.add(direction);
+                node.velocity.multiplyScalar(0.98);
+                
+                // Pulsing effect
+                const scale = 0.8 + Math.sin(time * 2 + node.position.length()) * 0.2;
+                node.scale.set(scale, scale, scale);
+            });
+            
+            // Update connections
+            connections.forEach(conn => {
+                // Update the curve points
+                const points = conn.curve.points;
+                points[0].copy(conn.nodeA.position);
+                points[2].copy(conn.nodeB.position);
+                
+                // Update midpoint
+                points[1].lerpVectors(
+                    conn.nodeA.position, 
+                    conn.nodeB.position, 
+                    0.5
+                );
+                
+                // Add some movement to midpoint
+                points[1].x += Math.sin(time * 0.5 + conn.nodeA.position.x) * 0.1;
+                points[1].y += Math.cos(time * 0.3 + conn.nodeA.position.y) * 0.1;
+                points[1].z += Math.sin(time * 0.4 + conn.nodeA.position.z) * 0.1;
+                
+                // Recreate the geometry
+                scene.remove(conn.mesh);
+                const newGeometry = new THREE.TubeGeometry(conn.curve, 20, 0.03, 8, false);
+                conn.mesh.geometry.dispose();
+                conn.mesh.geometry = newGeometry;
+                scene.add(conn.mesh);
+            });
+            
+            // Update planes
+            planes.forEach((plane, i) => {
+                plane.rotation.y = time * 0.1;
+                plane.material.opacity = 0.1 + Math.sin(time * 0.5 + i) * 0.05;
+            });
+            
+            // Update energy particles
+            energyParticles.forEach(particle => {
+                particle.position.add(particle.velocity);
+                
+                // Attraction to core
+                const direction = new THREE.Vector3().subVectors(
+                    core.position, particle.position
+                ).multiplyScalar(0.005);
+                
+                particle.velocity.add(direction);
+                particle.velocity.multiplyScalar(0.99);
+                
+                // Color change
+                const hue = (time * 20 + particle.position.length() * 10) % 360;
+                particle.material.color.setHSL(hue / 360, 0.8, 0.7);
+            });
+            
+            // Camera movement
+            targetX = mouseX * 0.05;
+            targetY = mouseY * 0.05;
+            
+            camera.position.x += (targetX - camera.position.x) * 0.05;
+            camera.position.y += (-targetY - camera.position.y) * 0.05;
+            camera.lookAt(scene.position);
+            
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+        
+        // Control event handlers
+        document.getElementById('learnControl').addEventListener('click', () => {
+            // Add new connections
+            for (let i = 0; i < 5; i++) {
+                const nodeA = nodes[Math.floor(Math.random() * nodes.length)];
+                const nodeB = nodes[Math.floor(Math.random() * nodes.length)];
+                if (nodeA !== nodeB) createConnection(nodeA, nodeB);
+            }
+            
+            // Update metrics
+            document.getElementById('intelligence').textContent = 
+                (0.9 + Math.random() * 0.08).toFixed(2);
+            document.getElementById('complexity').textContent = 
+                Math.floor(42000 + Math.random() * 2000) + 'K';
+        });
+        
+        document.getElementById('optimizeControl').addEventListener('click', () => {
+            // Remove some connections
+            for (let i = 0; i < 3 && connections.length > 10; i++) {
+                const index = Math.floor(Math.random() * connections.length);
+                scene.remove(connections[index].mesh);
+                connections.splice(index, 1);
+            }
+            
+            // Update metrics
+            document.getElementById('energy').textContent = 
+                Math.floor(33 + Math.random() * 5) + '%';
+        });
+        
+        document.getElementById('ethicalControl').addEventListener('click', () => {
+            document.getElementById('ethical').textContent = 
+                Math.floor(95 + Math.random() * 4) + '%';
+            
+            // Visual feedback
+            core.material.color.setHex(0x92fe9d);
+            setTimeout(() => {
+                core.material.color.setHex(0x00c9ff);
+            }, 1000);
+        });
+        
+        document.getElementById('transformControl').addEventListener('click', () => {
+            // Change node positions
+            nodes.forEach(node => {
+                node.originalPosition.x += (Math.random() - 0.5) * 2;
+                node.originalPosition.y += (Math.random() - 0.5) * 2;
+                node.originalPosition.z += (Math.random() - 0.5) * 2;
+            });
+        });
+        
+        document.getElementById('adaptControl').addEventListener('click', () => {
+            // Add new nodes
+            const phi = Math.acos(-1 + (2 * nodes.length) / (nodeCount + 1));
+            const theta = Math.sqrt((nodeCount + 1) * Math.PI) * phi;
+            
+            const radius = 5 + Math.random() * 3;
+            const x = radius * Math.sin(phi) * Math.cos(theta);
+            const y = radius * Math.sin(phi) * Math.sin(theta);
+            const z = radius * Math.cos(phi);
+            
+            const nodeGeometry = new THREE.SphereGeometry(0.2 + Math.random() * 0.3, 8, 8);
+            const hue = nodes.length / nodeCount * 360;
+            const nodeMaterial = new THREE.MeshPhongMaterial({ 
+                color: new THREE.Color(`hsl(${hue}, 80%, 60%)`),
+                emissive: new THREE.Color(`hsl(${hue}, 100%, 20%)`),
+                shininess: 50
+            });
+            
+            const node = new THREE.Mesh(nodeGeometry, nodeMaterial);
+            node.position.set(x, y, z);
+            node.originalPosition = node.position.clone();
+            node.velocity = new THREE.Vector3(
+                (Math.random() - 0.5) * 0.02,
+                (Math.random() - 0.5) * 0.02,
+                (Math.random() - 0.5) * 0.02
+            );
+            scene.add(node);
+            nodes.push(node);
+        });
+        
+        document.getElementById('quantumControl').addEventListener('click', () => {
+            // Flash the planes
+            planes.forEach(plane => {
+                plane.material.opacity = 0.5;
+                setTimeout(() => {
+                    plane.material.opacity = 0.1;
+                }, 300);
+            });
+        });
+        
+        // Start animation
+        animate();
+    </script>
+</body>
+</html>

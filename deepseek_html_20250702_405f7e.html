@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complex Adaptive Systems Simulation</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a2a6c, #2c3e50);
+            color: #ecf0f1;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.8rem;
+            background: linear-gradient(45deg, #00c9ff, #92fe9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-top: 10px;
+        }
+        
+        .content {
+            display: flex;
+            gap: 20px;
+            height: calc(100vh - 200px);
+        }
+        
+        .simulation-container {
+            flex: 3;
+            position: relative;
+            background: rgba(0, 15, 30, 0.7);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        #simulationCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .controls {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: rgba(0, 15, 30, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+        }
+        
+        .control-group {
+            background: rgba(30, 50, 80, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        h2 {
+            margin-top: 0;
+            color: #3498db;
+            font-size: 1.5rem;
+            border-bottom: 2px solid rgba(52, 152, 219, 0.5);
+            padding-bottom: 8px;
+        }
+        
+        .slider-container {
+            margin: 15px 0;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(100, 150, 200, 0.3);
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.7);
+        }
+        
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        button.reset {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: rgba(30, 50, 80, 0.5);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2ecc71;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        .system-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(30, 50, 80, 0.5);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .system-info ul {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        
+        .system-info li {
+            margin-bottom: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .simulation-container {
+                height: 60vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Complex Adaptive Systems Simulation</h1>
+            <div class="subtitle">Polycentric, Disorganized, Hierarchic & Cybernetic Systems with Self-Improvement/Destruction</div>
+        </header>
+        
+        <div class="content">
+            <div class="simulation-container">
+                <canvas id="simulationCanvas"></canvas>
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <h2>System Parameters</h2>
+                    
+                    <div class="slider-container">
+                        <label for="systemScale">System Scale: <span id="scaleValue">5</span></label>
+                        <input type="range" id="systemScale" min="1" max="10" value="5">
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label for="adaptationRate">Adaptation Rate: <span id="adaptationValue">0.75</span></label>
+                        <input type="range" id="adaptationRate" min="0.1" max="1.5" step="0.05" value="0.75">
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label for="disorderLevel">Disorder Level: <span id="disorderValue">40%</span></label>
+                        <input type="range" id="disorderLevel" min="0" max="100" value="40">
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label for="feedbackStrength">Feedback Strength: <span id="feedbackValue">65%</span></label>
+                        <input type="range" id="feedbackStrength" min="0" max="100" value="65">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h2>System Controls</h2>
+                    <div class="button-group">
+                        <button id="addSystem">Add System</button>
+                        <button id="removeSystem">Remove System</button>
+                        <button id="improveBtn">Improve Systems</button>
+                        <button class="reset" id="destroyBtn">Destroy Systems</button>
+                        <button id="resetBtn">Reset Simulation</button>
+                    </div>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="systemCount">0</div>
+                        <div class="stat-label">Active Systems</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="triangleCount">0</div>
+                        <div class="stat-label">Triangles</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="adaptationLevel">0%</div>
+                        <div class="stat-label">Adaptation</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="bridgeCount">0</div>
+                        <div class="stat-label">Bridges</div>
+                    </div>
+                </div>
+                
+                <div class="system-info">
+                    <h2>System Characteristics</h2>
+                    <ul>
+                        <li><strong>Polycentric:</strong> Multiple independent elements making mutual adjustments</li>
+                        <li><strong>Disorganized:</strong> Localized interactions without central control</li>
+                        <li><strong>Hierarchic:</strong> Nested systems within systems</li>
+                        <li><strong>Cybernetic:</strong> Feedback loops enabling self-regulation</li>
+                        <li><strong>Self-Improvement:</strong> Systems continuously evolve and adapt</li>
+                        <li><strong>Self-Destruction:</strong> Systems break down to reform stronger</li>
+                    </ul>
+                    <p>Systems are connected by bridges that filter information, allowing only beneficial improvements to propagate.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Canvas setup
+        const canvas = document.getElementById('simulationCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas to full container size
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+        
+        // Initialize canvas size
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Simulation parameters
+        let systems = [];
+        let bridges = [];
+        let systemCount = 0;
+        let triangleCount = 0;
+        let adaptationLevel = 0;
+        let bridgeCount = 0;
+        
+        // Configuration
+        let config = {
+            systemScale: 5,
+            adaptationRate: 0.75,
+            disorderLevel: 40,
+            feedbackStrength: 65,
+            maxSystems: 15,
+            minTriangles: 3,
+            maxTriangles: 12,
+            triangleSize: 30,
+            bridgeWidth: 4
+        };
+        
+        // Triangle class
+        class Triangle {
+            constructor(x, y, size, systemId, color) {
+                this.x = x;
+                this.y = y;
+                this.size = size;
+                this.systemId = systemId;
+                this.color = color;
+                this.rotation = Math.random() * Math.PI * 2;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.05;
+                this.connections = [];
+                this.energy = Math.random();
+                this.state = Math.random() > 0.5 ? 1 : 0;
+            }
+            
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                
+                ctx.beginPath();
+                ctx.moveTo(0, -this.size);
+                ctx.lineTo(-this.size * 0.866, this.size * 0.5);
+                ctx.lineTo(this.size * 0.866, this.size * 0.5);
+                ctx.closePath();
+                
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                
+                ctx.strokeStyle = this.state ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.3)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                ctx.restore();
+            }
+            
+            update() {
+                this.rotation += this.rotationSpeed;
+                
+                // Simulate energy flow
+                this.energy += (Math.random() - 0.5) * 0.1;
+                this.energy = Math.max(0, Math.min(1, this.energy));
+                
+                // State change based on energy and connections
+                if (this.connections.length > 0) {
+                    const avgEnergy = this.connections.reduce((sum, t) => sum + t.energy, 0) / this.connections.length;
+                    if (Math.abs(this.energy - avgEnergy) > 0.3) {
+                        this.state = this.energy > avgEnergy ? 1 : 0;
+                    }
+                }
+                
+                // Color based on state and energy
+                if (this.state) {
+                    const hue = 120 + Math.sin(Date.now() * 0.001) * 60;
+                    this.color = `hsla(${hue}, 80%, ${40 + this.energy * 40}%, 0.8)`;
+                } else {
+                    this.color = `hsla(240, 50%, ${30 + this.energy * 40}%, 0.6)`;
+                }
+            }
+        }
+        
+        // System class
+        class System {
+            constructor(id, x, y, size, level = 0) {
+                this.id = id;
+                this.x = x;
+                this.y = y;
+                this.size = size;
+                this.level = level;
+                this.triangles = [];
+                this.subSystems = [];
+                this.color = `hsl(${Math.random() * 360}, 70%, 50%)`;
+                this.energy = 1.0;
+                this.adaptation = 0;
+                this.createTriangles();
+            }
+            
+            createTriangles() {
+                const triangleCount = Math.floor(Math.random() * 
+                    (config.maxTriangles - config.minTriangles + 1)) + config.minTriangles;
+                
+                for (let i = 0; i < triangleCount; i++) {
+                    const angle = (i / triangleCount) * Math.PI * 2;
+                    const distance = Math.random() * this.size * 0.4;
+                    const x = this.x + Math.cos(angle) * distance;
+                    const y = this.y + Math.sin(angle) * distance;
+                    
+                    const triangle = new Triangle(
+                        x, y, 
+                        config.triangleSize * (0.8 + Math.random() * 0.4),
+                        this.id,
+                        this.color
+                    );
+                    
+                    this.triangles.push(triangle);
+                    triangleCount++;
+                }
+                
+                // Create connections
+                for (let i = 0; i < this.triangles.length; i++) {
+                    for (let j = i + 1; j < this.triangles.length; j++) {
+                        if (Math.random() > (config.disorderLevel / 100)) {
+                            this.triangles[i].connections.push(this.triangles[j]);
+                            this.triangles[j].connections.push(this.triangles[i]);
+                        }
+                    }
+                }
+                
+                // Create subsystems
+                if (this.level < 2 && Math.random() > 0.5) {
+                    const subCount = Math.floor(Math.random() * 3) + 1;
+                    for (let i = 0; i < subCount; i++) {
+                        const angle = Math.random() * Math.PI * 2;
+                        const distance = this.size * (0.2 + Math.random() * 0.3);
+                        const subX = this.x + Math.cos(angle) * distance;
+                        const subY = this.y + Math.sin(angle) * distance;
+                        const subSize = this.size * (0.3 + Math.random() * 0.2);
+                        
+                        const subSystem = new System(
+                            `${this.id}-${i}`, 
+                            subX, subY, subSize, 
+                            this.level + 1
+                        );
+                        
+                        this.subSystems.push(subSystem);
+                    }
+                }
+            }
+            
+            draw() {
+                // Draw system boundary
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 + this.energy * 0.2})`;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Draw triangles
+                for (const triangle of this.triangles) {
+                    triangle.draw();
+                }
+                
+                // Draw subsystems
+                for (const subSystem of this.subSystems) {
+                    subSystem.draw();
+                }
+            }
+            
+            update() {
+                // Update triangles
+                for (const triangle of this.triangles) {
+                    triangle.update();
+                }
+                
+                // Update subsystems
+                for (const subSystem of this.subSystems) {
+                    subSystem.update();
+                }
+                
+                // System energy based on triangle states
+                const activeTriangles = this.triangles.filter(t => t.state).length;
+                this.energy = activeTriangles / this.triangles.length;
+                
+                // Adaptation
+                this.adaptation = Math.min(1, this.adaptation + 
+                    (Math.random() * config.adaptationRate * 0.01));
+            }
+            
+            // Improve system by adding triangles or connections
+            improve() {
+                if (this.triangles.length < config.maxTriangles * 1.5 && Math.random() > 0.7) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = this.size * (0.3 + Math.random() * 0.4);
+                    const x = this.x + Math.cos(angle) * distance;
+                    const y = this.y + Math.sin(angle) * distance;
+                    
+                    const triangle = new Triangle(
+                        x, y, 
+                        config.triangleSize * (0.7 + Math.random() * 0.6),
+                        this.id,
+                        this.color
+                    );
+                    
+                    this.triangles.push(triangle);
+                    triangleCount++;
+                    
+                    // Connect to existing triangles
+                    for (let i = 0; i < this.triangles.length - 1; i++) {
+                        if (Math.random() > 0.6) {
+                            triangle.connections.push(this.triangles[i]);
+                            this.triangles[i].connections.push(triangle);
+                        }
+                    }
+                }
+            }
+            
+            // Destroy system by removing triangles and connections
+            destroy() {
+                if (this.triangles.length > config.minTriangles) {
+                    const removeCount = Math.floor(this.triangles.length * 0.3);
+                    for (let i = 0; i < removeCount; i++) {
+                        if (this.triangles.length > config.minTriangles) {
+                            const index = Math.floor(Math.random() * this.triangles.length);
+                            this.triangles.splice(index, 1);
+                            triangleCount--;
+                        }
+                    }
+                    
+                    // Remove connections
+                    for (const triangle of this.triangles) {
+                        for (let i = triangle.connections.length - 1; i >= 0; i--) {
+                            if (Math.random() > 0.7) {
+                                triangle.connections.splice(i, 1);
+                            }
+                        }
+                    }
+                }
+                
+                this.adaptation = Math.max(0, this.adaptation - 0.2);
+            }
+        }
+        
+        // Bridge class
+        class Bridge {
+            constructor(system1, system2) {
+                this.system1 = system1;
+                this.system2 = system2;
+                this.width = config.bridgeWidth;
+                this.active = false;
+                this.energy = 0;
+            }
+            
+            draw() {
+                const dx = this.system2.x - this.system1.x;
+                const dy = this.system2.y - this.system1.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const angle = Math.atan2(dy, dx);
+                
+                ctx.save();
+                ctx.translate(this.system1.x, this.system1.y);
+                ctx.rotate(angle);
+                
+                // Draw bridge
+                ctx.beginPath();
+                ctx.moveTo(0, -this.width);
+                ctx.lineTo(dist, -this.width);
+                ctx.lineTo(dist, this.width);
+                ctx.lineTo(0, this.width);
+                ctx.closePath();
+                
+                // Gradient based on energy
+                const gradient = ctx.createLinearGradient(0, 0, dist, 0);
+                gradient.addColorStop(0, this.active ? `rgba(46, 204, 113, ${0.3 + this.energy * 0.7})` : 'rgba(200, 200, 200, 0.1)');
+                gradient.addColorStop(1, this.active ? `rgba(52, 152, 219, ${0.3 + this.energy * 0.7})` : 'rgba(200, 200, 200, 0.1)');
+                
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                
+                // Draw energy flow if active
+                if (this.active && this.energy > 0.1) {
+                    ctx.beginPath();
+                    const offset = (Date.now() * 0.01) % 100;
+                    ctx.moveTo(offset - 100, 0);
+                    ctx.lineTo(offset, 0);
+                    ctx.strokeStyle = `rgba(255, 255, 255, ${this.energy * 0.8})`;
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+                
+                ctx.restore();
+            }
+            
+            update() {
+                // Activate bridge if systems have sufficient energy and adaptation
+                this.active = this.system1.energy > 0.6 && 
+                             this.system2.energy > 0.6 &&
+                             Math.random() > (config.disorderLevel / 100);
+                
+                if (this.active) {
+                    this.energy = Math.min(1, this.energy + 0.01);
+                    
+                    // Transfer adaptation between systems
+                    const adaptationTransfer = config.adaptationRate * 0.01 * this.energy;
+                    if (this.system1.adaptation > this.system2.adaptation) {
+                        this.system1.adaptation -= adaptationTransfer;
+                        this.system2.adaptation += adaptationTransfer;
+                    } else {
+                        this.system1.adaptation += adaptationTransfer;
+                        this.system2.adaptation -= adaptationTransfer;
+                    }
+                    
+                    // Apply feedback
+                    if (Math.random() < config.feedbackStrength / 100) {
+                        if (this.system1.energy > this.system2.energy) {
+                            this.system1.energy -= 0.01;
+                            this.system2.energy += 0.01;
+                        } else {
+                            this.system1.energy += 0.01;
+                            this.system2.energy -= 0.01;
+                        }
+                    }
+                } else {
+                    this.energy = Math.max(0, this.energy - 0.005);
+                }
+            }
+        }
+        
+        // Initialize simulation
+        function initSimulation() {
+            systems = [];
+            bridges = [];
+            systemCount = 0;
+            triangleCount = 0;
+            adaptationLevel = 0;
+            bridgeCount = 0;
+            
+            // Create initial systems
+            for (let i = 0; i < 3; i++) {
+                addRandomSystem();
+            }
+            
+            // Create initial bridges
+            createBridges();
+            
+            updateStats();
+        }
+        
+        // Add a new random system
+        function addRandomSystem() {
+            if (systems.length >= config.maxSystems) return;
+            
+            const size = 80 + Math.random() * 80;
+            const padding = size + 50;
+            let x, y;
+            let validPosition = false;
+            let attempts = 0;
+            
+            // Find a valid position
+            while (!validPosition && attempts < 100) {
+                x = padding + Math.random() * (canvas.width - padding * 2);
+                y = padding + Math.random() * (canvas.height - padding * 2);
+                
+                validPosition = true;
+                for (const system of systems) {
+                    const dx = system.x - x;
+                    const dy = system.y - y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < system.size + size + 50) {
+                        validPosition = false;
+                        break;
+                    }
+                }
+                attempts++;
+            }
+            
+            if (validPosition) {
+                const system = new System(systemCount++, x, y, size);
+                systems.push(system);
+                systemCount = systems.length;
+                triangleCount += system.triangles.length;
+                
+                // Create bridges to other systems
+                createBridges();
+            }
+        }
+        
+        // Remove a random system
+        function removeSystem() {
+            if (systems.length > 1) {
+                const index = Math.floor(Math.random() * systems.length);
+                triangleCount -= systems[index].triangles.length;
+                systems.splice(index, 1);
+                systemCount = systems.length;
+                
+                // Recreate bridges
+                createBridges();
+            }
+        }
+        
+        // Create bridges between systems
+        function createBridges() {
+            bridges = [];
+            bridgeCount = 0;
+            
+            // Create bridges between systems
+            for (let i = 0; i < systems.length; i++) {
+                for (let j = i + 1; j < systems.length; j++) {
+                    const dx = systems[j].x - systems[i].x;
+                    const dy = systems[j].y - systems[i].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Only create bridge if systems are close enough
+                    if (distance < 300) {
+                        bridges.push(new Bridge(systems[i], systems[j]));
+                        bridgeCount++;
+                    }
+                }
+            }
+        }
+        
+        // Improve systems
+        function improveSystems() {
+            for (const system of systems) {
+                system.improve();
+            }
+            triangleCount = systems.reduce((sum, sys) => sum + sys.triangles.length, 0);
+        }
+        
+        // Destroy systems
+        function destroySystems() {
+            for (const system of systems) {
+                system.destroy();
+            }
+            triangleCount = systems.reduce((sum, sys) => sum + sys.triangles.length, 0);
+        }
+        
+        // Update statistics display
+        function updateStats() {
+            document.getElementById('systemCount').textContent = systemCount;
+            document.getElementById('triangleCount').textContent = triangleCount;
+            document.getElementById('bridgeCount').textContent = bridgeCount;
+            
+            // Calculate overall adaptation
+            if (systems.length > 0) {
+                const totalAdaptation = systems.reduce((sum, sys) => sum + sys.adaptation, 0);
+                adaptationLevel = Math.floor((totalAdaptation / systems.length) * 100);
+            } else {
+                adaptationLevel = 0;
+            }
+            
+            document.getElementById('adaptationLevel').textContent = `${adaptationLevel}%`;
+        }
+        
+        // Update slider value displays
+        function updateSliderValues() {
+            document.getElementById('scaleValue').textContent = config.systemScale;
+            document.getElementById('adaptationValue').textContent = config.adaptationRate.toFixed(2);
+            document.getElementById('disorderValue').textContent = `${config.disorderLevel}%`;
+            document.getElementById('feedbackValue').textContent = `${config.feedbackStrength}%`;
+        }
+        
+        // Animation loop
+        function animate() {
+            // Clear canvas with a subtle background
+            ctx.fillStyle = 'rgba(10, 20, 35, 0.2)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw a grid for background
+            ctx.strokeStyle = 'rgba(50, 100, 150, 0.1)';
+            ctx.lineWidth = 1;
+            const gridSize = 40;
+            
+            for (let x = 0; x < canvas.width; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            
+            for (let y = 0; y < canvas.height; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            
+            // Update and draw bridges
+            for (const bridge of bridges) {
+                bridge.update();
+                bridge.draw();
+            }
+            
+            // Update and draw systems
+            for (const system of systems) {
+                system.update();
+                system.draw();
+            }
+            
+            // Update stats
+            updateStats();
+            
+            // Continue animation
+            requestAnimationFrame(animate);
+        }
+        
+        // Event listeners for controls
+        document.getElementById('addSystem').addEventListener('click', addRandomSystem);
+        document.getElementById('removeSystem').addEventListener('click', removeSystem);
+        document.getElementById('improveBtn').addEventListener('click', improveSystems);
+        document.getElementById('destroyBtn').addEventListener('click', destroySystems);
+        document.getElementById('resetBtn').addEventListener('click', initSimulation);
+        
+        // Slider event listeners
+        document.getElementById('systemScale').addEventListener('input', function() {
+            config.systemScale = parseInt(this.value);
+            updateSliderValues();
+        });
+        
+        document.getElementById('adaptationRate').addEventListener('input', function() {
+            config.adaptationRate = parseFloat(this.value);
+            updateSliderValues();
+        });
+        
+        document.getElementById('disorderLevel').addEventListener('input', function() {
+            config.disorderLevel = parseInt(this.value);
+            updateSliderValues();
+        });
+        
+        document.getElementById('feedbackStrength').addEventListener('input', function() {
+            config.feedbackStrength = parseInt(this.value);
+            updateSliderValues();
+        });
+        
+        // Initialize and start simulation
+        initSimulation();
+        animate();
+        updateSliderValues();
+    </script>
+</body>
+</html>

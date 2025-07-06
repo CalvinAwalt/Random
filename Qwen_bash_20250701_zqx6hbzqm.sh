@@ -1,0 +1,2 @@
+mkdir cosmicmind
+cd cosmicmind

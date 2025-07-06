@@ -1,0 +1,9 @@
+User Interface (React + Three.js)
+       ↓
+Communication Layer (WebSocket + REST API)
+       ↓
+AI Core (Python + PyTorch)
+       ↓
+Ethics & Governance Engine (Symbolic AI + Constraint Solvers)
+       ↓
+Self-Modification & Learning Loop
