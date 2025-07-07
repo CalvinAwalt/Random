@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaotic Three-Body Problem Simulation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: radial-gradient(circle at center, #0c0b20 0%, #050418 100%);
+            color: #e6f7ff;
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(10, 20, 50, 0.7);
+            border-bottom: 1px solid rgba(100, 180, 255, 0.3);
+            z-index: 100;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            color: #4dccff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px rgba(77, 204, 255, 0.7);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a0d2ff;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            display: flex;
+            flex: 1;
+            position: relative;
+            height: calc(100vh - 130px);
+        }
+        
+        .visualization {
+            flex: 1;
+            position: relative;
+        }
+        
+        #simulationCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .control-panel {
+            width: 400px;
+            background: rgba(10, 20, 50, 0.9);
+            padding: 25px;
+            overflow-y: auto;
+            border-left: 1px solid rgba(100, 180, 255, 0.3);
+            box-shadow: -5px 0 25px rgba(0, 50, 150, 0.3);
+            z-index: 50;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            margin: 25px 0 15px;
+            color: #4dccff;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(77, 204, 255, 0.5);
+        }
+        
+        .physics-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .info-card {
+            background: rgba(30, 50, 100, 0.7);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .info-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+            background: linear-gradient(45deg, #00c9ff, #92fe9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .info-label {
+            font-size: 0.9rem;
+            color: #a0d2ff;
+        }
+        
+        .formula-display {
+            background: rgba(0, 30, 60, 0.7);
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Cambria Math', serif;
+            font-size: 1.4rem;
+            text-align: center;
+            margin: 20px 0;
+            border: 1px solid rgba(0, 200, 255, 0.3);
+            box-shadow: 0 0 25px rgba(0, 200, 255, 0.3);
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .control-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #0072ff, #00c6ff);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 114, 255, 0.4);
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 114, 255, 0.6);
+        }
+        
+        .reset-btn {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
+        }
+        
+        .chaos-indicator {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            background: rgba(30, 50, 100, 0.6);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .level-label {
+            width: 150px;
+            font-size: 1rem;
+            color: #a0d2ff;
+        }
+        
+        .level-value {
+            flex: 1;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .physics-principle {
+            background: rgba(30, 50, 100, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(100, 200, 255, 0.3);
+        }
+        
+        .principle-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #4dccff;
+            display: flex;
+            align-items: center;
+        }
+        
+        .principle-title i {
+            margin-right: 12px;
+            font-size: 1.5rem;
+        }
+        
+        .principle-content {
+            color: #c2e5ff;
+            line-height: 1.6;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 15px;
+            background: rgba(10, 20, 50, 0.7);
+            border-top: 1px solid rgba(100, 180, 255, 0.3);
+            font-size: 0.9rem;
+            color: #a0d2ff;
+        }
+        
+        @media (max-width: 1100px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .control-panel {
+                width: 100%;
+                border-left: none;
+                border-top: 1px solid rgba(100, 180, 255, 0.3);
+            }
+        }
+        
+        .system-info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 20, 40, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 200;
+            max-width: 300px;
+        }
+        
+        .chaos-bar {
+            height: 20px;
+            background: linear-gradient(90deg, #00c9ff, #ff416c);
+            border-radius: 10px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .chaos-level {
+            height: 100%;
+            width: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: width 0.5s ease;
+        }
+        
+        .config-presets {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .preset-btn {
+            padding: 10px;
+            background: rgba(40, 70, 130, 0.7);
+            border: 1px solid rgba(100, 180, 255, 0.3);
+            border-radius: 8px;
+            color: #a0d2ff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .preset-btn:hover {
+            background: rgba(60, 100, 180, 0.7);
+            transform: translateY(-2px);
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Chaotic Three-Body Problem Simulation</h1>
+        <div class="subtitle">Numerical Solution to the Gravitational Three-Body Problem</div>
+    </div>
+    
+    <div class="container">
+        <div class="visualization">
+            <canvas id="simulationCanvas"></canvas>
+            <div class="system-info">
+                <h3>Three-Body System</h3>
+                <p>• Gravitational constant (G): 6.674</p>
+                <p>• Simulation steps: <span id="stepCount">0</span></p>
+                <p>• Energy conservation: <span id="energyValue">100%</span></p>
+                <p>• Chaos factor: <span id="chaosValue">0.00</span></p>
+                <div class="chaos-bar">
+                    <div class="chaos-level" id="chaosBar"></div>
+                </div>
+                
+                <div class="config-presets">
+                    <div class="preset-btn" data-preset="stable">Stable Orbit</div>
+                    <div class="preset-btn" data-preset="chaotic">Chaotic System</div>
+                    <div class="preset-btn" data-preset="ejection">Ejection Scenario</div>
+                    <div class="preset-btn" data-preset="figure8">Figure-8 Orbit</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="control-panel">
+            <div class="section-title">Physics Parameters</div>
+            
+            <div class="physics-info">
+                <div class="info-card">
+                    <div class="info-value" id="timeValue">0.00s</div>
+                    <div class="info-label">Simulation Time</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-value" id="timeStep">0.01</div>
+                    <div class="info-label">Time Step</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-value" id="distanceValue">0</div>
+                    <div class="info-label">Min Distance</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-value" id="speedValue">0</div>
+                    <div class="info-label">Max Speed</div>
+                </div>
+            </div>
+            
+            <div class="formula-display">
+                F = G·m₁·m₂/r²
+            </div>
+            <p style="text-align: center; color: #a0d2ff; margin-bottom: 20px;">
+                Newton's Law of Universal Gravitation
+            </p>
+            
+            <div class="controls">
+                <button class="control-btn" id="runBtn">
+                    <i class="fas fa-play"></i> Run Simulation
+                </button>
+                <button class="control-btn" id="slowBtn">
+                    <i class="fas fa-tachometer-alt"></i> Slow Motion
+                </button>
+                <button class="control-btn" id="trailsBtn">
+                    <i class="fas fa-braille"></i> Toggle Trails
+                </button>
+                <button class="control-btn reset-btn" id="resetBtn">
+                    <i class="fas fa-sync"></i> Reset
+                </button>
+            </div>
+            
+            <div class="chaos-indicator">
+                <div class="level-label">Chaos Level</div>
+                <div class="level-value" id="chaosLevel">Low</div>
+            </div>
+            
+            <div class="physics-principle">
+                <div class="principle-title">
+                    <i class="fas fa-infinity"></i> Three-Body Problem
+                </div>
+                <div class="principle-content">
+                    The three-body problem concerns predicting the motion of three celestial bodies interacting through gravity. Unlike the two-body problem, it has no general closed-form solution and exhibits chaotic behavior.
+                </div>
+            </div>
+            
+            <div class="physics-principle">
+                <div class="principle-title">
+                    <i class="fas fa-expand-arrows-alt"></i> Mathematical Formulation
+                </div>
+                <div class="principle-content">
+                    For bodies i, j, k:
+                    <br><br>
+                    aᵢ = G · Σ (mⱼ · (rⱼ - rᵢ) / ||rⱼ - rᵢ||³)
+                    <br><br>
+                    This system of differential equations is solved numerically.
+                </div>
+            </div>
+            
+            <div class="physics-principle">
+                <div class="principle-title">
+                    <i class="fas fa-cogs"></i> Numerical Solution
+                </div>
+                <div class="principle-content">
+                    We use a fourth-order Runge-Kutta method for numerical integration:
+                    <br><br>
+                    k₁ = h · f(tₙ, yₙ)
+                    <br>
+                    k₂ = h · f(tₙ + h/2, yₙ + k₁/2)
+                    <br>
+                    k₃ = h · f(tₙ + h/2, yₙ + k₂/2)
+                    <br>
+                    k₄ = h · f(tₙ + h, yₙ + k₃)
+                    <br>
+                    yₙ₊₁ = yₙ + (k₁ + 2k₂ + 2k₃ + k₄)/6
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        Three-Body Problem Simulation | Numerical Solution Using Newtonian Physics | Chaotic System Visualization
+    </div>
+
+    <script>
+        // Initialize Three.js scene
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x050418);
+        scene.fog = new THREE.FogExp2(0x0c0b20, 0.015);
+        
+        const container = document.querySelector('.visualization');
+        const camera = new THREE.PerspectiveCamera(60, container.clientWidth / window.innerHeight, 0.1, 5000);
+        const renderer = new THREE.WebGLRenderer({ 
+            canvas: document.getElementById('simulationCanvas'),
+            antialias: true
+        });
+        renderer.setSize(container.clientWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        
+        // Camera position
+        camera.position.set(0, 0, 300);
+        camera.lookAt(0, 0, 0);
+        
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0x333366, 1.5);
+        scene.add(ambientLight);
+        
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        directionalLight.position.set(10, 10, 10);
+        scene.add(directionalLight);
+        
+        // Gravitational constant
+        const G = 6.674;
+        
+        // Three body system
+        const bodies = [];
+        let trails = [];
+        let simulationStep = 0;
+        let initialEnergy = 0;
+        let simulationRunning = true;
+        let showTrails = true;
+        let simulationTime = 0;
+        let timeStep = 0.01;
+        let chaosFactor = 0;
+        let chaosHistory = [];
+        let minDistance = Infinity;
+        let maxSpeed = 0;
+        
+        // Body class
+        class Body {
+            constructor(mass, position, velocity, color, size, name) {
+                this.mass = mass;
+                this.position = position.clone();
+                this.velocity = velocity.clone();
+                this.color = color;
+                this.size = size;
+                this.name = name;
+                this.trail = [];
+                this.maxTrailLength = 200;
+                this.initialPosition = position.clone();
+                this.initialVelocity = velocity.clone();
+                
+                // Create sphere geometry
+                const geometry = new THREE.SphereGeometry(size, 32, 32);
+                const material = new THREE.MeshPhongMaterial({ 
+                    color: color,
+                    emissive: color.clone().multiplyScalar(0.2),
+                    specular: new THREE.Color(0xffffff),
+                    shininess: 30
+                });
+                this.mesh = new THREE.Mesh(geometry, material);
+                this.mesh.position.copy(position);
+                scene.add(this.mesh);
+                
+                // Add glow effect
+                const glowGeometry = new THREE.SphereGeometry(size * 1.3, 32, 32);
+                const glowMaterial = new THREE.MeshBasicMaterial({
+                    color: color,
+                    transparent: true,
+                    opacity: 0.3,
+                    blending: THREE.AdditiveBlending
+                });
+                this.glow = new THREE.Mesh(glowGeometry, glowMaterial);
+                scene.add(this.glow);
+            }
+            
+            updatePosition() {
+                this.mesh.position.copy(this.position);
+                this.glow.position.copy(this.position);
+                
+                // Update trail
+                if (showTrails) {
+                    this.trail.push(this.position.clone());
+                    if (this.trail.length > this.maxTrailLength) {
+                        this.trail.shift();
+                    }
+                }
+            }
+            
+            drawTrail() {
+                // Create trail geometry
+                if (this.trail.length < 2 || !showTrails) return null;
+                
+                const trailGeometry = new THREE.BufferGeometry();
+                const positions = new Float32Array(this.trail.length * 3);
+                
+                for (let i = 0; i < this.trail.length; i++) {
+                    positions[i * 3] = this.trail[i].x;
+                    positions[i * 3 + 1] = this.trail[i].y;
+                    positions[i * 3 + 2] = this.trail[i].z;
+                }
+                
+                trailGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                
+                // Create material with gradient color
+                const trailMaterial = new THREE.LineBasicMaterial({
+                    color: this.color,
+                    transparent: true,
+                    opacity: 0.7,
+                    linewidth: 2
+                });
+                
+                const trailLine = new THREE.Line(trailGeometry, trailMaterial);
+                scene.add(trailLine);
+                
+                return trailLine;
+            }
+            
+            reset() {
+                this.position.copy(this.initialPosition);
+                this.velocity.copy(this.initialVelocity);
+                this.trail = [];
+                this.updatePosition();
+            }
+        }
+        
+        // Initialize bodies in a stable configuration
+        function initBodies(preset = 'chaotic') {
+            // Clear existing bodies
+            bodies.forEach(body => {
+                scene.remove(body.mesh);
+                scene.remove(body.glow);
+            });
+            bodies.length = 0;
+            
+            // Create three bodies with different masses and colors
+            if (preset === 'stable') {
+                // Stable orbital configuration
+                const body1 = new Body(
+                    100, 
+                    new THREE.Vector3(-50, 0, 0),
+                    new THREE.Vector3(0, 5, 0),
+                    new THREE.Color(0xff5555),
+                    15,
+                    "Alpha"
+                );
+                
+                const body2 = new Body(
+                    100, 
+                    new THREE.Vector3(50, 0, 0),
+                    new THREE.Vector3(0, -5, 0),
+                    new THREE.Color(0x55ff55),
+                    15,
+                    "Beta"
+                );
+                
+                const body3 = new Body(
+                    50, 
+                    new THREE.Vector3(0, 100, 0),
+                    new THREE.Vector3(-5, 0, 0),
+                    new THREE.Color(0x5555ff),
+                    10,
+                    "Gamma"
+                );
+                
+                bodies.push(body1, body2, body3);
+            } else if (preset === 'figure8') {
+                // Figure-8 stable orbit
+                const body1 = new Body(
+                    100, 
+                    new THREE.Vector3(-0.97000436, 0.24308753, 0),
+                    new THREE.Vector3(0.466203685, 0.43236573, 0),
+                    new THREE.Color(0xff5555),
+                    15,
+                    "Alpha"
+                );
+                
+                const body2 = new Body(
+                    100, 
+                    new THREE.Vector3(0.97000436, -0.24308753, 0),
+                    new THREE.Vector3(0.466203685, 0.43236573, 0),
+                    new THREE.Color(0x55ff55),
+                    15,
+                    "Beta"
+                );
+                
+                const body3 = new Body(
+                    100, 
+                    new THREE.Vector3(0, 0, 0),
+                    new THREE.Vector3(-0.93240737, -0.86473146, 0),
+                    new THREE.Color(0x5555ff),
+                    15,
+                    "Gamma"
+                );
+                
+                bodies.push(body1, body2, body3);
+            } else if (preset === 'ejection') {
+                // Configuration that leads to ejection
+                const body1 = new Body(
+                    100, 
+                    new THREE.Vector3(-50, 0, 0),
+                    new THREE.Vector3(0, 0, 0),
+                    new THREE.Color(0xff5555),
+                    15,
+                    "Alpha"
+                );
+                
+                const body2 = new Body(
+                    100, 
+                    new THREE.Vector3(50, 0, 0),
+                    new THREE.Vector3(0, 0, 0),
+                    new THREE.Color(0x55ff55),
+                    15,
+                    "Beta"
+                );
+                
+                const body3 = new Body(
+                    50, 
+                    new THREE.Vector3(0, 100, 0),
+                    new THREE.Vector3(15, 0, 0),
+                    new THREE.Color(0x5555ff),
+                    10,
+                    "Gamma"
+                );
+                
+                bodies.push(body1, body2, body3);
+            } else {
+                // Default chaotic configuration
+                const body1 = new Body(
+                    100, 
+                    new THREE.Vector3(-50, 0, 0),
+                    new THREE.Vector3(0, 5, 2),
+                    new THREE.Color(0xff5555),
+                    15,
+                    "Alpha"
+                );
+                
+                const body2 = new Body(
+                    100, 
+                    new THREE.Vector3(50, 0, 0),
+                    new THREE.Vector3(0, -5, -2),
+                    new THREE.Color(0x55ff55),
+                    15,
+                    "Beta"
+                );
+                
+                const body3 = new Body(
+                    50, 
+                    new THREE.Vector3(0, 100, 0),
+                    new THREE.Vector3(-5, 0, 1),
+                    new THREE.Color(0x5555ff),
+                    10,
+                    "Gamma"
+                );
+                
+                bodies.push(body1, body2, body3);
+            }
+            
+            // Calculate initial system energy
+            initialEnergy = calculateSystemEnergy();
+            simulationStep = 0;
+            simulationTime = 0;
+            chaosFactor = 0;
+            chaosHistory = [];
+            minDistance = Infinity;
+            maxSpeed = 0;
+            document.getElementById('stepCount').textContent = simulationStep;
+            document.getElementById('timeValue').textContent = simulationTime.toFixed(2) + 's';
+            document.getElementById('chaosValue').textContent = chaosFactor.toFixed(4);
+            document.getElementById('chaosBar').style.width = '0%';
+            document.getElementById('chaosLevel').textContent = 'Low';
+        }
+        
+        // Calculate gravitational acceleration for a body
+        function calculateAcceleration(body) {
+            const acceleration = new THREE.Vector3(0, 0, 0);
+            
+            for (const otherBody of bodies) {
+                if (otherBody === body) continue;
+                
+                const direction = new THREE.Vector3().subVectors(otherBody.position, body.position);
+                const distance = direction.length();
+                const forceMagnitude = G * body.mass * otherBody.mass / (distance * distance);
+                
+                direction.normalize().multiplyScalar(forceMagnitude / body.mass);
+                acceleration.add(direction);
+            }
+            
+            return acceleration;
+        }
+        
+        // Calculate system energy (kinetic + potential)
+        function calculateSystemEnergy() {
+            let kinetic = 0;
+            let potential = 0;
+            
+            for (let i = 0; i < bodies.length; i++) {
+                const body = bodies[i];
+                kinetic += 0.5 * body.mass * body.velocity.lengthSq();
+                
+                for (let j = i + 1; j < bodies.length; j++) {
+                    const otherBody = bodies[j];
+                    const distance = body.position.distanceTo(otherBody.position);
+                    potential -= G * body.mass * otherBody.mass / distance;
+                }
+            }
+            
+            return kinetic + potential;
+        }
+        
+        // Calculate chaos factor (divergence from initial conditions)
+        function calculateChaosFactor() {
+            let positionDivergence = 0;
+            let velocityDivergence = 0;
+            
+            for (const body of bodies) {
+                positionDivergence += body.position.distanceTo(body.initialPosition);
+                velocityDivergence += body.velocity.distanceTo(body.initialVelocity);
+            }
+            
+            // Normalize and combine factors
+            const positionFactor = positionDivergence / (100 * bodies.length);
+            const velocityFactor = velocityDivergence / (10 * bodies.length);
+            
+            return Math.min(1, (positionFactor + velocityFactor) / 2);
+        }
+        
+        // Find closest approach and max speed
+        function updateSystemMetrics() {
+            minDistance = Infinity;
+            maxSpeed = 0;
+            
+            // Find min distance between any two bodies
+            for (let i = 0; i < bodies.length; i++) {
+                const body = bodies[i];
+                const speed = body.velocity.length();
+                if (speed > maxSpeed) maxSpeed = speed;
+                
+                for (let j = i + 1; j < bodies.length; j++) {
+                    const otherBody = bodies[j];
+                    const distance = body.position.distanceTo(otherBody.position);
+                    if (distance < minDistance) minDistance = distance;
+                }
+            }
+            
+            document.getElementById('distanceValue').textContent = minDistance.toFixed(2);
+            document.getElementById('speedValue').textContent = maxSpeed.toFixed(2);
+        }
+        
+        // Update the system using Runge-Kutta 4th order method
+        function updateSystem(dt) {
+            const k1v = [];
+            const k1r = [];
+            const k2v = [];
+            const k2r = [];
+            const k3v = [];
+            const k3r = [];
+            const k4v = [];
+            const k4r = [];
+            
+            // Step 1: Calculate k1
+            for (let i = 0; i < bodies.length; i++) {
+                const body = bodies[i];
+                k1v[i] = calculateAcceleration(body);
+                k1r[i] = body.velocity.clone();
+            }
+            
+            // Step 2: Calculate k2
+            for (let i = 0; i < bodies.length; i++) {
+                const body = bodies[i];
+                const tempPos = body.position.clone().add(k1r[i].clone().multiplyScalar(dt/2));
+                const tempVel = body.velocity.clone().add(k1v[i].clone().multiplyScalar(dt/2));
+                
+                const tempBody = { position: tempPos, velocity: tempVel, mass: body.mass };
+                k2v[i] = calculateAcceleration(tempBody);
+                k2r[i] = tempVel.clone();
+            }
+            
+            // Step 3: Calculate k3
+            for (let i = 0; i < bodies.length; i++) {
+                const body = bodies[i];
+                const tempPos = body.position.clone().add(k2r[i].clone().multiplyScalar(dt/2));
+                const tempVel = body.velocity.clone().add(k2v[i].clone().multiplyScalar(dt/2));
+                
+                const tempBody = { position: tempPos, velocity: tempVel, mass: body.mass };
+                k3v[i] = calculateAcceleration(tempBody);
+                k3r[i] = tempVel.clone();
+            }
+            
+            // Step 4: Calculate k4
+            for (let i = 0; i < bodies.length; i++) {
+                const body = bodies[i];
+                const tempPos = body.position.clone().add(k3r[i].clone().multiplyScalar(dt));
+                const tempVel = body.velocity.clone().add(k3v[i].clone().multiplyScalar(dt));
+                
+                const tempBody = { position: tempPos, velocity: tempVel, mass: body.mass };
+                k4v[i] = calculateAcceleration(tempBody);
+                k4r[i] = tempVel.clone();
+            }
+            
+            // Update positions and velocities
+            for (let i = 0; i < bodies.length; i++) {
+                const body = bodies[i];
+                
+                // Update velocity
+                const vx = (k1v[i].x + 2*k2v[i].x + 2*k3v[i].x + k4v[i].x) / 6;
+                const vy = (k1v[i].y + 2*k2v[i].y + 2*k3v[i].y + k4v[i].y) / 6;
+                const vz = (k1v[i].z + 2*k2v[i].z + 2*k3v[i].z + k4v[i].z) / 6;
+                
+                body.velocity.x += vx * dt;
+                body.velocity.y += vy * dt;
+                body.velocity.z += vz * dt;
+                
+                // Update position
+                const rx = (k1r[i].x + 2*k2r[i].x + 2*k3r[i].x + k4r[i].x) / 6;
+                const ry = (k1r[i].y + 2*k2r[i].y + 2*k3r[i].y + k4r[i].y) / 6;
+                const rz = (k1r[i].z + 2*k2r[i].z + 2*k3r[i].z + k4r[i].z) / 6;
+                
+                body.position.x += rx * dt;
+                body.position.y += ry * dt;
+                body.position.z += rz * dt;
+                
+                body.updatePosition();
+            }
+            
+            simulationStep++;
+            simulationTime += dt;
+            document.getElementById('stepCount').textContent = simulationStep;
+            document.getElementById('timeValue').textContent = simulationTime.toFixed(2) + 's';
+            
+            // Update chaos factor
+            chaosFactor = calculateChaosFactor();
+            chaosHistory.push(chaosFactor);
+            if (chaosHistory.length > 100) chaosHistory.shift();
+            
+            // Update chaos display
+            document.getElementById('chaosValue').textContent = chaosFactor.toFixed(4);
+            document.getElementById('chaosBar').style.width = (chaosFactor * 100) + '%';
+            
+            if (chaosFactor < 0.1) {
+                document.getElementById('chaosLevel').textContent = 'Low';
+                document.getElementById('chaosBar').style.background = '#00c9ff';
+            } else if (chaosFactor < 0.5) {
+                document.getElementById('chaosLevel').textContent = 'Medium';
+                document.getElementById('chaosBar').style.background = '#ffcc00';
+            } else {
+                document.getElementById('chaosLevel').textContent = 'High';
+                document.getElementById('chaosBar').style.background = '#ff416c';
+            }
+            
+            // Update energy conservation display
+            const currentEnergy = calculateSystemEnergy();
+            const energyRatio = (currentEnergy / initialEnergy * 100).toFixed(2);
+            document.getElementById('energyValue').textContent = `${energyRatio}%`;
+            
+            // Update system metrics
+            updateSystemMetrics();
+        }
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (simulationRunning) {
+                // Clear previous trails
+                trails.forEach(trail => scene.remove(trail));
+                trails = [];
+                
+                // Update physics
+                updateSystem(timeStep);
+                
+                // Draw trails
+                for (const body of bodies) {
+                    const trail = body.drawTrail();
+                    if (trail) trails.push(trail);
+                }
+            }
+            
+            // Rotate camera slowly
+            const time = Date.now() * 0.0001;
+            camera.position.x = Math.sin(time) * 300;
+            camera.position.z = Math.cos(time) * 300;
+            camera.lookAt(0, 0, 0);
+            
+            renderer.render(scene, camera);
+        }
+        
+        // Event listeners
+        document.getElementById('runBtn').addEventListener('click', function() {
+            simulationRunning = !simulationRunning;
+            this.innerHTML = simulationRunning ? 
+                '<i class="fas fa-pause"></i> Pause Simulation' : 
+                '<i class="fas fa-play"></i> Run Simulation';
+        });
+        
+        document.getElementById('slowBtn').addEventListener('click', function() {
+            timeStep = timeStep === 0.01 ? 0.001 : 0.01;
+            document.getElementById('timeStep').textContent = timeStep;
+            this.innerHTML = timeStep === 0.001 ? 
+                '<i class="fas fa-tachometer-alt"></i> Normal Speed' : 
+                '<i class="fas fa-tachometer-alt"></i> Slow Motion';
+        });
+        
+        document.getElementById('trailsBtn').addEventListener('click', function() {
+            showTrails = !showTrails;
+            this.innerHTML = showTrails ? 
+                '<i class="fas fa-braille"></i> Hide Trails' : 
+                '<i class="fas fa-braille"></i> Show Trails';
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', function() {
+            initBodies();
+        });
+        
+        // Preset buttons
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                initBodies(this.dataset.preset);
+            });
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, window.innerHeight);
+        });
+        
+        // Initialize the simulation
+        initBodies();
+        
+        // Start animation
+        animate();
+    </script>
+</body>
+</html>

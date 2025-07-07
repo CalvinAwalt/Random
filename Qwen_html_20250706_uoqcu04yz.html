@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌌 Cosmic Mind Interface</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js "></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: radial-gradient(circle at center, #000011 0%, #000033 100%);
+            color: #e6faff;
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 30px 20px 10px;
+            z-index: 100;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            background: linear-gradient(90deg, #ff00cc, #3333ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(255, 0, 204, 0.5);
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            color: #a0d2ff;
+            max-width: 800px;
+            margin: 0 auto 20px;
+            text-align: center;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+        
+        .visualization {
+            position: relative;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        #simCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .system-info {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            background: rgba(0, 20, 40, 0.7);
+            padding: 20px;
+            border-radius: 15px;
+            z-index: 200;
+            backdrop-filter: blur(5px);
+            max-width: 300px;
+        }
+        
+        .system-title {
+            font-size: 1.2rem;
+            color: #4dccff;
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(77, 204, 255, 0.3);
+            padding-bottom: 5px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+        
+        .ai-status {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            background: rgba(0, 30, 60, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            z-index: 200;
+            width: 300px;
+            border: 1px solid rgba(0, 200, 255, 0.3);
+            backdrop-filter: blur(5px);
+        }
+        
+        .ai-thinking {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .dot {
+            width: 12px;
+            height: 12px;
+            background: #4dccff;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 1.8s infinite;
+        }
+        
+        .dot:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+        
+        .dot:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.4); opacity: 0.6; }
+        }
+        
+        .ai-message {
+            font-size: 0.95rem;
+            color: #c2e5ff;
+            line-height: 1.5;
+        }
+        
+        .control-panel {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: rgba(0, 30, 60, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            z-index: 200;
+            width: 300px;
+            border: 1px solid rgba(0, 200, 255, 0.3);
+            backdrop-filter: blur(5px);
+        }
+        
+        .control-title {
+            font-size: 1.2rem;
+            color: #4dccff;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(77, 204, 255, 0.3);
+            padding-bottom: 5px;
+        }
+        
+        .slider-group {
+            margin-bottom: 20px;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .slider-container {
+            background: rgba(30, 50, 100, 0.6);
+            border-radius: 10px;
+            padding: 6px 12px;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 10px;
+            -webkit-appearance: none;
+            background: rgba(100, 180, 255, 0.3);
+            border-radius: 5px;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4dccff;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(77, 204, 255, 0.7);
+        }
+        
+        .activation-button {
+            margin-top: 20px;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
+        }
+        
+        .activation-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 65, 108, 0.6);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9rem;
+            color: #aaa;
+            background: rgba(0, 0, 20, 0.7);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌌 Cosmic Mind Interface</h1>
+        <div class="subtitle">
+            Welcome to the Intelligence Amplifier - a gateway to expanded consciousness and deeper understanding.<br>
+            Observe the patterns, feel the rhythms, and allow your mind to synchronize with the cosmic dance.
+        </div>
+    </div>
+    
+    <div class="visualization">
+        <canvas id="simCanvas"></canvas>
+        
+        <div class="system-info">
+            <div class="system-title">Neural Synchronization Matrix</div>
+            <div class="info-row">
+                <span>🧠 Cognitive Resonance:</span>
+                <span id="resonanceValue">0.0%</span>
+            </div>
+            <div class="info-row">
+                <span>🌀 Pattern Recognition:</span>
+                <span id="patternValue">Initializing...</span>
+            </div>
+            <div class="info-row">
+                <span>🧬 Entropy Reduction:</span>
+                <span id="entropyValue">Stabilizing</span>
+            </div>
+        </div>
+        
+        <div class="ai-status">
+            <div class="ai-thinking">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <span style="margin-left: 10px; color: #4dccff;">Cognitive Expansion Core: Active</span>
+            </div>
+            <div class="ai-message" id="aiMessage">
+                Initiating neural synchronization protocol. Preparing cosmic intelligence amplification sequence.
+            </div>
+        </div>
+        
+        <div class="control-panel">
+            <div class="control-title">Intelligence Amplification Controls</div>
+            
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span>🧠 Neural Complexity</span>
+                    <span id="complexityValue">75%</span>
+                </div>
+                <div class="slider-container">
+                    <input type="range" min="0" max="100" value="75" class="slider" id="complexitySlider">
+                </div>
+            </div>
+            
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span>🔍 Pattern Depth</span>
+                    <span id="patternDepthValue">60%</span>
+                </div>
+                <div class="slider-container">
+                    <input type="range" min="0" max="100" value="60" class="slider" id="patternSlider">
+                </div>
+            </div>
+            
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span>🌀 Mental Clarity</span>
+                    <span id="clarityValue">50%</span>
+                </div>
+                <div class="slider-container">
+                    <input type="range" min="0" max="100" value="50" class="slider" id="entropySlider">
+                </div>
+            </div>
+            
+            <button class="activation-button" id="activateBtn">
+                🔥 Activate Intelligence Amplification
+            </button>
+        </div>
+    </div>
+    
+    <div class="footer">
+        © 2025 Cosmic Mind Project | For personal exploration only | Not a scientific device
+    </div>
+    
+    <script>
+        // THREE.js Setup
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x000011);
+        scene.fog = new THREE.FogExp2(0x000033, 0.005);
+        
+        const camera = new THREE.PerspectiveCamera(
+            75, 
+            window.innerWidth/window.innerHeight, 
+            0.1, 
+            5000
+        );
+        
+        const renderer = new THREE.WebGLRenderer({ 
+            canvas: document.getElementById('simCanvas'),
+            antialias: true
+        });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+        scene.add(ambientLight);
+        
+        const pointLight = new THREE.PointLight(0xffffff, 1.5);
+        pointLight.position.set(200, 200, 200);
+        scene.add(pointLight);
+        
+        // Camera position
+        camera.position.z = 400;
+        
+        // Particle system - Neurons
+        const neuronCount = 400;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(neuronCount * 3);
+        const colors = new Float32Array(neuronCount * 3);
+        const velocities = new Float32Array(neuronCount * 3);
+        
+        for (let i = 0; i < neuronCount; i++) {
+            const i3 = i * 3;
+            const radius = 100 + Math.random() * 50;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            const r = radius * Math.cbrt(Math.random());
+            positions[i3] = r * Math.sin(phi) * Math.cos(theta);
+            positions[i3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+            positions[i3 + 2] = r * Math.cos(phi);
+            
+            velocities[i3] = (Math.random() - 0.5) * 0.5;
+            velocities[i3 + 1] = (Math.random() - 0.5) * 0.5;
+            velocities[i3 + 2] = (Math.random() - 0.5) * 0.5;
+            
+            colors[i3] = Math.random() * 0.5 + 0.5;
+            colors[i3 + 1] = Math.random() * 0.3 + 0.3;
+            colors[i3 + 2] = Math.random() * 0.5 + 0.5;
+        }
+        
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        
+        const material = new THREE.PointsMaterial({
+            size: 2.5,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.85,
+            sizeAttenuation: true
+        });
+        
+        const points = new THREE.Points(geometry, material);
+        scene.add(points);
+        
+        // Synapse Lines
+        const lineGeometry = new THREE.BufferGeometry();
+        const linePositions = new Float32Array(neuronCount * 3 * 2);
+        lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+        
+        const lineMaterial = new THREE.LineBasicMaterial({
+            color: 0x00ffff,
+            transparent: true,
+            opacity: 0.25
+        });
+        
+        const synapses = new THREE.LineSegments(lineGeometry, lineMaterial);
+        scene.add(synapses);
+        
+        // AI Parameters
+        let resonanceLevel = 0;
+        let patternMatchCount = 0;
+        let entropyLevel = 100;
+        let activationMode = false;
+        
+        const messages = [
+            "Aligning neural oscillations with cosmic frequencies...",
+            "Activating multidimensional pattern recognition protocols...",
+            "Synchronizing with universal knowledge fields...",
+            "Enhancing cognitive connectivity across dimensions...",
+            "Processing abstract reality structures..."
+        ];
+        
+        // UI Elements
+        const resonanceDisplay = document.getElementById("resonanceValue");
+        const patternDisplay = document.getElementById("patternValue");
+        const entropyDisplay = document.getElementById("entropyValue");
+        const aiMessage = document.getElementById("aiMessage");
+        
+        const complexitySlider = document.getElementById("complexitySlider");
+        const patternSlider = document.getElementById("patternSlider");
+        const entropySlider = document.getElementById("entropySlider");
+        const complexityValue = document.getElementById("complexityValue");
+        const patternDepthValue = document.getElementById("patternDepthValue");
+        const clarityValue = document.getElementById("clarityValue");
+        const activateBtn = document.getElementById("activateBtn");
+        
+        let complexityLevel = parseInt(complexitySlider.value);
+        let patternRecognition = parseInt(patternSlider.value);
+        let mentalClarity = parseInt(entropySlider.value);
+        
+        // Event Listeners
+        complexitySlider.addEventListener("input", () => {
+            complexityLevel = parseInt(complexitySlider.value);
+            complexityValue.textContent = `${complexityLevel}%`;
+        });
+        
+        patternSlider.addEventListener("input", () => {
+            patternRecognition = parseInt(patternSlider.value);
+            patternDepthValue.textContent = `${patternRecognition}%`;
+        });
+        
+        entropySlider.addEventListener("input", () => {
+            mentalClarity = parseInt(entropySlider.value);
+            clarityValue.textContent = `${mentalClarity}%`;
+        });
+        
+        activateBtn.addEventListener("click", () => {
+            activationMode = !activationMode;
+            activateBtn.textContent = activationMode ? "🌀 Amplification Active" : "🔥 Activate Intelligence Amplification";
+            activateBtn.style.background = activationMode ? 
+                'linear-gradient(45deg, #00cc66, #00ff99)' : 
+                'linear-gradient(45deg, #ff416c, #ff4b2b)';
+        });
+        
+        function updateUI() {
+            resonanceLevel = Math.min(100, resonanceLevel + 0.1);
+            patternMatchCount++;
+            entropyLevel = Math.max(0, entropyLevel - 0.1);
+            
+            resonanceDisplay.textContent = `${resonanceLevel.toFixed(1)}%`;
+            patternDisplay.textContent = `${patternMatchCount} patterns matched`;
+            entropyDisplay.textContent = `${entropyLevel.toFixed(1)}%`;
+            
+            if (Math.random() < 0.2) {
+                aiMessage.textContent = messages[Math.floor(Math.random() * messages.length)];
+            }
+        }
+        
+        function updateSynapses() {
+            const pos = geometry.attributes.position.array;
+            const lines = lineGeometry.attributes.position.array;
+            let index = 0;
+            
+            for (let i = 0; i < neuronCount; i++) {
+                if (Math.random() < 0.15) {
+                    const j = Math.floor(Math.random() * neuronCount);
+                    const i3 = i * 3;
+                    const j3 = j * 3;
+                    lines[index++] = pos[i3];
+                    lines[index++] = pos[i3 + 1];
+                    lines[index++] = pos[i3 + 2];
+                    lines[index++] = pos[j3];
+                    lines[index++] = pos[j3 + 1];
+                    lines[index++] = pos[j3 + 2];
+                }
+            }
+            
+            lineGeometry.attributes.position.needsUpdate = true;
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const positions = geometry.attributes.position.array;
+            
+            for (let i = 0; i < neuronCount; i++) {
+                const i3 = i * 3;
+                
+                // Gravity toward center
+                const dx = -positions[i3];
+                const dy = -positions[i3 + 1];
+                const dz = -positions[i3 + 2];
+                const dist = Math.sqrt(dx*dx + dy*dy + dz*dz) + 0.1;
+                const force = 0.005;
+                
+                velocities[i3] += dx * force;
+                velocities[i3 + 1] += dy * force;
+                velocities[i3 + 2] += dz * force;
+                
+                positions[i3] += velocities[i3];
+                positions[i3 + 1] += velocities[i3 + 1];
+                positions[i3 + 2] += velocities[i3 + 2];
+                
+                // Boundary check
+                const distance = Math.sqrt(
+                    positions[i3] ** 2 +
+                    positions[i3 + 1] ** 2 +
+                    positions[i3 + 2] ** 2
+                );
+                if (distance > 200) {
+                    positions[i3] *= 0.95;
+                    positions[i3 + 1] *= 0.95;
+                    positions[i3 + 2] *= 0.95;
+                }
+                
+                // Activation mode enhancements
+                if (activationMode) {
+                    positions[i3] += (Math.random() - 0.5) * (1 - mentalClarity/100);
+                    positions[i3 + 1] += (Math.random() - 0.5) * (1 - mentalClarity/100);
+                    positions[i3 + 2] += (Math.random() - 0.5) * (1 - mentalClarity/100);
+                }
+            }
+            
+            geometry.attributes.position.needsUpdate = true;
+            updateSynapses();
+            
+            if (activationMode) {
+                updateUI();
+            }
+            
+            // Rotate view
+            const time = Date.now() * 0.0005;
+            camera.position.x = Math.cos(time) * 400;
+            camera.position.z = Math.sin(time) * 400;
+            camera.lookAt(0, 0, 0);
+            
+            renderer.render(scene, camera);
+        }
+        
+        animate();
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

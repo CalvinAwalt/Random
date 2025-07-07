@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Neural Simulator: Brain Mapping Interface</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js "></script>
+    <style>
+        body {
+            margin: 0;
+            background: radial-gradient(circle at center, #0d0d0d, #000);
+            color: #fff;
+            font-family: sans-serif;
+            overflow: hidden;
+        }
+        canvas { display: block; }
+        .ui-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            width: 300px;
+            box-shadow: 0 0 20px #0ff3;
+        }
+        label {
+            font-size: 0.9rem;
+            display: block;
+            margin-top: 10px;
+        }
+        input[type=range] {
+            width: 100%;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 15px;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="ui-panel">
+    <label>Neuron Density: <span id="densityValue">100</span></label>
+    <input type="range" min="10" max="500" value="100" id="densitySlider">
+
+    <label>Synapse Strength: <span id="synapseValue">0.5</span></label>
+    <input type="range" min="0" max="1" step="0.01" value="0.5" id="synapseSlider">
+
+    <label>Neural Activity: <span id="activityValue">0.3</span></label>
+    <input type="range" min="0" max="1" step="0.01" value="0.3" id="activitySlider">
+
+    <button id="toggleAI">🧠 AI Mode: OFF</button>
+</div>
+
+<canvas id="brainCanvas"></canvas>
+
+<script>
+    // Three.js Setup
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x000000);
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 2000);
+    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('brainCanvas') });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    scene.add(ambientLight);
+    const pointLight = new THREE.PointLight(0xffffff, 1);
+    pointLight.position.set(100, 100, 100);
+    scene.add(pointLight);
+
+    // Neuron System
+    const neuronCount = 100;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(neuronCount * 3);
+    const colors = new Float32Array(neuronCount * 3);
+    const activity = new Float32Array(neuronCount); // neuron activation level
+
+    for (let i = 0; i < neuronCount; i++) {
+        const i3 = i * 3;
+        // Random positions in sphere
+        const radius = 100;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        const r = radius * Math.cbrt(Math.random());
+        positions[i3] = r * Math.sin(phi) * Math.cos(theta);
+        positions[i3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+        positions[i3 + 2] = r * Math.cos(phi);
+        // Initial colors
+        colors[i3] = 0.5 + Math.random() * 0.5;
+        colors[i3 + 1] = 0.2 + Math.random() * 0.3;
+        colors[i3 + 2] = 0.5 + Math.random() * 0.5;
+        activity[i] = 0;
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+    const material = new THREE.PointsMaterial({
+        size: 3,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.8
+    });
+
+    const neurons = new THREE.Points(geometry, material);
+    scene.add(neurons);
+
+    // Synapse Connections
+    const lineGeometry = new THREE.BufferGeometry();
+    const linePositions = new Float32Array(neuronCount * 3 * 2); // each line connects two points
+    lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+
+    const lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffff, opacity: 0.3, transparent: true });
+    const synapses = new THREE.LineSegments(lineGeometry, lineMaterial);
+    scene.add(synapses);
+
+    // UI Elements
+    const densitySlider = document.getElementById("densitySlider");
+    const synapseSlider = document.getElementById("synapseSlider");
+    const activitySlider = document.getElementById("activitySlider");
+    const aiBtn = document.getElementById("toggleAI");
+
+    let neuronDensity = parseInt(densitySlider.value);
+    let synapseStrength = parseFloat(synapseSlider.value);
+    let neuralActivity = parseFloat(activitySlider.value);
+    let aiMode = false;
+
+    densitySlider.addEventListener("input", () => {
+        neuronDensity = parseInt(densitySlider.value);
+        document.getElementById("densityValue").textContent = neuronDensity;
+    });
+
+    synapseSlider.addEventListener("input", () => {
+        synapseStrength = parseFloat(synapseSlider.value);
+        document.getElementById("synapseValue").textContent = synapseStrength.toFixed(2);
+    });
+
+    activitySlider.addEventListener("input", () => {
+        neuralActivity = parseFloat(activitySlider.value);
+        document.getElementById("activityValue").textContent = neuralActivity.toFixed(2);
+    });
+
+    aiBtn.addEventListener("click", () => {
+        aiMode = !aiMode;
+        aiBtn.textContent = aiMode ? "🧠 AI Mode: ON" : "🧠 AI Mode: OFF";
+    });
+
+    // Update Synapses
+    function updateSynapses() {
+        const pos = geometry.attributes.position.array;
+        const lines = lineGeometry.attributes.position.array;
+        let index = 0;
+
+        for (let i = 0; i < neuronCount; i++) {
+            if (Math.random() < synapseStrength) {
+                const j = Math.floor(Math.random() * neuronCount);
+                const i3 = i * 3;
+                const j3 = j * 3;
+                lines[index++] = pos[i3];
+                lines[index++] = pos[i3 + 1];
+                lines[index++] = pos[i3 + 2];
+                lines[index++] = pos[j3];
+                lines[index++] = pos[j3 + 1];
+                lines[index++] = pos[j3 + 2];
+            }
+        }
+        lineGeometry.attributes.position.needsUpdate = true;
+    }
+
+    // AI Neural Activation
+    function activateNeurons() {
+        const colors = geometry.attributes.color.array;
+        const act = activity;
+        for (let i = 0; i < neuronCount; i++) {
+            if (Math.random() < neuralActivity) {
+                act[i] = Math.min(act[i] + 0.1, 1);
+            } else {
+                act[i] = Math.max(act[i] - 0.02, 0);
+            }
+            const cIndex = i * 3;
+            colors[cIndex] = 0.5 + act[i] * 0.5;
+            colors[cIndex + 1] = 0.2 + act[i] * 0.3;
+            colors[cIndex + 2] = 0.5 + act[i] * 0.5;
+        }
+        geometry.attributes.color.needsUpdate = true;
+    }
+
+    // Animation Loop
+    function animate() {
+        requestAnimationFrame(animate);
+        if (aiMode) {
+            activateNeurons();
+            updateSynapses();
+        }
+
+        // Rotate view
+        const time = Date.now() * 0.0005;
+        camera.position.x = Math.cos(time) * 300;
+        camera.position.z = Math.sin(time) * 300;
+        camera.lookAt(0, 0, 0);
+
+        renderer.render(scene, camera);
+    }
+
+    // Camera
+    camera.position.z = 300;
+
+    // Resize handler
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    animate();
+</script>
+</body>
+</html>

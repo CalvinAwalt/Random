@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Universal Simulator: AI Reality Engine</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js "></script>
+    <style>
+        body {
+            margin: 0;
+            background: radial-gradient(circle at center, #000 0%, #0f0f2d 100%);
+            color: #fff;
+            font-family: sans-serif;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+        .ui-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            width: 300px;
+            box-shadow: 0 0 20px #0ff3;
+        }
+        .slider-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        input[type=range] {
+            width: 100%;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background: #00ccff;
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .status {
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+<div class="ui-panel">
+    <div class="slider-group">
+        <label>Gravity: <span id="gravityValue">1.0</span></label>
+        <input type="range" min="0" max="10" step="0.1" id="gravitySlider" value="1">
+    </div>
+    <div class="slider-group">
+        <label>Time Flow: <span id="timeValue">1.0</span></label>
+        <input type="range" min="0.1" max="5" step="0.1" id="timeSlider" value="1">
+    </div>
+    <div class="slider-group">
+        <label>Entropy: <span id="entropyValue">0.5</span></label>
+        <input type="range" min="0" max="1" step="0.01" id="entropySlider" value="0.5">
+    </div>
+    <div class="slider-group">
+        <label>Quantum Noise: <span id="noiseValue">0.2</span></label>
+        <input type="range" min="0" max="1" step="0.01" id="noiseSlider" value="0.2">
+    </div>
+    <button id="aiBtn">AI Control: OFF</button>
+    <div class="status" id="aiStatus">Reality Stability: Normal</div>
+</div>
+
+<script>
+    // THREE.js Setup
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x000000);
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 2000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambientLight);
+    const pointLight = new THREE.PointLight(0xffffff, 1);
+    pointLight.position.set(100, 100, 100);
+    scene.add(pointLight);
+
+    // Universe Particles
+    const particleCount = 500;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const velocities = new Float32Array(particleCount * 3);
+
+    for (let i = 0; i < particleCount; i++) {
+        const i3 = i * 3;
+        positions[i3] = (Math.random() - 0.5) * 400;
+        positions[i3 + 1] = (Math.random() - 0.5) * 400;
+        positions[i3 + 2] = (Math.random() - 0.5) * 400;
+
+        velocities[i3] = (Math.random() - 0.5) * 2;
+        velocities[i3 + 1] = (Math.random() - 0.5) * 2;
+        velocities[i3 + 2] = (Math.random() - 0.5) * 2;
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const material = new THREE.PointsMaterial({
+        color: 0x00ffff,
+        size: 2,
+        transparent: true,
+        opacity: 0.7
+    });
+
+    const points = new THREE.Points(geometry, material);
+    scene.add(points);
+
+    // UI Elements
+    const gravitySlider = document.getElementById("gravitySlider");
+    const timeSlider = document.getElementById("timeSlider");
+    const entropySlider = document.getElementById("entropySlider");
+    const noiseSlider = document.getElementById("noiseSlider");
+    const aiBtn = document.getElementById("aiBtn");
+    const statusText = document.getElementById("aiStatus");
+
+    let gravity = parseFloat(gravitySlider.value);
+    let timeFlow = parseFloat(timeSlider.value);
+    let entropy = parseFloat(entropySlider.value);
+    let quantumNoise = parseFloat(noiseSlider.value);
+    let aiMode = false;
+
+    gravitySlider.addEventListener("input", () => {
+        gravity = parseFloat(gravitySlider.value);
+        document.getElementById("gravityValue").textContent = gravity.toFixed(2);
+    });
+
+    timeSlider.addEventListener("input", () => {
+        timeFlow = parseFloat(timeSlider.value);
+        document.getElementById("timeValue").textContent = timeFlow.toFixed(2);
+    });
+
+    entropySlider.addEventListener("input", () => {
+        entropy = parseFloat(entropySlider.value);
+        document.getElementById("entropyValue").textContent = entropy.toFixed(2);
+    });
+
+    noiseSlider.addEventListener("input", () => {
+        quantumNoise = parseFloat(noiseSlider.value);
+        document.getElementById("noiseValue").textContent = quantumNoise.toFixed(2);
+    });
+
+    aiBtn.addEventListener("click", () => {
+        aiMode = !aiMode;
+        aiBtn.textContent = aiMode ? "AI Control: ON" : "AI Control: OFF";
+    });
+
+    function updateAI() {
+        if (!aiMode) return;
+        // Randomly adjust values
+        gravity = Math.max(0, Math.min(10, gravity + (Math.random() - 0.5) * 0.5));
+        timeFlow = Math.max(0.1, Math.min(5, timeFlow + (Math.random() - 0.5) * 0.2));
+        entropy = Math.max(0, Math.min(1, entropy + (Math.random() - 0.5) * 0.05));
+        quantumNoise = Math.max(0, Math.min(1, quantumNoise + (Math.random() - 0.5) * 0.05));
+
+        gravitySlider.value = gravity.toFixed(2);
+        timeSlider.value = timeFlow.toFixed(2);
+        entropySlider.value = entropy.toFixed(2);
+        noiseSlider.value = quantumNoise.toFixed(2);
+
+        document.getElementById("gravityValue").textContent = gravity.toFixed(2);
+        document.getElementById("timeValue").textContent = timeFlow.toFixed(2);
+        document.getElementById("entropyValue").textContent = entropy.toFixed(2);
+        document.getElementById("noiseValue").textContent = quantumNoise.toFixed(2);
+
+        statusText.textContent = "AI is recalibrating universal constants...";
+    }
+
+    // Animation Loop
+    function animate() {
+        requestAnimationFrame(animate);
+        const positions = geometry.attributes.position.array;
+
+        for (let i = 0; i < particleCount; i++) {
+            const i3 = i * 3;
+
+            // Gravity toward center
+            const dx = -positions[i3];
+            const dy = -positions[i3 + 1];
+            const dz = -positions[i3 + 2];
+            const dist = Math.sqrt(dx*dx + dy*dy + dz*dz) + 0.1;
+            const force = gravity / (dist * dist);
+
+            velocities[i3] += dx * force * 0.01 * timeFlow;
+            velocities[i3 + 1] += dy * force * 0.01 * timeFlow;
+            velocities[i3 + 2] += dz * force * 0.01 * timeFlow;
+
+            // Apply velocity
+            positions[i3] += velocities[i3] * timeFlow;
+            positions[i3 + 1] += velocities[i3 + 1] * timeFlow;
+            positions[i3 + 2] += velocities[i3 + 2] * timeFlow;
+
+            // Entropy drift
+            positions[i3] += (Math.random() - 0.5) * entropy * 2;
+            positions[i3 + 1] += (Math.random() - 0.5) * entropy * 2;
+            positions[i3 + 2] += (Math.random() - 0.5) * entropy * 2;
+
+            // Quantum noise
+            if (Math.random() < quantumNoise) {
+                positions[i3] += (Math.random() - 0.5) * 10;
+                positions[i3 + 1] += (Math.random() - 0.5) * 10;
+                positions[i3 + 2] += (Math.random() - 0.5) * 10;
+            }
+        }
+
+        geometry.attributes.position.needsUpdate = true;
+
+        // AI updates
+        updateAI();
+
+        // Camera orbit
+        const time = Date.now() * 0.0005;
+        camera.position.x = Math.cos(time) * 300;
+        camera.position.z = Math.sin(time) * 300;
+        camera.lookAt(0, 0, 0);
+
+        renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // Responsive resize
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth/window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+</script>
+</body>
+</html>

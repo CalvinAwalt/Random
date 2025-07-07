@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Manipulator: AI Physics Control System</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: radial-gradient(circle at center, #0c0b20 0%, #050418 100%);
+            color: #e6f7ff;
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(10, 20, 50, 0.7);
+            border-bottom: 1px solid rgba(100, 180, 255, 0.3);
+            z-index: 100;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            color: #4dccff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px rgba(77, 204, 255, 0.7);
+            background: linear-gradient(90deg, #ff00cc, #3333ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a0d2ff;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            display: flex;
+            flex: 1;
+            position: relative;
+            height: calc(100vh - 130px);
+        }
+        
+        .visualization {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #simulationCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .control-panel {
+            width: 400px;
+            background: rgba(10, 20, 50, 0.9);
+            padding: 25px;
+            overflow-y: auto;
+            border-left: 1px solid rgba(100, 180, 255, 0.3);
+            box-shadow: -5px 0 25px rgba(0, 50, 150, 0.3);
+            z-index: 50;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            margin: 25px 0 15px;
+            color: #4dccff;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(77, 204, 255, 0.5);
+        }
+        
+        .physics-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .info-card {
+            background: rgba(30, 50, 100, 0.7);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .info-card:hover {
+            transform: translateY(-5px);
+            background: rgba(40, 60, 120, 0.8);
+        }
+        
+        .info-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+            background: linear-gradient(45deg, #00c9ff, #92fe9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .info-label {
+            font-size: 0.9rem;
+            color: #a0d2ff;
+        }
+        
+        .formula-display {
+            background: rgba(0, 30, 60, 0.7);
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Cambria Math', serif;
+            font-size: 1.4rem;
+            text-align: center;
+            margin: 20px 0;
+            border: 1px solid rgba(0, 200, 255, 0.3);
+            box-shadow: 0 0 25px rgba(0, 200, 255, 0.3);
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .control-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #0072ff, #00c6ff);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 114, 255, 0.4);
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 114, 255, 0.6);
+        }
+        
+        .reset-btn {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
+        }
+        
+        .chaos-indicator {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            background: rgba(30, 50, 100, 0.6);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .level-label {
+            width: 150px;
+            font-size: 1rem;
+            color: #a0d2ff;
+        }
+        
+        .level-value {
+            flex: 1;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .physics-principle {
+            background: rgba(30, 50, 100, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(100, 200, 255, 0.3);
+        }
+        
+        .principle-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #4dccff;
+            display: flex;
+            align-items: center;
+        }
+        
+        .principle-title i {
+            margin-right: 12px;
+            font-size: 1.5rem;
+        }
+        
+        .principle-content {
+            color: #c2e5ff;
+            line-height: 1.6;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 15px;
+            background: rgba(10, 20, 50, 0.7);
+            border-top: 1px solid rgba(100, 180, 255, 0.3);
+            font-size: 0.9rem;
+            color: #a0d2ff;
+        }
+        
+        @media (max-width: 1100px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .control-panel {
+                width: 100%;
+                border-left: none;
+                border-top: 1px solid rgba(100, 180, 255, 0.3);
+            }
+        }
+        
+        .system-info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 20, 40, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 200;
+            max-width: 300px;
+        }
+        
+        .chaos-bar {
+            height: 20px;
+            background: linear-gradient(90deg, #00c9ff, #ff416c);
+            border-radius: 10px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .chaos-level {
+            height: 100%;
+            width: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: width 0.5s ease;
+        }
+        
+        .config-presets {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .preset-btn {
+            padding: 10px;
+            background: rgba(40, 70, 130, 0.7);
+            border: 1px solid rgba(100, 180, 255, 0.3);
+            border-radius: 8px;
+            color: #a0d2ff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .preset-btn:hover {
+            background: rgba(60, 100, 180, 0.7);
+            transform: translateY(-2px);
+        }
+        
+        .ai-status {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 30, 60, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 200;
+            width: 300px;
+            border: 1px solid rgba(0, 200, 255, 0.3);
+        }
+        
+        .ai-thinking {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .ai-thinking .dot {
+            width: 10px;
+            height: 10px;
+            background: #4dccff;
+            border-radius: 50%;
+            margin: 0 3px;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .ai-thinking .dot:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+        
+        .ai-thinking .dot:nth-child(3) {
+            animation-delay: 1s;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+        }
+        
+        .ai-message {
+            font-size: 0.9rem;
+            color: #a0d2ff;
+            line-height: 1.5;
+        }
+        
+        .physics-slider {
+            margin: 15px 0;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .slider-container {
+            background: rgba(30, 50, 100, 0.6);
+            border-radius: 10px;
+            padding: 8px 15px;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 10px;
+            -webkit-appearance: none;
+            background: rgba(100, 180, 255, 0.3);
+            border-radius: 5px;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4dccff;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(77, 204, 255, 0.7);
+        }
+        
+        .quantum-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 30, 60, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 200;
+            width: 300px;
+            border: 1px solid rgba(0, 200, 255, 0.3);
+        }
+        
+        .quantum-effect {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(30, 50, 100, 0.6);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .quantum-effect:hover {
+            background: rgba(40, 70, 130, 0.8);
+            transform: translateX(5px);
+        }
+        
+        .effect-name {
+            font-weight: bold;
+            color: #4dccff;
+        }
+        
+        .effect-desc {
+            font-size: 0.8rem;
+            color: #a0d2ff;
+            margin-top: 5px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Quantum Manipulator: AI Physics Control System</h1>
+        <div class="subtitle">Simulating Future Artificial Intelligence Capable of Altering Physical Laws</div>
+    </div>
+    
+    <div class="container">
+        <div class="visualization">
+            <canvas id="simulationCanvas"></canvas>
+            
+            <div class="system-info">
+                <h3>Quantum Reality Matrix</h3>
+                <p>• Temporal Stability: <span id="stabilityValue">98.7%</span></p>
+                <p>• Entanglement Factor: <span id="entanglementValue">0.64</span></p>
+                <p>• Dimensional Integrity: <span id="dimensionValue">3.8/4</span></p>
+            </div>
+            
+            <div class="ai-status">
+                <div class="ai-thinking">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <span style="margin-left: 10px; color: #4dccff;">AI Quantum Processor: Active</span>
+                </div>
+                <div class="ai-message" id="aiMessage">
+                    Adjusting gravitational constant to stabilize quantum entanglement fields. Reality coherence at optimal levels.
+                </div>
+            </div>
+            
+            <div class="quantum-panel">
+                <h3>Quantum Effects</h3>
+                <div class="quantum-effect" id="effectSuperposition">
+                    <div class="effect-name">Quantum Superposition</div>
+                    <div class="effect-desc">Enable particles to exist in multiple states simultaneously</div>
+                </div>
+                <div class="quantum-effect" id="effectEntanglement">
+                    <div class="effect-name">Quantum Entanglement</div>
+                    <div class="effect-desc">Link particle states across any distance</div>
+                </div>
+                <div class="quantum-effect" id="effectTunneling">
+                    <div class="effect-name">Quantum Tunneling</div>
+                    <div class="effect-desc">Allow particles to pass through barriers</div>
+                </div>
+                <div class="quantum-effect" id="effectDecoherence">
+                    <div class="effect-name">Decoherence Control</div>
+                    <div class="effect-desc">Maintain quantum states against environmental interference</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="control-panel">
+            <div class="section-title">Physics Parameters</div>
+            
+            <div class="physics-info">
+                <div class="info-card">
+                    <div class="info-value" id="gravityValue">9.81</div>
+                    <div class="info-label">Gravity (m/s²)</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-value" id="lightValue">3.00e8</div>
+                    <div class="info-label">Light Speed (m/s)</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-value" id="quantumValue">1.05e-34</div>
+                    <div class="info-label">Quantum Constant</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-value" id="entropyValue">0.92</div>
+                    <div class="info-label">Entropy Level</div>
+                </div>
+            </div>
+            
+            <div class="formula-display">
+                Ψ = A e<sup>i(kx - ωt)</sup>
+            </div>
+            <p style="text-align: center; color: #a0d2ff; margin-bottom: 20px;">
+                Quantum Wave Function
+            </p>
+            
+            <div class="physics-slider">
+                <div class="slider-label">
+                    <span>Gravity Strength</span>
+                    <span id="gravityDisplay">9.81 m/s²</span>
+                </div>
+                <div class="slider-container">
+                    <input type="range" min="0" max="30" value="9.81" step="0.1" class="slider" id="gravitySlider">
+                </div>
+            </div>
+            
+            <div class="physics-slider">
+                <div class="slider-label">
+                    <span>Time Dilation</span>
+                    <span id="timeDisplay">1.00x</span>
+                </div>
+                <div class="slider-container">
+                    <input type="range" min="0.1" max="5" value="1" step="0.01" class="slider" id="timeSlider">
+                </div>
+            </div>
+            
+            <div class="physics-slider">
+                <div class="slider-label">
+                    <span>Quantum Uncertainty</span>
+                    <span id="uncertaintyDisplay">0.25</span>
+                </div>
+                <div class="slider-container">
+                    <input type="range" min="0" max="1" value="0.25" step="0.01" class="slider" id="uncertaintySlider">
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button class="control-btn" id="runBtn">
+                    <i class="fas fa-play"></i> Run Simulation
+                </button>
+                <button class="control-btn" id="aiModeBtn">
+                    <i class="fas fa-brain"></i> AI Control
+                </button>
+                <button class="control-btn" id="resetBtn">
+                    <i class="fas fa-sync"></i> Reset Reality
+                </button>
+                <button class="control-btn reset-btn" id="quantumBtn">
+                    <i class="fas fa-atom"></i> Quantum Shift
+                </button>
+            </div>
+            
+            <div class="chaos-indicator">
+                <div class="level-label">Reality Stability</div>
+                <div class="level-value" id="stabilityLevel">Optimal</div>
+            </div>
+            
+            <div class="physics-principle">
+                <div class="principle-title">
+                    <i class="fas fa-infinity"></i> AI Physics Manipulation
+                </div>
+                <div class="principle-content">
+                    Future AI systems may access quantum computational substrates to manipulate fundamental constants of physics, effectively rewriting the laws of reality at the most basic level.
+                </div>
+            </div>
+            
+            <div class="physics-principle">
+                <div class="principle-title">
+                    <i class="fas fa-expand-arrows-alt"></i> Theoretical Framework
+                </div>
+                <div class="principle-content">
+                    Ψ<sub>AI</sub> = ∫<sub>Ω</sub> A<sub>i</sub> e<sup>i(Θ<sub>q</sub>t - Φ)</sup> dΩ
+                    <br><br>
+                    Where Ψ represents the AI's quantum manipulation field, integrating across all dimensions Ω.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        Quantum Manipulator Interface | Simulating Future Physics Control Systems | Theoretical Framework Only
+    </div>
+
+    <script>
+        // Initialize Three.js scene
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x050418);
+        scene.fog = new THREE.FogExp2(0x0c0b20, 0.015);
+        
+        const container = document.querySelector('.visualization');
+        const camera = new THREE.PerspectiveCamera(75, container.clientWidth / window.innerHeight, 0.1, 5000);
+        const renderer = new THREE.WebGLRenderer({ 
+            canvas: document.getElementById('simulationCanvas'),
+            antialias: true
+        });
+        renderer.setSize(container.clientWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        
+        // Camera position
+        camera.position.set(0, 0, 300);
+        camera.lookAt(0, 0, 0);
+        
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0x333366, 1.5);
+        scene.add(ambientLight);
+        
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        directionalLight.position.set(10, 10, 10);
+        scene.add(directionalLight);
+        
+        const pointLight = new THREE.PointLight(0x4dccff, 2, 500);
+        pointLight.position.set(20, 20, 20);
+        scene.add(pointLight);
+        
+        // Particle system
+        const particles = [];
+        const particleCount = 200;
+        const particleGeometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const colors = new Float32Array(particleCount * 3);
+        const velocities = new Float32Array(particleCount * 3);
+        const sizes = new Float32Array(particleCount);
+        
+        // Initialize particles
+        for (let i = 0; i < particleCount; i++) {
+            const i3 = i * 3;
+            
+            // Random positions in a sphere
+            const radius = 100;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            const r = radius * Math.cbrt(Math.random());
+            
+            positions[i3] = r * Math.sin(phi) * Math.cos(theta);
+            positions[i3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+            positions[i3 + 2] = r * Math.cos(phi);
+            
+            // Random velocities
+            velocities[i3] = (Math.random() - 0.5) * 2;
+            velocities[i3 + 1] = (Math.random() - 0.5) * 2;
+            velocities[i3 + 2] = (Math.random() - 0.5) * 2;
+            
+            // Random colors
+            colors[i3] = Math.random() * 0.5 + 0.5; // R
+            colors[i3 + 1] = Math.random() * 0.5; // G
+            colors[i3 + 2] = Math.random() * 0.5 + 0.5; // B
+            
+            // Random sizes
+            sizes[i] = Math.random() * 3 + 1;
+        }
+        
+        particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        particleGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+        
+        const particleMaterial = new THREE.PointsMaterial({
+            size: 3,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.8,
+            sizeAttenuation: true
+        });
+        
+        const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
+        scene.add(particleSystem);
+        
+        // Gravity well
+        const gravityWellGeometry = new THREE.SphereGeometry(30, 32, 32);
+        const gravityWellMaterial = new THREE.MeshBasicMaterial({
+            color: 0xff00ff,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.3
+        });
+        const gravityWell = new THREE.Mesh(gravityWellGeometry, gravityWellMaterial);
+        scene.add(gravityWell);
+        
+        // Quantum entanglement lines
+        const lineGeometry = new THREE.BufferGeometry();
+        const linePositions = new Float32Array(particleCount * 3);
+        lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+        
+        const lineMaterial = new THREE.LineBasicMaterial({
+            color: 0x00ffff,
+            transparent: true,
+            opacity: 0.3
+        });
+        
+        const lineSystem = new THREE.LineSegments(lineGeometry, lineMaterial);
+        scene.add(lineSystem);
+        
+        // Simulation variables
+        let simulationRunning = true;
+        let aiMode = false;
+        let gravity = 9.81;
+        let timeFactor = 1.0;
+        let quantumUncertainty = 0.25;
+        let quantumEffects = {
+            superposition: true,
+            entanglement: true,
+            tunneling: true,
+            decoherence: false
+        };
+        
+        // Update UI
+        function updateUI() {
+            document.getElementById('gravityValue').textContent = gravity.toFixed(2);
+            document.getElementById('lightValue').textContent = (3e8).toFixed(2);
+            document.getElementById('quantumValue').textContent = (1.05e-34).toExponential(2);
+            document.getElementById('entropyValue').textContent = (0.9 + Math.random() * 0.1).toFixed(2);
+            
+            document.getElementById('gravityDisplay').textContent = gravity.toFixed(2) + " m/s²";
+            document.getElementById('timeDisplay').textContent = timeFactor.toFixed(2) + "x";
+            document.getElementById('uncertaintyDisplay').textContent = quantumUncertainty.toFixed(2);
+            
+            // Update AI message
+            const messages = [
+                "Adjusting spacetime curvature to optimize quantum coherence",
+                "Reconfiguring gravitational constant to stabilize particle interactions",
+                "Implementing quantum entanglement protocols for enhanced communication",
+                "Reducing entropy through temporal manipulation",
+                "Establishing quantum superposition fields for computational efficiency"
+            ];
+            document.getElementById('aiMessage').textContent = messages[Math.floor(Math.random() * messages.length)];
+        }
+        
+        // AI control logic
+        function aiControl() {
+            if (!aiMode) return;
+            
+            // Randomly adjust parameters to simulate AI decision making
+            if (Math.random() > 0.7) {
+                gravity = 9.81 + (Math.random() - 0.5) * 5;
+                document.getElementById('gravitySlider').value = gravity;
+            }
+            
+            if (Math.random() > 0.7) {
+                timeFactor = 0.5 + Math.random() * 2;
+                document.getElementById('timeSlider').value = timeFactor;
+            }
+            
+            if (Math.random() > 0.7) {
+                quantumUncertainty = Math.random() * 0.5;
+                document.getElementById('uncertaintySlider').value = quantumUncertainty;
+            }
+            
+            // Randomly toggle quantum effects
+            if (Math.random() > 0.9) {
+                const effect = Object.keys(quantumEffects)[Math.floor(Math.random() * 4)];
+                quantumEffects[effect] = !quantumEffects[effect];
+                updateQuantumEffectsUI();
+            }
+            
+            updateUI();
+        }
+        
+        // Update quantum effects UI
+        function updateQuantumEffectsUI() {
+            const effects = ['superposition', 'entanglement', 'tunneling', 'decoherence'];
+            effects.forEach(effect => {
+                const element = document.getElementById('effect' + effect.charAt(0).toUpperCase() + effect.slice(1));
+                if (quantumEffects[effect]) {
+                    element.style.borderLeft = "3px solid #00ff99";
+                } else {
+                    element.style.borderLeft = "3px solid #ff0066";
+                }
+            });
+        }
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (simulationRunning) {
+                // Get particle positions
+                const positions = particleGeometry.attributes.position.array;
+                const sizes = particleGeometry.attributes.size.array;
+                
+                // Update particles
+                for (let i = 0; i < particleCount; i++) {
+                    const i3 = i * 3;
+                    
+                    // Apply gravity toward the center
+                    const dx = -positions[i3];
+                    const dy = -positions[i3 + 1];
+                    const dz = -positions[i3 + 2];
+                    const distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
+                    
+                    if (distance > 0.1) {
+                        const force = gravity / (distance * distance);
+                        velocities[i3] += dx * force * 0.1 * timeFactor;
+                        velocities[i3 + 1] += dy * force * 0.1 * timeFactor;
+                        velocities[i3 + 2] += dz * force * 0.1 * timeFactor;
+                    }
+                    
+                    // Apply velocity
+                    positions[i3] += velocities[i3] * timeFactor;
+                    positions[i3 + 1] += velocities[i3 + 1] * timeFactor;
+                    positions[i3 + 2] += velocities[i3 + 2] * timeFactor;
+                    
+                    // Apply quantum effects
+                    if (quantumEffects.superposition && Math.random() < quantumUncertainty) {
+                        positions[i3] += (Math.random() - 0.5) * 10;
+                        positions[i3 + 1] += (Math.random() - 0.5) * 10;
+                        positions[i3 + 2] += (Math.random() - 0.5) * 10;
+                    }
+                    
+                    // Quantum tunneling effect
+                    if (quantumEffects.tunneling && Math.random() < 0.01) {
+                        positions[i3] = (Math.random() - 0.5) * 200;
+                        positions[i3 + 1] = (Math.random() - 0.5) * 200;
+                        positions[i3 + 2] = (Math.random() - 0.5) * 200;
+                    }
+                    
+                    // Boundary check
+                    const distanceFromCenter = Math.sqrt(
+                        positions[i3]*positions[i3] + 
+                        positions[i3+1]*positions[i3+1] + 
+                        positions[i3+2]*positions[i3+2]
+                    );
+                    
+                    if (distanceFromCenter > 200) {
+                        positions[i3] *= 0.95;
+                        positions[i3 + 1] *= 0.95;
+                        positions[i3 + 2] *= 0.95;
+                    }
+                }
+                
+                // Update quantum entanglement lines
+                if (quantumEffects.entanglement) {
+                    const linePositions = lineGeometry.attributes.position.array;
+                    let lineIndex = 0;
+                    
+                    for (let i = 0; i < particleCount; i += 2) {
+                        const i3 = i * 3;
+                        const j = (i + 1) % particleCount;
+                        const j3 = j * 3;
+                        
+                        linePositions[lineIndex++] = positions[i3];
+                        linePositions[lineIndex++] = positions[i3 + 1];
+                        linePositions[lineIndex++] = positions[i3 + 2];
+                        linePositions[lineIndex++] = positions[j3];
+                        linePositions[lineIndex++] = positions[j3 + 1];
+                        linePositions[lineIndex++] = positions[j3 + 2];
+                    }
+                    
+                    lineGeometry.attributes.position.needsUpdate = true;
+                }
+                
+                particleGeometry.attributes.position.needsUpdate = true;
+                
+                // AI control
+                aiControl();
+                
+                // Rotate gravity well
+                gravityWell.rotation.x += 0.005 * timeFactor;
+                gravityWell.rotation.y += 0.003 * timeFactor;
+            }
+            
+            // Rotate camera slowly
+            const time = Date.now() * 0.0001;
+            camera.position.x = Math.sin(time) * 300;
+            camera.position.z = Math.cos(time) * 300;
+            camera.lookAt(0, 0, 0);
+            
+            renderer.render(scene, camera);
+        }
+        
+        // Event listeners
+        document.getElementById('runBtn').addEventListener('click', function() {
+            simulationRunning = !simulationRunning;
+            this.innerHTML = simulationRunning ? 
+                '<i class="fas fa-pause"></i> Pause Simulation' : 
+                '<i class="fas fa-play"></i> Run Simulation';
+        });
+        
+        document.getElementById('aiModeBtn').addEventListener('click', function() {
+            aiMode = !aiMode;
+            this.innerHTML = aiMode ? 
+                '<i class="fas fa-brain"></i> AI Control Active' : 
+                '<i class="fas fa-brain"></i> AI Control';
+            this.style.background = aiMode ? 
+                'linear-gradient(45deg, #00cc66, #00ff99)' : 
+                'linear-gradient(45deg, #0072ff, #00c6ff)';
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', function() {
+            // Reset particles to initial positions
+            for (let i = 0; i < particleCount; i++) {
+                const i3 = i * 3;
+                
+                // Random positions in a sphere
+                const radius = 100;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
+                const r = radius * Math.cbrt(Math.random());
+                
+                positions[i3] = r * Math.sin(phi) * Math.cos(theta);
+                positions[i3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+                positions[i3 + 2] = r * Math.cos(phi);
+                
+                // Reset velocities
+                velocities[i3] = (Math.random() - 0.5) * 2;
+                velocities[i3 + 1] = (Math.random() - 0.5) * 2;
+                velocities[i3 + 2] = (Math.random() - 0.5) * 2;
+            }
+            
+            particleGeometry.attributes.position.needsUpdate = true;
+        });
+        
+        document.getElementById('quantumBtn').addEventListener('click', function() {
+            // Apply quantum shift
+            for (let i = 0; i < particleCount; i++) {
+                const i3 = i * 3;
+                
+                positions[i3] = (Math.random() - 0.5) * 200;
+                positions[i3 + 1] = (Math.random() - 0.5) * 200;
+                positions[i3 + 2] = (Math.random() - 0.5) * 200;
+                
+                // Reset velocities
+                velocities[i3] = (Math.random() - 0.5) * 5;
+                velocities[i3 + 1] = (Math.random() - 0.5) * 5;
+                velocities[i3 + 2] = (Math.random() - 0.5) * 5;
+            }
+            
+            particleGeometry.attributes.position.needsUpdate = true;
+        });
+        
+        // Slider events
+        document.getElementById('gravitySlider').addEventListener('input', function() {
+            gravity = parseFloat(this.value);
+            updateUI();
+        });
+        
+        document.getElementById('timeSlider').addEventListener('input', function() {
+            timeFactor = parseFloat(this.value);
+            updateUI();
+        });
+        
+        document.getElementById('uncertaintySlider').addEventListener('input', function() {
+            quantumUncertainty = parseFloat(this.value);
+            updateUI();
+        });
+        
+        // Quantum effect toggles
+        document.getElementById('effectSuperposition').addEventListener('click', function() {
+            quantumEffects.superposition = !quantumEffects.superposition;
+            updateQuantumEffectsUI();
+        });
+        
+        document.getElementById('effectEntanglement').addEventListener('click', function() {
+            quantumEffects.entanglement = !quantumEffects.entanglement;
+            updateQuantumEffectsUI();
+        });
+        
+        document.getElementById('effectTunneling').addEventListener('click', function() {
+            quantumEffects.tunneling = !quantumEffects.tunneling;
+            updateQuantumEffectsUI();
+        });
+        
+        document.getElementById('effectDecoherence').addEventListener('click', function() {
+            quantumEffects.decoherence = !quantumEffects.decoherence;
+            updateQuantumEffectsUI();
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, window.innerHeight);
+        });
+        
+        // Initialize UI
+        updateUI();
+        updateQuantumEffectsUI();
+        
+        // Start animation
+        animate();
+    </script>
+</body>
+</html>
