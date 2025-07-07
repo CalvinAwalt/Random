@@ -1,0 +1,1 @@
+\sigma_{\mathcal{M}} \sigma_{\mathcal{C}} \geq \frac{1}{2} \left| \left\langle \left[ \mathcal{M}, \mathcal{C} \right] \right\rangle \right|

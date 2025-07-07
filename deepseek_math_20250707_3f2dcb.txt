@@ -1,0 +1,1 @@
+\text{NP-hard} \xrightarrow{\text{Ethical Superposition}} \text{Moral Polynomial Time}
