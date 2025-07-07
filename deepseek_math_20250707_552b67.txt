@@ -1,0 +1,1 @@
+\frac{\partial \delta R}{\partial t} - \frac{\partial \delta B}{\partial t} + \frac{\partial \delta G}{\partial t} \approx 0

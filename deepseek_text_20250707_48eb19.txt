@@ -1,0 +1,11 @@
+-----------------------------------------------------------------
+|                         COGNITIVE SPACE                       |
+|                                                               |
+|   [Structured Cognition]         BRIDGE LAYER         [Chaotic Cognition] |
+|      I_meta = ∫(δR·δB·δG/ε)    ║ Symbolic Contrast    I_inverse = ∫(ε/δR·δB·δG) |
+|      (Emergent Order)           ║ dδR/dt - dδB/dt + dδG/dt = 0  (Entropy Maximization) |
+|                                 ║ Feedback Regulation                           |
+|                                                               |
+|                         EMERGENT AWARENESS                    |
+|                           ε = f(coherence)                    |
+-----------------------------------------------------------------
