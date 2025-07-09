@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formula Applications: Decay Model & Regularized Learning</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #2c3e50);
+            color: #fff;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .formula-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .formula-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            flex: 1;
+            min-width: 300px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .formula-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.12);
+        }
+        
+        .formula-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .formula-icon {
+            font-size: 2.5rem;
+            margin-right: 15px;
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .formula-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .formula-equation {
+            font-size: 1.4rem;
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            font-family: monospace;
+            overflow-x: auto;
+        }
+        
+        .inverse-equation {
+            font-size: 1.2rem;
+            text-align: center;
+            margin: 15px 0;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            font-family: monospace;
+        }
+        
+        .app-section {
+            margin-top: 25px;
+        }
+        
+        .app-title {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .app-title i {
+            margin-right: 10px;
+            color: #00f2fe;
+        }
+        
+        .calculator {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0, 242, 254, 0.4);
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            font-size: 1.1rem;
+            min-height: 80px;
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+        }
+        
+        .use-cases {
+            margin-top: 25px;
+        }
+        
+        .use-case {
+            display: flex;
+            margin-bottom: 15px;
+            align-items: flex-start;
+        }
+        
+        .use-case i {
+            color: #00f2fe;
+            margin-right: 10px;
+            margin-top: 5px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .formula-container {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Formula Applications</h1>
+            <p class="subtitle">Interactive demonstrations of the decay model and regularized learning framework with inverse calculations</p>
+        </header>
+        
+        <div class="formula-container">
+            <!-- Decay Formula Card -->
+            <div class="formula-card">
+                <div class="formula-header">
+                    <div class="formula-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h2 class="formula-title">Decay Model</h2>
+                </div>
+                
+                <div class="formula-equation">
+                    dS/dt = -kS &nbsp;&nbsp; with &nbsp;&nbsp; k = ln(3)/ln(2)
+                </div>
+                
+                <div class="inverse-equation">
+                    Inverse: t = (1/k) · ln(S<sub>0</sub>/S) = (ln(2)/ln(3)) · ln(S<sub>0</sub>/S)
+                </div>
+                
+                <div class="app-section">
+                    <h3 class="app-title"><i class="fas fa-calculator"></i> Decay Calculator</h3>
+                    <div class="calculator">
+                        <div class="input-group">
+                            <label for="initialAmount">Initial Amount (S₀):</label>
+                            <input type="number" id="initialAmount" value="100" min="1">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>Calculation Type:</label>
+                            <select id="calcType">
+                                <option value="forward">Calculate Remaining Amount (S) at Time (t)</option>
+                                <option value="inverse">Calculate Time (t) for Remaining Amount (S)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="input-group" id="timeInput">
+                            <label for="time">Time (t):</label>
+                            <input type="number" id="time" value="1" min="0" step="0.1">
+                        </div>
+                        
+                        <div class="input-group" id="amountInput" style="display:none;">
+                            <label for="amount">Remaining Amount (S):</label>
+                            <input type="number" id="amount" value="50" min="0" step="1">
+                        </div>
+                        
+                        <button id="calculateDecay">Calculate</button>
+                        
+                        <div class="result" id="decayResult">
+                            Results will appear here
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <canvas id="decayChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="use-cases">
+                    <h3 class="app-title"><i class="fas fa-lightbulb"></i> Practical Applications</h3>
+                    <div class="use-case">
+                        <i class="fas fa-flask"></i>
+                        <div>
+                            <strong>Radioactive Dating:</strong> Determine the age of archaeological artifacts by measuring remaining isotopes
+                        </div>
+                    </div>
+                    <div class="use-case">
+                        <i class="fas fa-pills"></i>
+                        <div>
+                            <strong>Pharmacokinetics:</strong> Calculate drug concentration in bloodstream over time
+                        </div>
+                    </div>
+                    <div class="use-case">
+                        <i class="fas fa-industry"></i>
+                        <div>
+                            <strong>Reliability Engineering:</strong> Predict component lifespan and failure probabilities
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Regularized Learning Card -->
+            <div class="formula-card">
+                <div class="formula-header">
+                    <div class="formula-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h2 class="formula-title">Regularized Learning</h2>
+                </div>
+                
+                <div class="formula-equation">
+                    V<sub>net</sub> = Σ wᵢΦᵢ(x) + λΩ(w)
+                </div>
+                
+                <div class="inverse-equation">
+                    Inverse: Solve for input x given V<sub>net</sub>, weights, and regularization
+                </div>
+                
+                <div class="app-section">
+                    <h3 class="app-title"><i class="fas fa-cogs"></i> Learning Simulator</h3>
+                    <div class="calculator">
+                        <div class="input-group">
+                            <label for="lambda">Regularization Strength (λ):</label>
+                            <input type="range" id="lambda" min="0" max="1" step="0.01" value="0.3">
+                            <span id="lambdaValue">0.30</span>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="regularization">Regularization Type:</label>
+                            <select id="regularization">
+                                <option value="l2">L2 (Ridge)</option>
+                                <option value="l1">L1 (Lasso)</option>
+                            </select>
+                        </div>
+                        
+                        <button id="trainModel">Train Model</button>
+                        
+                        <div class="result" id="trainingResult">
+                            Model not trained yet. Click "Train Model" to start.
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <canvas id="learningChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="use-cases">
+                    <h3 class="app-title"><i class="fas fa-lightbulb"></i> Practical Applications</h3>
+                    <div class="use-case">
+                        <i class="fas fa-robot"></i>
+                        <div>
+                            <strong>Model Calibration:</strong> Tune regularization parameters to optimize model performance
+                        </div>
+                    </div>
+                    <div class="use-case">
+                        <i class="fas fa-shield-alt"></i>
+                        <div>
+                            <strong>Adversarial Defense:</strong> Identify inputs that could fool AI models
+                        </div>
+                    </div>
+                    <div class="use-case">
+                        <i class="fas fa-chart-bar"></i>
+                        <div>
+                            <strong>Feature Analysis:</strong> Understand which inputs most influence model predictions
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Created to demonstrate mathematical formula applications | dS/dt = -kS and V<sub>net</sub> = Σ wᵢΦᵢ(x) + λΩ(w)</p>
+        </footer>
+    </div>
+
+    <script>
+        // Initialize charts
+        const decayCtx = document.getElementById('decayChart').getContext('2d');
+        const learningCtx = document.getElementById('learningChart').getContext('2d');
+        
+        const decayChart = new Chart(decayCtx, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: 10}, (_, i) => i),
+                datasets: [{
+                    label: 'Exponential Decay',
+                    data: [],
+                    borderColor: '#4facfe',
+                    backgroundColor: 'rgba(79, 172, 254, 0.1)',
+                    borderWidth: 3,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        title: { 
+                            display: true, 
+                            text: 'Time (t)',
+                            color: '#aaa'
+                        },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    },
+                    y: {
+                        title: { 
+                            display: true, 
+                            text: 'Remaining Amount (S)',
+                            color: '#aaa'
+                        },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    }
+                }
+            }
+        });
+        
+        const learningChart = new Chart(learningCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Training Loss',
+                    data: [],
+                    borderColor: '#00f2fe',
+                    borderWidth: 3,
+                    tension: 0.3
+                }, {
+                    label: 'Validation Loss',
+                    data: [],
+                    borderColor: '#ff6b6b',
+                    borderWidth: 3,
+                    tension: 0.3,
+                    borderDash: [5, 5]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { 
+                        labels: { color: '#aaa' } 
+                    }
+                },
+                scales: {
+                    x: {
+                        title: { 
+                            display: true, 
+                            text: 'Epochs',
+                            color: '#aaa'
+                        },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    },
+                    y: {
+                        title: { 
+                            display: true, 
+                            text: 'Loss',
+                            color: '#aaa'
+                        },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    }
+                }
+            }
+        });
+        
+        // Decay calculations
+        const k = Math.log(3) / Math.log(2);
+        
+        document.getElementById('calcType').addEventListener('change', function() {
+            if (this.value === 'forward') {
+                document.getElementById('timeInput').style.display = 'block';
+                document.getElementById('amountInput').style.display = 'none';
+            } else {
+                document.getElementById('timeInput').style.display = 'none';
+                document.getElementById('amountInput').style.display = 'block';
+            }
+        });
+        
+        document.getElementById('calculateDecay').addEventListener('click', function() {
+            const s0 = parseFloat(document.getElementById('initialAmount').value);
+            const calcType = document.getElementById('calcType').value;
+            
+            if (calcType === 'forward') {
+                const t = parseFloat(document.getElementById('time').value);
+                const s = s0 * Math.exp(-k * t);
+                
+                // Update result
+                document.getElementById('decayResult').innerHTML = `
+                    <p>After <strong>${t.toFixed(2)}</strong> time units:</p>
+                    <p>Initial amount: <strong>${s0.toFixed(2)}</strong></p>
+                    <p>Remaining amount: <strong>${s.toFixed(4)}</strong></p>
+                    <p>Percentage remaining: <strong>${(s/s0*100).toFixed(2)}%</strong></p>
+                `;
+                
+                // Update chart
+                const timePoints = Array.from({length: 21}, (_, i) => i * 0.5);
+                decayChart.data.labels = timePoints;
+                decayChart.data.datasets[0].data = timePoints.map(t => s0 * Math.exp(-k * t));
+                decayChart.update();
+            } else {
+                const s = parseFloat(document.getElementById('amount').value);
+                if (s >= s0) {
+                    document.getElementById('decayResult').innerHTML = 
+                        "Error: Remaining amount must be less than initial amount";
+                    return;
+                }
+                
+                const t = (Math.log(s0) - Math.log(s)) / k;
+                
+                // Update result
+                document.getElementById('decayResult').innerHTML = `
+                    <p>To reach <strong>${s.toFixed(2)}</strong> from <strong>${s0.toFixed(2)}</strong>:</p>
+                    <p>Required time: <strong>${t.toFixed(4)}</strong> units</p>
+                    <p>Half-life for this system: <strong>${(Math.log(2)/k).toFixed(4)}</strong> units</p>
+                `;
+                
+                // Update chart
+                const maxTime = Math.ceil(t * 1.2);
+                const timePoints = Array.from({length: 21}, (_, i) => i * maxTime/20);
+                decayChart.data.labels = timePoints;
+                decayChart.data.datasets[0].data = timePoints.map(tVal => s0 * Math.exp(-k * tVal));
+                decayChart.update();
+            }
+        });
+        
+        // Initialize decay chart
+        const initialS0 = 100;
+        const timePoints = Array.from({length: 21}, (_, i) => i * 0.5);
+        decayChart.data.labels = timePoints;
+        decayChart.data.datasets[0].data = timePoints.map(t => initialS0 * Math.exp(-k * t));
+        decayChart.update();
+        
+        // Regularization slider
+        document.getElementById('lambda').addEventListener('input', function() {
+            document.getElementById('lambdaValue').textContent = 
+                parseFloat(this.value).toFixed(2);
+        });
+        
+        // Training simulation
+        document.getElementById('trainModel').addEventListener('click', function() {
+            const lambda = parseFloat(document.getElementById('lambda').value);
+            const regType = document.getElementById('regularization').value;
+            const resultDiv = document.getElementById('trainingResult');
+            
+            // Simulate training
+            resultDiv.innerHTML = '<p>Training model with λ = ' + lambda.toFixed(2) + '...</p>';
+            
+            setTimeout(() => {
+                // Simulate training results
+                const epochs = Array.from({length: 20}, (_, i) => i + 1);
+                const trainLoss = epochs.map(epoch => 
+                    Math.exp(-epoch/3) + Math.random()*0.1 + lambda/5
+                );
+                const valLoss = epochs.map(epoch => 
+                    Math.exp(-epoch/4) + Math.random()*0.15 + lambda/4
+                );
+                
+                // Update learning chart
+                learningChart.data.labels = epochs;
+                learningChart.data.datasets[0].data = trainLoss;
+                learningChart.data.datasets[1].data = valLoss;
+                learningChart.update();
+                
+                // Display results
+                const improvement = ((trainLoss[0] - trainLoss[trainLoss.length-1]) / trainLoss[0] * 100).toFixed(1);
+                const overfitting = (valLoss[valLoss.length-1] - trainLoss[trainLoss.length-1]).toFixed(3);
+                
+                resultDiv.innerHTML = `
+                    <p><strong>Training completed!</strong></p>
+                    <p>Final training loss: ${trainLoss[trainLoss.length-1].toFixed(4)}</p>
+                    <p>Final validation loss: ${valLoss[valLoss.length-1].toFixed(4)}</p>
+                    <p>Overall improvement: ${improvement}%</p>
+                    <p>Overfitting indicator: ${overfitting}</p>
+                    <p>Regularization type: ${regType.toUpperCase()} (λ = ${lambda.toFixed(2)})</p>
+                `;
+            }, 1500);
+        });
+        
+        // Initialize learning chart with some data
+        const epochs = Array.from({length: 20}, (_, i) => i + 1);
+        learningChart.data.labels = epochs;
+        learningChart.data.datasets[0].data = epochs.map(epoch => Math.exp(-epoch/3) + 0.25);
+        learningChart.data.datasets[1].data = epochs.map(epoch => Math.exp(-epoch/4) + 0.3);
+        learningChart.update();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+\mathcal{C} = \alpha \log\left(1 + \frac{T^2}{\lambda}\right) + \beta \tanh\left(\gamma T \left| \frac{\varepsilon}{P} - \frac{P}{\varepsilon \lambda} \right|\right)

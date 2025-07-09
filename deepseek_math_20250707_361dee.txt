@@ -1,0 +1,1 @@
+\zeta\left(\frac{1}{2} + it\right) = 0 \iff \mathcal{M} \otimes \mathcal{C} = \varepsilon_{\text{critical}}

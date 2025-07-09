@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inverse Formula Visualizer</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #fff;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .formula-display {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px auto;
+            max-width: 900px;
+            text-align: center;
+            font-size: 1.4rem;
+            font-family: monospace;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .components {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .component-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            flex: 1;
+            min-width: 300px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .component-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .component-icon {
+            font-size: 2rem;
+            margin-right: 15px;
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .component-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+        }
+        
+        .formula {
+            font-size: 1.2rem;
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            font-family: monospace;
+        }
+        
+        .inverse-formula {
+            font-size: 1.1rem;
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            font-family: monospace;
+            color: #4facfe;
+        }
+        
+        .calculator {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0, 242, 254, 0.4);
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            font-size: 1.1rem;
+            min-height: 80px;
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+        }
+        
+        .application {
+            margin-top: 25px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+        }
+        
+        .app-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .app-title i {
+            margin-right: 10px;
+            color: #00f2fe;
+        }
+        
+        @media (max-width: 768px) {
+            .components {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .formula-display {
+                font-size: 1rem;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Inverse Formula Visualizer</h1>
+            <p>Exploring the inverse relationships of the complex formula</p>
+        </header>
+        
+        <div class="formula-display">
+            Original Formula: V<sub>net</sub> = ΣwᵢΦᵢ(x) + λΩ(w) | ∮Δ (δR ⊗ δB ⊗ δG) / ε | C(L) = C₀e<sup>kL</sup>, k=ln(3)/ln(2)
+        </div>
+        
+        <div class="components">
+            <!-- Component 1: Vnet -->
+            <div class="component-card">
+                <div class="component-header">
+                    <div class="component-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h2 class="component-title">V<sub>net</sub> Component</h2>
+                </div>
+                
+                <div class="formula">
+                    V<sub>net</sub> = ΣwᵢΦᵢ(x) + λΩ(w)
+                </div>
+                
+                <div class="inverse-formula">
+                    Inverse: Solve for x or w given V<sub>net</sub>
+                </div>
+                
+                <div class="calculator">
+                    <div class="input-group">
+                        <label for="vnetValue">V<sub>net</sub> Value:</label>
+                        <input type="number" id="vnetValue" value="10">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="lambda">Regularization λ:</label>
+                        <input type="number" id="lambda" value="0.5" step="0.1">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Solve For:</label>
+                        <select id="solveFor">
+                            <option value="x">Input Features (x)</option>
+                            <option value="w">Model Weights (w)</option>
+                        </select>
+                    </div>
+                    
+                    <button id="calculateVnet">Calculate Inverse</button>
+                    
+                    <div class="result" id="vnetResult">
+                        Inverse solution will appear here
+                    </div>
+                </div>
+                
+                <div class="application">
+                    <div class="app-title"><i class="fas fa-lightbulb"></i> Applications</div>
+                    <p>Inverse problems in machine learning: model interpretation, adversarial example generation, feature importance analysis, and model compression.</p>
+                </div>
+            </div>
+            
+            <!-- Component 2: Integral -->
+            <div class="component-card">
+                <div class="component-header">
+                    <div class="component-icon">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <h2 class="component-title">Integral Component</h2>
+                </div>
+                
+                <div class="formula">
+                    ∮Δ (δR ⊗ δB ⊗ δG) / ε
+                </div>
+                
+                <div class="inverse-formula">
+                    Inverse: Solve for δR, δB, δG given integral value
+                </div>
+                
+                <div class="calculator">
+                    <div class="input-group">
+                        <label for="integralValue">Integral Value:</label>
+                        <input type="number" id="integralValue" value="15">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="epsilon">Epsilon (ε):</label>
+                        <input type="number" id="epsilon" value="0.1" step="0.01">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Solve For:</label>
+                        <select id="solveForColor">
+                            <option value="all">All Variations (δR, δB, δG)</option>
+                            <option value="r">Red Channel (δR)</option>
+                            <option value="g">Green Channel (δG)</option>
+                            <option value="b">Blue Channel (δB)</option>
+                        </select>
+                    </div>
+                    
+                    <button id="calculateIntegral">Calculate Inverse</button>
+                    
+                    <div class="result" id="integralResult">
+                        Color variations will appear here
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="colorChart"></canvas>
+                </div>
+                
+                <div class="application">
+                    <div class="app-title"><i class="fas fa-lightbulb"></i> Applications</div>
+                    <p>Computer vision: image reconstruction, signal processing: signal separation, physics: field decomposition, and graphics: material property analysis.</p>
+                </div>
+            </div>
+            
+            <!-- Component 3: Exponential Growth -->
+            <div class="component-card">
+                <div class="component-header">
+                    <div class="component-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h2 class="component-title">Exponential Component</h2>
+                </div>
+                
+                <div class="formula">
+                    C(L) = C₀e<sup>kL</sup>, k = ln(3)/ln(2)
+                </div>
+                
+                <div class="inverse-formula">
+                    Inverse: L = (1/k) · ln(C(L)/C₀)
+                </div>
+                
+                <div class="calculator">
+                    <div class="input-group">
+                        <label for="c0">Initial Value (C₀):</label>
+                        <input type="number" id="c0" value="10">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="cl">Current Value (C(L)):</label>
+                        <input type="number" id="cl" value="30">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="length">Length Scale (L):</label>
+                        <input type="number" id="length" value="2" step="0.1" disabled>
+                    </div>
+                    
+                    <button id="calculateExponent">Calculate Inverse</button>
+                    
+                    <div class="result" id="exponentResult">
+                        Inverse length calculation will appear here
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="growthChart"></canvas>
+                </div>
+                
+                <div class="application">
+                    <div class="app-title"><i class="fas fa-lightbulb"></i> Applications</div>
+                    <p>Biological growth modeling, financial compound interest reversal, radioactive decay dating, and signal processing gain calibration.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize charts
+        const colorCtx = document.getElementById('colorChart').getContext('2d');
+        const growthCtx = document.getElementById('growthChart').getContext('2d');
+        
+        const colorChart = new Chart(colorCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Red (δR)', 'Green (δG)', 'Blue (δB)'],
+                datasets: [{
+                    label: 'Color Variations',
+                    data: [0.5, 0.3, 0.7],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(54, 162, 235, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(75, 192, 192)',
+                        'rgb(54, 162, 235)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Variation Value',
+                            color: '#aaa'
+                        },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+        
+        const k = Math.log(3) / Math.log(2);
+        const growthChart = new Chart(growthCtx, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: 10}, (_, i) => i),
+                datasets: [{
+                    label: 'Exponential Growth',
+                    data: [],
+                    borderColor: '#4facfe',
+                    backgroundColor: 'rgba(79, 172, 254, 0.1)',
+                    borderWidth: 3,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        title: { 
+                            display: true, 
+                            text: 'Length (L)',
+                            color: '#aaa'
+                        },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    },
+                    y: {
+                        title: { 
+                            display: true, 
+                            text: 'C(L)',
+                            color: '#aaa'
+                        },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    }
+                }
+            }
+        });
+        
+        // Initialize growth chart
+        const c0 = 10;
+        const lengthPoints = Array.from({length: 10}, (_, i) => i * 0.5);
+        growthChart.data.labels = lengthPoints;
+        growthChart.data.datasets[0].data = lengthPoints.map(l => c0 * Math.exp(k * l));
+        growthChart.update();
+        
+        // Vnet calculations
+        document.getElementById('calculateVnet').addEventListener('click', function() {
+            const vnet = parseFloat(document.getElementById('vnetValue').value);
+            const lambda = parseFloat(document.getElementById('lambda').value);
+            const solveFor = document.getElementById('solveFor').value;
+            const resultDiv = document.getElementById('vnetResult');
+            
+            if (solveFor === 'x') {
+                // Simulate solving for input features
+                const features = [
+                    (vnet * 0.3).toFixed(3),
+                    (vnet * 0.5).toFixed(3),
+                    (vnet * 0.2).toFixed(3)
+                ];
+                
+                resultDiv.innerHTML = `
+                    <p>Inverse solution for input features (x):</p>
+                    <p><strong>Feature 1:</strong> ${features[0]}</p>
+                    <p><strong>Feature 2:</strong> ${features[1]}</p>
+                    <p><strong>Feature 3:</strong> ${features[2]}</p>
+                    <p>With λ = ${lambda.toFixed(2)} and V<sub>net</sub> = ${vnet.toFixed(2)}</p>
+                `;
+            } else {
+                // Simulate solving for weights
+                const weights = [
+                    (vnet * 0.4).toFixed(3),
+                    (vnet * 0.3).toFixed(3),
+                    (vnet * 0.2).toFixed(3),
+                    (vnet * 0.1).toFixed(3)
+                ];
+                
+                resultDiv.innerHTML = `
+                    <p>Inverse solution for model weights (w):</p>
+                    <p><strong>Weight 1:</strong> ${weights[0]}</p>
+                    <p><strong>Weight 2:</strong> ${weights[1]}</p>
+                    <p><strong>Weight 3:</strong> ${weights[2]}</p>
+                    <p><strong>Weight 4:</strong> ${weights[3]}</p>
+                    <p>With λ = ${lambda.toFixed(2)} and V<sub>net</sub> = ${vnet.toFixed(2)}</p>
+                `;
+            }
+        });
+        
+        // Integral calculations
+        document.getElementById('calculateIntegral').addEventListener('click', function() {
+            const integralValue = parseFloat(document.getElementById('integralValue').value);
+            const epsilon = parseFloat(document.getElementById('epsilon').value);
+            const solveFor = document.getElementById('solveForColor').value;
+            const resultDiv = document.getElementById('integralResult');
+            
+            // Calculate variations based on integral value
+            const baseValue = integralValue * epsilon;
+            const variations = {
+                r: (baseValue * 0.7).toFixed(4),
+                g: (baseValue * 0.5).toFixed(4),
+                b: (baseValue * 0.9).toFixed(4)
+            };
+            
+            if (solveFor === 'all') {
+                resultDiv.innerHTML = `
+                    <p>Inverse solution for color variations:</p>
+                    <p><strong>δR:</strong> ${variations.r}</p>
+                    <p><strong>δG:</strong> ${variations.g}</p>
+                    <p><strong>δB:</strong> ${variations.b}</p>
+                    <p>Integral Value: ${integralValue.toFixed(2)}, ε: ${epsilon.toFixed(2)}</p>
+                `;
+                
+                // Update color chart
+                colorChart.data.datasets[0].data = [variations.r, variations.g, variations.b];
+                colorChart.update();
+            } else {
+                const channel = solveFor === 'r' ? 'Red (δR)' : 
+                              solveFor === 'g' ? 'Green (δG)' : 'Blue (δB)';
+                const value = solveFor === 'r' ? variations.r :
+                             solveFor === 'g' ? variations.g : variations.b;
+                
+                resultDiv.innerHTML = `
+                    <p>Inverse solution for ${channel}:</p>
+                    <p><strong>Value:</strong> ${value}</p>
+                    <p>Integral Value: ${integralValue.toFixed(2)}, ε: ${epsilon.toFixed(2)}</p>
+                `;
+            }
+        });
+        
+        // Exponential growth calculations
+        document.getElementById('calculateExponent').addEventListener('click', function() {
+            const c0 = parseFloat(document.getElementById('c0').value);
+            const cl = parseFloat(document.getElementById('cl').value);
+            const resultDiv = document.getElementById('exponentResult');
+            
+            if (cl <= c0) {
+                resultDiv.innerHTML = "Error: Current value must be greater than initial value";
+                return;
+            }
+            
+            // Calculate inverse length
+            const length = Math.log(cl / c0) / k;
+            document.getElementById('length').value = length.toFixed(4);
+            
+            resultDiv.innerHTML = `
+                <p>Inverse length calculation:</p>
+                <p>L = (1/k) · ln(C(L)/C₀) = (1/${k.toFixed(4)}) · ln(${cl}/${c0})</p>
+                <p><strong>Result:</strong> L = ${length.toFixed(4)}</p>
+                <p>k = ln(3)/ln(2) ≈ ${k.toFixed(4)}</p>
+            `;
+            
+            // Update growth chart
+            const maxLength = Math.ceil(length * 1.5);
+            const lengthPoints = Array.from({length: 11}, (_, i) => i * maxLength/10);
+            growthChart.data.labels = lengthPoints;
+            growthChart.data.datasets[0].data = lengthPoints.map(l => c0 * Math.exp(k * l));
+            growthChart.update();
+        });
+        
+        // Initialize exponential calculation
+        document.getElementById('calculateExponent').click();
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</body>
+</html>

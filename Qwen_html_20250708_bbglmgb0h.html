@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theoretical Search Engine Model</title>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax @3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        .formula {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .controls {
+            margin-top: 30px;
+        }
+        label {
+            display: block;
+            margin: 15px 0 5px;
+        }
+        input[type="range"] {
+            width: 100%;
+        }
+        .results {
+            margin-top: 30px;
+            background-color: #fcfdfe;
+            padding: 15px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Theoretical Search Engine Model</h1>
+        
+        <p>This demonstration shows how mathematical concepts could be theoretically applied to search engine ranking.</p>
+
+        <div class="formula">
+            <h2>Decay Model for Content Freshness</h2>
+            <p>$$\\frac{dS}{dt} = -kS, \\quad k = \\frac{\\ln(3)}{\\ln(2)}$$</p>
+            <p>This formula models how content relevance decays over time.</p>
+            
+            <label for="ageSlider">Content Age (days): <span id="ageValue">7</span></label>
+            <input type="range" id="ageSlider" min="1" max="365" value="7">
+            
+            <div id="freshnessScore" style="margin-top: 10px; font-weight: bold;"></div>
+        </div>
+
+        <div class="formula">
+            <h2>Network Potential Ranking Function</h2>
+            <p>$$V_{net} = \\sum w_i\\Phi_i(x) + \\lambda\\Omega(w)$$</p>
+            <p>This represents a generalized ranking function combining multiple features.</p>
+            
+            <label for="contentQuality">Content Quality Score: <span id="contentQualityValue">0.8</span></label>
+            <input type="range" id="contentQuality" min="0" max="1" step="0.01" value="0.8">
+
+            <label for="linkAuthority">Link Authority Score: <span id="linkAuthorityValue">0.7</span></label>
+            <input type="range" id="linkAuthority" min="0" max="1" step="0.01" value="0.7">
+
+            <label for="userRelevance">User Relevance Score: <span id="userRelevanceValue">0.6</span></label>
+            <input type="range" id="userRelevance" min="0" max="1" step="0.01" value="0.6">
+            
+            <div id="rankingScore" style="margin-top: 10px; font-weight: bold;"></div>
+        </div>
+
+        <div class="controls">
+            <button onclick="calculateScores()" style="background-color: #3498db; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+                Calculate Scores
+            </button>
+        </div>
+
+        <div class="results" id="resultsContainer" style="display: none;">
+            <h2>Sample Search Results</h2>
+            <div id="searchResults"></div>
+        </div>
+    </div>
+
+    <script>
+        // Calculate freshness score based on the differential equation
+        function calculateFreshness(ageDays) {
+            const k = Math.log(3) / Math.log(2); // ~1.58496
+            const daysSinceEpoch = 365; // Assuming we normalize to 1 year
+            
+            // Solve the differential equation: S(t) = S₀ * e^(-kt)
+            // We'll use ageDays as t, and assume initial relevance S₀ = 1
+            const relevance = Math.exp(-k * ageDays / daysSinceEpoch);
+            
+            return relevance;
+        }
+
+        // Calculate ranking score using the network potential function approach
+        function calculateRankingScore(contentQuality, linkAuthority, userRelevance) {
+            // In a real system, these weights would be learned
+            const weights = {
+                content: 0.4,
+                links: 0.35,
+                user: 0.25
+            };
+            
+            // Simple linear combination with regularization (simplified Omega(w))
+            const score = (
+                weights.content * contentQuality +
+                weights.links * linkAuthority +
+                weights.user * userRelevance
+            ) * (1 - 0.05 * (Math.abs(weights.content - 0.33) + 
+                            Math.abs(weights.links - 0.33) + 
+                            Math.abs(weights.user - 0.33)));
+            
+            return score;
+        }
+
+        function calculateScores() {
+            // Get input values
+            const age = parseInt(document.getElementById('ageSlider').value);
+            const contentQuality = parseFloat(document.getElementById('contentQuality').value);
+            const linkAuthority = parseFloat(document.getElementById('linkAuthority').value);
+            const userRelevance = parseFloat(document.getElementById('userRelevance').value);
+            
+            // Update displays
+            document.getElementById('ageValue').textContent = age;
+            document.getElementById('contentQualityValue').textContent = contentQuality.toFixed(2);
+            document.getElementById('linkAuthorityValue').textContent = linkAuthority.toFixed(2);
+            document.getElementById('userRelevanceValue').textContent = userRelevance.toFixed(2);
+            
+            // Calculate scores
+            const freshness = calculateFreshness(age);
+            const ranking = calculateRankingScore(contentQuality, linkAuthority, userRelevance);
+            
+            // Display scores
+            document.getElementById('freshnessScore').innerHTML = 
+                `Freshness Score: ${freshness.toFixed(2)} (based on ${age} days old content)`;
+                
+            document.getElementById('rankingScore').innerHTML = 
+                `Calculated Ranking Score: ${ranking.toFixed(2)} (combines content quality, link authority, and user relevance)`;
+                
+            // Show sample search results
+            showSearchResults(ranking);
+            document.getElementById('resultsContainer').style.display = 'block';
+        }
+
+        function showSearchResults(queryRelevance) {
+            const resultsContainer = document.getElementById('searchResults');
+            resultsContainer.innerHTML = '';
+            
+            // Sample search results with varying attributes
+            const sampleResults = [
+                { title: "Understanding Machine Learning", url: "https://example.com/ml ", 
+                  contentScore: 0.85, linkScore: 0.75, topicMatch: queryRelevance * 0.9 },
+                  
+                { title: "Introduction to AI Ethics", url: "https://example.com/ai-ethics ", 
+                  contentScore: 0.78, linkScore: 0.82, topicMatch: queryRelevance * 0.75 },
+                  
+                { title: "Deep Learning Fundamentals", url: "https://example.com/deep-learning ", 
+                  contentScore: 0.9, linkScore: 0.65, topicMatch: queryRelevance * 0.85 },
+                  
+                { title: "History of Artificial Intelligence", url: "https://example.com/ai-history ", 
+                  contentScore: 0.72, linkScore: 0.9, topicMatch: queryRelevance * 0.65 }
+            ];
+            
+            // Calculate final scores and sort
+            const scoredResults = sampleResults.map(result => {
+                result.finalScore = calculateRankingScore(
+                    result.contentScore, 
+                    result.linkScore, 
+                    result.topicMatch
+                );
+                return result;
+            });
+            
+            // Sort by final score descending
+            scoredResults.sort((a, b) => b.finalScore - a.finalScore);
+            
+            // Display results
+            scoredResults.forEach((result, index) => {
+                const resultDiv = document.createElement('div');
+                resultDiv.style.marginBottom = '20px';
+                
+                resultDiv.innerHTML = `
+                    <div style="font-size: 1.1em; margin-bottom: 5px;">
+                        <strong>${index + 1}. <a href="${result.url}" target="_blank">${result.title}</a></strong>
+                    </div>
+                    <div>URL: ${result.url}</div>
+                    <div>Content Quality: ${result.contentScore.toFixed(2)}</div>
+                    <div>Link Authority: ${result.linkScore.toFixed(2)}</div>
+                    <div>User Relevance: ${result.topicMatch.toFixed(2)}</div>
+                    <div style="color: green; font-weight: bold;">Final Score: ${result.finalScore.toFixed(2)}</div>
+                `;
+                
+                resultsContainer.appendChild(resultDiv);
+            });
+        }
+
+        // Initial calculation
+        window.addEventListener('load', calculateScores);
+    </script>
+</body>
+</html>

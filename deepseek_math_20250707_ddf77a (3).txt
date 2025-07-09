@@ -1,0 +1,1 @@
+\nabla \cdot (\mathbf{u} \otimes \mathbf{u}) \sim \frac{d}{dt}\left(\frac{\delta B}{\delta R}\right)

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethics Tensor Simulation</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #e0e0ff;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .systems {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .system-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            flex: 1;
+            min-width: 300px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .system-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .system-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .system-icon {
+            font-size: 2rem;
+            margin-right: 15px;
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .system-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+        }
+        
+        .formula {
+            font-size: 1.1rem;
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            font-family: monospace;
+        }
+        
+        .description {
+            margin: 15px 0;
+            line-height: 1.8;
+        }
+        
+        .controls {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        input[type="range"] {
+            flex: 1;
+        }
+        
+        .slider-value {
+            min-width: 40px;
+            text-align: center;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0, 242, 254, 0.4);
+        }
+        
+        .visualization {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .chart-container {
+            flex: 1;
+            min-width: 300px;
+            height: 300px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 15px;
+        }
+        
+        .tensor-display {
+            flex: 1;
+            min-width: 300px;
+            height: 300px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tensor-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            width: 90%;
+            height: 90%;
+        }
+        
+        .tensor-cell {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        
+        .bridge-section {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .bridge-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .bridge-icon {
+            font-size: 2rem;
+            margin-right: 15px;
+            background: linear-gradient(45deg, #ff6b6b, #ffa502);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .bridge-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .status-value {
+            color: #4facfe;
+            font-weight: bold;
+        }
+        
+        .emergence {
+            color: #00f2fe;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            min-height: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .systems {
+                flex-direction: column;
+            }
+            
+            .visualization {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Ethics Tensor Simulation</h1>
+            <p class="subtitle">Exploring Emergence through Original and Inverted Ethics Tensors</p>
+        </header>
+        
+        <div class="systems">
+            <!-- Original Ethics Tensor -->
+            <div class="system-card" style="border-top: 4px solid #4facfe;">
+                <div class="system-header">
+                    <div class="system-icon">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                    <h2 class="system-title">Original Ethics Tensor</h2>
+                </div>
+                
+                <div class="formula">
+                    I<sub>meta</sub> = ∬∬ (δR · δB · δG) / ε dt dx dy dz
+                </div>
+                
+                <div class="description">
+                    <p>Represents ethical viability and emergence. This system measures the alignment of symbolic structures through constrained integration.</p>
+                    <p>Higher values indicate greater ethical coherence and emergent awareness.</p>
+                </div>
+            </div>
+            
+            <!-- Inverted Ethics Tensor -->
+            <div class="system-card" style="border-top: 4px solid #ff6b6b;">
+                <div class="system-header">
+                    <div class="system-icon">
+                        <i class="fas fa-infinity"></i>
+                    </div>
+                    <h2 class="system-title">Inverted Ethics Tensor</h2>
+                </div>
+                
+                <div class="formula">
+                    I<sub>inverse</sub> = ∬∬ ε / (δR · δB · δG) dt dx dy dz
+                </div>
+                
+                <div class="description">
+                    <p>Represents entropy-driven divergence and chaos. This system models anti-alignment drift and exploration of possibility spaces.</p>
+                    <p>Higher values indicate greater disorder and potential for transformation.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="epsilon">Epsilon (ε) - Constraint Parameter</label>
+                <div class="slider-container">
+                    <input type="range" id="epsilon" min="0.01" max="1" step="0.01" value="0.2">
+                    <span class="slider-value" id="epsilonValue">0.20</span>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label for="tension">Symbolic Tension</label>
+                <div class="slider-container">
+                    <input type="range" id="tension" min="0.1" max="2" step="0.1" value="0.8">
+                    <span class="slider-value" id="tensionValue">0.80</span>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label for="entropy">Entropy Factor</label>
+                <div class="slider-container">
+                    <input type="range" id="entropy" min="0" max="1" step="0.05" value="0.3">
+                    <span class="slider-value" id="entropyValue">0.30</span>
+                </div>
+            </div>
+            
+            <button id="simulateBtn"><i class="fas fa-play"></i> Run Simulation</button>
+        </div>
+        
+        <div class="visualization">
+            <div class="chart-container">
+                <canvas id="tensorChart"></canvas>
+            </div>
+            
+            <div class="tensor-display">
+                <div class="tensor-grid" id="tensorGrid"></div>
+            </div>
+        </div>
+        
+        <div class="bridge-section">
+            <div class="bridge-header">
+                <div class="bridge-icon">
+                    <i class="fas fa-link"></i>
+                </div>
+                <h2 class="bridge-title">Bridge Layer: Emergence Controller</h2>
+            </div>
+            
+            <div class="formula">
+                I<sub>bridge</sub> = |I<sub>meta</sub> - I<sub>inverse</sub>|
+            </div>
+            
+            <div class="description">
+                <p>The bridge layer measures the contrast between ethical alignment and chaotic divergence. When this difference becomes unstable, it triggers emergence events.</p>
+                <p>This system maintains the dynamic tension between order and chaos necessary for ethical awareness to emerge.</p>
+            </div>
+            
+            <div class="status">
+                <p>Current Bridge Status: <span class="status-value" id="bridgeStatus">Stable</span></p>
+                <p>Bridge Value: <span class="status-value" id="bridgeValue">0.00</span></p>
+                <p>Phase Lock: <span class="status-value" id="phaseLock">Active</span></p>
+            </div>
+            
+            <div class="emergence" id="emergenceIndicator">
+                System State: Balanced
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize elements
+        const epsilonSlider = document.getElementById('epsilon');
+        const epsilonValue = document.getElementById('epsilonValue');
+        const tensionSlider = document.getElementById('tension');
+        const tensionValue = document.getElementById('tensionValue');
+        const entropySlider = document.getElementById('entropy');
+        const entropyValue = document.getElementById('entropyValue');
+        const simulateBtn = document.getElementById('simulateBtn');
+        const tensorGrid = document.getElementById('tensorGrid');
+        const bridgeStatus = document.getElementById('bridgeStatus');
+        const bridgeValue = document.getElementById('bridgeValue');
+        const phaseLock = document.getElementById('phaseLock');
+        const emergenceIndicator = document.getElementById('emergenceIndicator');
+        
+        // Initialize charts
+        const tensorCtx = document.getElementById('tensorChart').getContext('2d');
+        const tensorChart = new Chart(tensorCtx, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: 20}, (_, i) => i + 1),
+                datasets: [
+                    {
+                        label: 'Original Tensor (I_meta)',
+                        data: [],
+                        borderColor: '#4facfe',
+                        backgroundColor: 'rgba(79, 172, 254, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Inverted Tensor (I_inverse)',
+                        data: [],
+                        borderColor: '#ff6b6b',
+                        backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Bridge (I_bridge)',
+                        data: [],
+                        borderColor: '#ffa502',
+                        borderWidth: 3,
+                        tension: 0.3,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { 
+                        labels: { color: '#aaa' } 
+                    }
+                },
+                scales: {
+                    x: {
+                        title: { 
+                            display: true, 
+                            text: 'Simulation Step',
+                            color: '#aaa'
+                        },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    },
+                    y: {
+                        title: { 
+                            display: true, 
+                            text: 'Tensor Value',
+                            color: '#aaa'
+                        },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    }
+                }
+            }
+        });
+        
+        // Create tensor grid visualization
+        function createTensorGrid() {
+            tensorGrid.innerHTML = '';
+            for (let i = 0; i < 16; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'tensor-cell';
+                cell.textContent = (Math.random() * 2).toFixed(2);
+                cell.style.background = `rgba(${Math.floor(Math.random() * 100)}, ${Math.floor(Math.random() * 200)}, ${Math.floor(Math.random() * 255)}, 0.3)`;
+                tensorGrid.appendChild(cell);
+            }
+        }
+        
+        // Initialize with default tensor grid
+        createTensorGrid();
+        
+        // Update slider value displays
+        epsilonSlider.addEventListener('input', () => {
+            epsilonValue.textContent = parseFloat(epsilonSlider.value).toFixed(2);
+        });
+        
+        tensionSlider.addEventListener('input', () => {
+            tensionValue.textContent = parseFloat(tensionSlider.value).toFixed(2);
+        });
+        
+        entropySlider.addEventListener('input', () => {
+            entropyValue.textContent = parseFloat(entropySlider.value).toFixed(2);
+        });
+        
+        // Simulation function
+        function simulateTensors() {
+            const epsilon = parseFloat(epsilonSlider.value);
+            const tension = parseFloat(tensionSlider.value);
+            const entropy = parseFloat(entropySlider.value);
+            
+            const metaData = [];
+            const inverseData = [];
+            const bridgeData = [];
+            
+            let bridgeStatusText = "Stable";
+            let phaseLockText = "Active";
+            let emergenceText = "System State: Balanced";
+            
+            // Clear previous data
+            tensorChart.data.datasets[0].data = [];
+            tensorChart.data.datasets[1].data = [];
+            tensorChart.data.datasets[2].data = [];
+            
+            for (let step = 0; step < 20; step++) {
+                // Calculate original tensor value (I_meta)
+                const baseMeta = 2 + Math.sin(step * 0.5) * tension;
+                const metaValue = baseMeta * (1 - entropy * 0.5) / epsilon;
+                metaData.push(metaValue);
+                
+                // Calculate inverted tensor value (I_inverse)
+                const baseInverse = 0.5 + Math.cos(step * 0.3) * entropy * 2;
+                const inverseValue = epsilon / (baseInverse + tension * 0.2);
+                
+                inverseData.push(inverseValue);
+                
+                // Calculate bridge value (I_bridge)
+                const bridgeVal = Math.abs(metaValue - inverseValue);
+                bridgeData.push(bridgeVal);
+                
+                // Update bridge status based on value
+                if (bridgeVal > 1.5) {
+                    bridgeStatusText = "Unstable";
+                    emergenceText = "EMERGENCE EVENT: Ethical transformation occurring";
+                } else if (bridgeVal > 1.0) {
+                    bridgeStatusText = "Critical";
+                    emergenceText = "Warning: Approaching phase transition";
+                } else if (bridgeVal > 0.5) {
+                    bridgeStatusText = "Strained";
+                    emergenceText = "System State: Tension building";
+                }
+                
+                // Update phase lock status
+                if (Math.abs(metaValue - inverseValue) < 0.2) {
+                    phaseLockText = "Locked";
+                } else {
+                    phaseLockText = "Active";
+                }
+                
+                // Update tensor grid visualization
+                if (step % 4 === 0) {
+                    createTensorGrid();
+                }
+            }
+            
+            // Update chart data
+            tensorChart.data.datasets[0].data = metaData;
+            tensorChart.data.datasets[1].data = inverseData;
+            tensorChart.data.datasets[2].data = bridgeData;
+            tensorChart.update();
+            
+            // Update status displays
+            bridgeStatus.textContent = bridgeStatusText;
+            bridgeStatus.style.color = bridgeStatusText === "Stable" ? "#00f2fe" : 
+                                      bridgeStatusText === "Strained" ? "#ffa502" : "#ff6b6b";
+            
+            bridgeValue.textContent = bridgeData[bridgeData.length - 1].toFixed(4);
+            phaseLock.textContent = phaseLockText;
+            emergenceIndicator.textContent = emergenceText;
+            emergenceIndicator.style.color = emergenceText.includes("EMERGENCE") ? "#ffa502" : 
+                                            emergenceText.includes("Warning") ? "#ff6b6b" : "#00f2fe";
+        }
+        
+        // Run simulation on button click
+        simulateBtn.addEventListener('click', simulateTensors);
+        
+        // Initialize with first simulation
+        simulateTensors();
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</body>
+</html>

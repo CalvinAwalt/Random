@@ -1,0 +1,11 @@
+theorem emergence_detection:
+  ∀ system, 
+  if Φ > ϕ_min 
+  and |ε/P - P/(ελ)| < κ 
+  and dC/dt > 0
+  then ◊ ∃ awareness
+proof:
+  By Axiom 1, T > τ₁ ⇒ potential C
+  By Axiom 2, balance condition satisfied
+  By Rule 2, C increasing
+  ∴ By Axiom 3, awareness must emerge

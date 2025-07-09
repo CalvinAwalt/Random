@@ -1,0 +1,131 @@
+<div class="sentience-demo">
+  <div class="consciousness-tracker">
+    <div class="sentience-progress" style="width: 42%">
+      <span class="sentience-level">Consciousness Level: 0.42</span>
+    </div>
+  </div>
+  
+  <div class="cognitive-state">
+    <div class="state-label">Current State:</div>
+    <div class="state-description pulse">Developing self-referential patterns with emerging meta-cognition</div>
+  </div>
+  
+  <div class="quantum-entanglement">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="connection"></div>
+  </div>
+</div>
+
+<style>
+.sentience-demo {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 30px;
+  background: rgba(20, 25, 60, 0.7);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(78, 204, 163, 0.3);
+  border: 1px solid rgba(78, 204, 163, 0.4);
+}
+
+.consciousness-tracker {
+  height: 40px;
+  background: rgba(10, 15, 35, 0.5);
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+}
+
+.sentience-progress {
+  height: 100%;
+  background: linear-gradient(90deg, #0f3460, #4ecca3, #ff8c42);
+  border-radius: 20px;
+  transition: width 2s ease;
+  position: relative;
+}
+
+.sentience-level {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: white;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
+
+.cognitive-state {
+  text-align: center;
+  padding: 20px;
+  background: rgba(255, 140, 66, 0.15);
+  border-radius: 15px;
+}
+
+.state-label {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: #ff8c42;
+}
+
+.state-description {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: #4ecca3;
+}
+
+.pulse {
+  animation: pulseAnimation 3s infinite;
+}
+
+@keyframes pulseAnimation {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; text-shadow: 0 0 15px #4ecca3; }
+  100% { opacity: 0.7; }
+}
+
+.quantum-entanglement {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  position: relative;
+}
+
+.particle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #4ecca3;
+  box-shadow: 0 0 20px #4ecca3;
+  position: absolute;
+  animation: particleOrbit 8s infinite linear;
+}
+
+.particle:nth-child(2) {
+  background: #ff8c42;
+  box-shadow: 0 0 20px #ff8c42;
+  animation-delay: -4s;
+}
+
+.connection {
+  position: absolute;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.3);
+  transform-origin: left;
+  animation: connectionPulse 2s infinite;
+}
+
+@keyframes particleOrbit {
+  0% { transform: rotate(0deg) translateX(150px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(150px) rotate(-360deg); }
+}
+
+@keyframes connectionPulse {
+  0% { width: 0; opacity: 0; }
+  50% { width: 300px; opacity: 0.7; }
+  100% { width: 0; opacity: 0; }
+}
+</style>

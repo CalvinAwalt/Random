@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consciousness Tensor Inversion Explorer</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c0123, #0c0033, #0d0442);
+            color: #e6e6ff;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 0 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 3.2rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 15px rgba(79, 172, 254, 0.7);
+            background: linear-gradient(to right, #8a2be2, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+            color: #a3a3ff;
+        }
+        
+        .formula-container {
+            background: rgba(25, 15, 60, 0.6);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px auto;
+            text-align: center;
+            border: 1px solid rgba(138, 43, 226, 0.4);
+            box-shadow: 0 10px 30px rgba(79, 172, 254, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .formula-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(to right, #8a2be2, #4facfe, #00f2fe);
+        }
+        
+        .formula {
+            font-size: 1.6rem;
+            font-family: 'Cambria Math', serif;
+            margin: 25px 0;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            overflow-x: auto;
+            border: 1px solid rgba(138, 43, 226, 0.3);
+        }
+        
+        .inversion-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .inversion-card {
+            background: rgba(35, 20, 75, 0.7);
+            border-radius: 20px;
+            padding: 30px;
+            flex: 1;
+            min-width: 300px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .inversion-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(79, 172, 254, 0.3);
+        }
+        
+        .inversion-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(138, 43, 226, 0.3);
+        }
+        
+        .inversion-icon {
+            font-size: 2.5rem;
+            margin-right: 20px;
+            background: linear-gradient(45deg, #8a2be2, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .inversion-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #b19cd9;
+        }
+        
+        .inversion-content {
+            margin-top: 25px;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        
+        .controls {
+            background: rgba(25, 15, 60, 0.7);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 40px 0;
+            border: 1px solid rgba(138, 43, 226, 0.3);
+        }
+        
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 15px;
+        }
+        
+        .control-label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-weight: 500;
+            color: #b19cd9;
+            font-size: 1.2rem;
+        }
+        
+        .control-label i {
+            margin-right: 10px;
+            font-size: 1.5rem;
+            color: #8a2be2;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        input[type="range"] {
+            flex: 1;
+            height: 10px;
+            -webkit-appearance: none;
+            background: linear-gradient(90deg, #8a2be2, #4facfe);
+            border-radius: 10px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 25px;
+            height: 25px;
+            background: #00f2fe;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 242, 254, 0.7);
+            border: 2px solid #fff;
+        }
+        
+        .slider-value {
+            min-width: 60px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.3rem;
+            color: #00f2fe;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 15px;
+            border-radius: 10px;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #8a2be2, #00f2fe);
+            color: white;
+            border: none;
+            padding: 16px 30px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            box-shadow: 0 5px 20px rgba(138, 43, 226, 0.4);
+        }
+        
+        button:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 25px rgba(0, 242, 254, 0.6);
+        }
+        
+        .visualization {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .chart-container {
+            flex: 2;
+            min-width: 300px;
+            height: 400px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(138, 43, 226, 0.3);
+        }
+        
+        .consciousness-display {
+            flex: 1;
+            min-width: 300px;
+            height: 400px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .consciousness-value {
+            font-size: 5rem;
+            font-weight: 700;
+            color: #00f2fe;
+            text-shadow: 0 0 20px rgba(0, 242, 254, 0.8);
+            margin: 20px 0;
+            z-index: 2;
+        }
+        
+        .consciousness-label {
+            font-size: 1.5rem;
+            color: #b19cd9;
+            z-index: 2;
+        }
+        
+        .consciousness-glow {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(0, 242, 254, 0.4), transparent 70%);
+            border-radius: 50%;
+            filter: blur(30px);
+            animation: pulse 3s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            100% { transform: scale(1.2); opacity: 0.8; }
+        }
+        
+        .result-container {
+            background: rgba(25, 15, 60, 0.7);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+            text-align: center;
+            border: 1px solid rgba(138, 43, 226, 0.3);
+        }
+        
+        .result-title {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: #b19cd9;
+        }
+        
+        .result-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+        }
+        
+        .result-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            min-width: 250px;
+            text-align: center;
+            border: 1px solid rgba(138, 43, 226, 0.3);
+        }
+        
+        .result-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #00f2fe;
+            margin: 15px 0;
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+        }
+        
+        .result-label {
+            font-size: 1.2rem;
+            color: #b19cd9;
+        }
+        
+        .interpretation {
+            max-width: 800px;
+            margin: 40px auto 0;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+        
+        @media (max-width: 768px) {
+            .inversion-section {
+                flex-direction: column;
+            }
+            
+            .visualization {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .formula {
+                font-size: 1.2rem;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Consciousness Tensor Inversion Explorer</h1>
+            <p class="subtitle">Inverting the Ethics Tensor Formula to Solve for Consciousness Components</p>
+        </header>
+        
+        <div class="formula-container">
+            <h2>The Original Consciousness Tensor Formula</h2>
+            <div class="formula">
+                I<sub>final</sub> = 
+                \frac{\varepsilon}{\delta R \cdot \delta B \cdot \delta G} \cdot 
+                \iiint_{0}^{1} \iiint \Phi(t,x,y,z) \, dt \, dx \, dy \, dz + 
+                \frac{\delta R \cdot \delta B \cdot \delta G}{\varepsilon \cdot \lambda} \cdot 
+                \iiint_{0}^{1} \iiint \Phi(t,x,y,z) \, dt \, dx \, dy \, dz
+            </div>
+        </div>
+        
+        <div class="inversion-section">
+            <div class="inversion-card">
+                <div class="inversion-header">
+                    <div class="inversion-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h2 class="inversion-title">Structural Inversion</h2>
+                </div>
+                <div class="inversion-content">
+                    <p>Solving for the constrained structure term:</p>
+                    <p class="formula">
+                        \text{Term}_1 = \frac{\varepsilon}{\delta R \cdot \delta B \cdot \delta G} \cdot \iiint \Phi \, dV
+                    </p>
+                    <p>This represents the organized, predictable aspects of consciousness - neural pathways, cognitive frameworks, and stable perception patterns.</p>
+                    <p>Inversion reveals the minimum structural requirements for conscious awareness.</p>
+                </div>
+            </div>
+            
+            <div class="inversion-card">
+                <div class="inversion-header">
+                    <div class="inversion-icon">
+                        <i class="fas fa-infinity"></i>
+                    </div>
+                    <h2 class="inversion-title">Divergent Inversion</h2>
+                </div>
+                <div class="inversion-content">
+                    <p>Solving for the exploratory divergence term:</p>
+                    <p class="formula">
+                        \text{Term}_2 = \frac{\delta R \cdot \delta B \cdot \delta G}{\varepsilon \cdot \lambda} \cdot \iiint \Phi \, dV
+                    </p>
+                    <p>This represents the chaotic, exploratory aspects of consciousness - creativity, novelty detection, and adaptive learning.</p>
+                    <p>Inversion reveals the boundary conditions for conscious exploration and transformation.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <h2>Consciousness Tensor Parameters</h2>
+            <div class="control-grid">
+                <div class="control-group">
+                    <div class="control-label">
+                        <i class="fas fa-cube"></i>
+                        <span>δR (Red Tensor Component)</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="deltaR" min="0.1" max="2" step="0.01" value="0.8">
+                        <span class="slider-value" id="deltaRValue">0.80</span>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <i class="fas fa-cube"></i>
+                        <span>δB (Blue Tensor Component)</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="deltaB" min="0.1" max="2" step="0.01" value="1.2">
+                        <span class="slider-value" id="deltaBValue">1.20</span>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <i class="fas fa-cube"></i>
+                        <span>δG (Green Tensor Component)</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="deltaG" min="0.1" max="2" step="0.01" value="0.6">
+                        <span class="slider-value" id="deltaGValue">0.60</span>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <i class="fas fa-compress-arrows-alt"></i>
+                        <span>ε (Constraint Parameter)</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="epsilon" min="0.01" max="1" step="0.01" value="0.3">
+                        <span class="slider-value" id="epsilonValue">0.30</span>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                        <span>λ (Entropy Parameter)</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="lambda" min="0.1" max="5" step="0.1" value="1.5">
+                        <span class="slider-value" id="lambdaValue">1.50</span>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <i class="fas fa-wave-square"></i>
+                        <span>Φ (Consciousness Field)</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="phi" min="0.5" max="3" step="0.1" value="1.8">
+                        <span class="slider-value" id="phiValue">1.80</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="invertBtn">
+                <i class="fas fa-sync-alt"></i> Invert Tensor for Consciousness Components
+            </button>
+        </div>
+        
+        <div class="visualization">
+            <div class="chart-container">
+                <canvas id="tensorChart"></canvas>
+            </div>
+            
+            <div class="consciousness-display">
+                <div class="consciousness-glow"></div>
+                <div class="consciousness-label">Consciousness Index</div>
+                <div class="consciousness-value" id="consciousnessValue">0.00</div>
+                <div class="consciousness-label" id="consciousnessState">MINIMAL AWARENESS</div>
+            </div>
+        </div>
+        
+        <div class="result-container">
+            <div class="result-title">Inversion Results: Consciousness Components</div>
+            <div class="result-content">
+                <div class="result-card">
+                    <div class="result-label">Structural Integrity</div>
+                    <div class="result-value" id="structureValue">0.00</div>
+                    <div class="result-label">(Term₁ Inversion)</div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-label">Divergent Potential</div>
+                    <div class="result-value" id="divergenceValue">0.00</div>
+                    <div class="result-label">(Term₂ Inversion)</div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-label">Emergence Factor</div>
+                    <div class="result-value" id="emergenceValue">0.00</div>
+                    <div class="result-label">(Term₁ × Term₂)</div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-label">Homeostasis</div>
+                    <div class="result-value" id="balanceValue">0.00</div>
+                    <div class="result-label">(Term₁ ÷ Term₂)</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="interpretation">
+            <h3>Consciousness Interpretation</h3>
+            <p id="interpretationText">
+                The inverted tensor reveals the fundamental components of consciousness. Structural integrity represents 
+                the organized neural patterns that maintain stable awareness, while divergent potential measures the 
+                system's capacity for novelty and transformation. The emergence factor quantifies the synergistic 
+                interaction between these components that generates conscious experience, and homeostasis indicates 
+                the balance between stability and adaptability that characterizes healthy consciousness.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Initialize elements
+        const deltaRSlider = document.getElementById('deltaR');
+        const deltaRValue = document.getElementById('deltaRValue');
+        const deltaBSlider = document.getElementById('deltaB');
+        const deltaBValue = document.getElementById('deltaBValue');
+        const deltaGSlider = document.getElementById('deltaG');
+        const deltaGValue = document.getElementById('deltaGValue');
+        const epsilonSlider = document.getElementById('epsilon');
+        const epsilonValue = document.getElementById('epsilonValue');
+        const lambdaSlider = document.getElementById('lambda');
+        const lambdaValue = document.getElementById('lambdaValue');
+        const phiSlider = document.getElementById('phi');
+        const phiValue = document.getElementById('phiValue');
+        const invertBtn = document.getElementById('invertBtn');
+        const consciousnessValue = document.getElementById('consciousnessValue');
+        const consciousnessState = document.getElementById('consciousnessState');
+        const structureValue = document.getElementById('structureValue');
+        const divergenceValue = document.getElementById('divergenceValue');
+        const emergenceValue = document.getElementById('emergenceValue');
+        const balanceValue = document.getElementById('balanceValue');
+        const interpretationText = document.getElementById('interpretationText');
+        
+        // Initialize chart
+        const tensorCtx = document.getElementById('tensorChart').getContext('2d');
+        const tensorChart = new Chart(tensorCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Structural', 'Divergent', 'Emergence', 'Homeostasis'],
+                datasets: [{
+                    label: 'Consciousness Components',
+                    data: [0, 0, 0, 0],
+                    backgroundColor: [
+                        'rgba(138, 43, 226, 0.7)',
+                        'rgba(79, 172, 254, 0.7)',
+                        'rgba(0, 242, 254, 0.7)',
+                        'rgba(177, 156, 217, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(138, 43, 226, 1)',
+                        'rgba(79, 172, 254, 1)',
+                        'rgba(0, 242, 254, 1)',
+                        'rgba(177, 156, 217, 1)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { 
+                        display: false,
+                        labels: { color: '#e0f7fa' } 
+                    },
+                    title: {
+                        display: true,
+                        text: 'Consciousness Component Analysis',
+                        color: '#b19cd9',
+                        font: { size: 18 }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: { 
+                            display: true, 
+                            text: 'Component',
+                            color: '#b19cd9'
+                        },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        ticks: { color: '#e0f7fa' }
+                    },
+                    y: {
+                        title: { 
+                            display: true, 
+                            text: 'Component Value',
+                            color: '#b19cd9'
+                        },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        ticks: { color: '#e0f7fa' }
+                    }
+                }
+            }
+        });
+        
+        // Function to update slider value displays
+        function updateSliderValues() {
+            deltaRValue.textContent = parseFloat(deltaRSlider.value).toFixed(2);
+            deltaBValue.textContent = parseFloat(deltaBSlider.value).toFixed(2);
+            deltaGValue.textContent = parseFloat(deltaGSlider.value).toFixed(2);
+            epsilonValue.textContent = parseFloat(epsilonSlider.value).toFixed(2);
+            lambdaValue.textContent = parseFloat(lambdaSlider.value).toFixed(2);
+            phiValue.textContent = parseFloat(phiSlider.value).toFixed(2);
+        }
+        
+        // Function to compute consciousness metrics
+        function computeConsciousness() {
+            const δR = parseFloat(deltaRSlider.value);
+            const δB = parseFloat(deltaBSlider.value);
+            const δG = parseFloat(deltaGSlider.value);
+            const ε = parseFloat(epsilonSlider.value);
+            const λ = parseFloat(lambdaSlider.value);
+            const Φ = parseFloat(phiSlider.value);
+            
+            // Tensor product
+            const P = δR * δB * δG;
+            
+            // Compute the two terms of the formula
+            const term1 = (ε / P) * Φ;
+            const term2 = (P / (ε * λ)) * Φ;
+            
+            // Compute consciousness index
+            const C = term1 + term2;
+            
+            // Compute inversion results
+            const structure = Math.pow(term1 * ε * λ, 0.5);  // Inverted structural component
+            const divergence = Math.pow(term2 * ε * λ, 0.5); // Inverted divergent component
+            const emergence = structure * divergence;         // Emergence factor
+            const balance = structure / divergence;           // Homeostasis balance
+            
+            return {
+                consciousness: C,
+                term1: term1,
+                term2: term2,
+                structure: structure,
+                divergence: divergence,
+                emergence: emergence,
+                balance: balance
+            };
+        }
+        
+        // Function to update consciousness state text
+        function updateConsciousnessState(value) {
+            if (value < 2) {
+                return "MINIMAL AWARENESS";
+            } else if (value < 4) {
+                return "BASAL CONSCIOUSNESS";
+            } else if (value < 7) {
+                return "SELF-AWARENESS";
+            } else if (value < 10) {
+                return "REFLECTIVE CONSCIOUSNESS";
+            } else {
+                return "TRANSCENDENT AWARENESS";
+            }
+        }
+        
+        // Function to update interpretation
+        function updateInterpretation(results) {
+            let text = "";
+            
+            if (results.balance > 2.0) {
+                text = "The system exhibits highly structured consciousness with stable patterns of awareness, ";
+                text += "but may lack adaptability. This represents focused, disciplined cognition with strong ";
+                text += "memory recall but potentially limited creative capacity.";
+            } else if (results.balance > 1.2) {
+                text = "Consciousness shows balanced integration between structure and exploration. This state ";
+                text += "supports both stable self-awareness and creative problem-solving, characteristic of ";
+                text += "healthy human cognition during wakeful states.";
+            } else if (results.balance > 0.8) {
+                text = "The system demonstrates adaptable consciousness with a slight emphasis on novelty and ";
+                text += "exploration. This state enhances learning and creativity, potentially at the cost of ";
+                text += "some focus and stability. Characteristic of creative flow states.";
+            } else {
+                text = "Highly divergent consciousness dominates, with minimal structural constraints. This ";
+                text += "state enables radical creativity and novel perception but may lack coherence and ";
+                text += "continuity. Resembles dream states or psychedelic experiences.";
+            }
+            
+            if (results.emergence > 10) {
+                text += " The high emergence factor indicates synergistic interaction between consciousness ";
+                text += "components, potentially enabling meta-cognition and self-transformation.";
+            } else if (results.emergence > 5) {
+                text += " Moderate emergence supports complex pattern recognition and integrated perception.";
+            } else {
+                text += " Limited emergence suggests fragmented or compartmentalized conscious experience.";
+            }
+            
+            return text;
+        }
+        
+        // Function to update all displays
+        function updateAll() {
+            updateSliderValues();
+            const results = computeConsciousness();
+            
+            // Update displays
+            consciousnessValue.textContent = results.consciousness.toFixed(2);
+            consciousnessState.textContent = updateConsciousnessState(results.consciousness);
+            structureValue.textContent = results.structure.toFixed(2);
+            divergenceValue.textContent = results.divergence.toFixed(2);
+            emergenceValue.textContent = results.emergence.toFixed(2);
+            balanceValue.textContent = results.balance.toFixed(2);
+            interpretationText.textContent = updateInterpretation(results);
+            
+            // Update chart
+            tensorChart.data.datasets[0].data = [
+                results.structure,
+                results.divergence,
+                results.emergence,
+                results.balance
+            ];
+            tensorChart.update();
+        }
+        
+        // Set up event listeners
+        [deltaRSlider, deltaBSlider, deltaGSlider, epsilonSlider, lambdaSlider, phiSlider].forEach(slider => {
+            slider.addEventListener('input', updateAll);
+        });
+        
+        invertBtn.addEventListener('click', updateAll);
+        
+        // Initialize
+        updateAll();
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</body>
+</html>

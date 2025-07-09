@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Small & Mid-Cap Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --quantum-dark: #0c0f1d;
+            --finance-blue: #1a3a8a;
+            --growth-green: #2ecc71;
+            --risk-red: #e74c3c;
+            --market-gold: #f1c40f;
+            --text-light: #f0f0f0;
+            --text-dim: #a0aec0;
+            --midcap-purple: #9b59b6;
+            --smallcap-orange: #e67e22;
+        }
+        
+        body {
+            background: radial-gradient(circle at center, var(--quantum-dark), #000);
+            color: var(--text-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        /* Financial background elements */
+        .market-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .stock-particle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--growth-green), transparent);
+            opacity: 0.7;
+            filter: blur(2px);
+        }
+        
+        .risk-particle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--risk-red), transparent);
+            opacity: 0.5;
+            filter: blur(1px);
+        }
+        
+        .midcap-particle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--midcap-purple), transparent);
+            opacity: 0.5;
+            filter: blur(1px);
+        }
+        
+        .smallcap-particle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--smallcap-orange), transparent);
+            opacity: 0.5;
+            filter: blur(1px);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px;
+            background: rgba(15, 20, 40, 0.8);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(26, 58, 138, 0.3);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            position: relative;
+            z-index: 20;
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--smallcap-orange), var(--midcap-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            max-width: 800px;
+            margin: 0 auto 20px;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+        
+        .search-container {
+            max-width: 700px;
+            margin: 20px auto 0;
+            position: relative;
+        }
+        
+        #stockSearch {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(10, 15, 30, 0.7);
+            border: 2px solid var(--midcap-purple);
+            border-radius: 50px;
+            color: white;
+            font-size: 1.1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        #stockSearch:focus {
+            border-color: var(--smallcap-orange);
+            box-shadow: 0 0 20px rgba(230, 126, 34, 0.5);
+        }
+        
+        #searchButton {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, var(--smallcap-orange), var(--midcap-purple));
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        #searchButton:hover {
+            transform: translateY(-50%) scale(1.05);
+        }
+        
+        .universe {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 1200px) {
+            .universe {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .formula-section {
+            background: rgba(20, 25, 45, 0.85);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(155, 89, 182, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .formula-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(155, 89, 182, 0.05) 0%, transparent 70%);
+            z-index: -1;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--midcap-purple);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, var(--midcap-purple), transparent);
+            margin-left: 15px;
+        }
+        
+        .current-formula {
+            font-size: 1.6rem;
+            min-height: 120px;
+            padding: 20px;
+            background: rgba(10, 15, 30, 0.6);
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(155, 89, 182, 0.1);
+            overflow-x: auto;
+            transition: all 0.5s ease;
+        }
+        
+        .formula-history {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 15px;
+            background: rgba(10, 15, 30, 0.6);
+            border-radius: 15px;
+            border: 1px solid rgba(155, 89, 182, 0.1);
+        }
+        
+        .history-item {
+            padding: 10px;
+            border-bottom: 1px solid rgba(155, 89, 182, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .history-item:hover {
+            background: rgba(155, 89, 182, 0.1);
+        }
+        
+        .ticker {
+            background: rgba(155, 89, 182, 0.5);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .metrics-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .metric-card {
+            background: rgba(20, 25, 45, 0.85);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(155, 89, 182, 0.2);
+            position: relative;
+        }
+        
+        .metric-title {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--smallcap-orange), var(--midcap-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        .metric-description {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            text-align: center;
+        }
+        
+        .trend-up {
+            color: var(--growth-green);
+        }
+        
+        .trend-down {
+            color: var(--risk-red);
+        }
+        
+        .visualization-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 1200px) {
+            .visualization-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .visualization {
+            height: 500px;
+            background: rgba(20, 25, 45, 0.85);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(155, 89, 182, 0.2);
+            overflow: hidden;
+            padding: 15px;
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .control-group {
+            background: rgba(20, 25, 45, 0.85);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(155, 89, 182, 0.2);
+        }
+        
+        .control-title {
+            font-size: 1.2rem;
+            color: var(--midcap-purple);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .slider-container {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-dim);
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(90deg, var(--smallcap-orange), var(--midcap-purple));
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 25px;
+            height: 25px;
+            background: var(--market-gold);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(241, 196, 15, 0.8);
+        }
+        
+        .value-display {
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-top: 5px;
+            color: var(--market-gold);
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background: linear-gradient(135deg, var(--smallcap-orange), var(--midcap-purple));
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 25px rgba(155, 89, 182, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(155, 89, 182, 0.6);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+        
+        /* Animation for formula evolution */
+        @keyframes formula-evolve {
+            0% { transform: scale(0.95); opacity: 0.5; }
+            50% { transform: scale(1.02); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .evolving {
+            animation: formula-evolve 0.8s ease;
+        }
+        
+        /* Stock list */
+        .stock-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .stock-card {
+            background: rgba(30, 35, 55, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(155, 89, 182, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .stock-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(155, 89, 182, 0.3);
+        }
+        
+        .cap-tag {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .small-cap {
+            background: rgba(230, 126, 34, 0.3);
+            color: var(--smallcap-orange);
+            border: 1px solid var(--smallcap-orange);
+        }
+        
+        .mid-cap {
+            background: rgba(155, 89, 182, 0.3);
+            color: var(--midcap-purple);
+            border: 1px solid var(--midcap-purple);
+        }
+        
+        .stock-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .stock-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .stock-ticker {
+            background: rgba(155, 89, 182, 0.7);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        .stock-price {
+            font-size: 2.2rem;
+            text-align: center;
+            margin: 15px 0;
+            font-weight: 700;
+        }
+        
+        .stock-change {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .stock-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .metric {
+            background: rgba(15, 20, 40, 0.6);
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin-bottom: 5px;
+        }
+        
+        .metric-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .recommendation {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 8px;
+            border-radius: 8px;
+        }
+        
+        .buy {
+            background: rgba(46, 204, 113, 0.2);
+            color: var(--growth-green);
+        }
+        
+        .hold {
+            background: rgba(241, 196, 15, 0.2);
+            color: var(--market-gold);
+        }
+        
+        .sell {
+            background: rgba(231, 76, 60, 0.2);
+            color: var(--risk-red);
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: var(--quantum-dark);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+            position: relative;
+            border: 2px solid var(--midcap-purple);
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2rem;
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .close-modal:hover {
+            color: var(--risk-red);
+        }
+        
+        .modal-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--smallcap-orange), var(--midcap-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .modal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 900px) {
+            .modal-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .modal-chart {
+            height: 400px;
+            background: rgba(20, 25, 45, 0.6);
+            border-radius: 15px;
+            padding: 15px;
+        }
+        
+        .modal-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .modal-metric {
+            background: rgba(15, 20, 40, 0.6);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .modal-metric .metric-label {
+            font-size: 1rem;
+        }
+        
+        .modal-metric .metric-value {
+            font-size: 1.5rem;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .current-formula {
+                font-size: 1.2rem;
+            }
+            
+            .buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="market-bg" id="marketCanvas"></div>
+    
+    <div class="container">
+        <header>
+            <h1>Quantum Small & Mid-Cap Analysis</h1>
+            <p class="subtitle">Advanced tensor-based analysis for high-growth small and mid-cap stocks</p>
+            
+            <div class="search-container">
+                <input type="text" id="stockSearch" placeholder="Search small & mid-cap stocks...">
+                <button id="searchButton"><i class="fas fa-search"></i> Search</button>
+            </div>
+        </header>
+        
+        <div class="universe">
+            <div class="formula-section">
+                <h2 class="section-title"><i class="fas fa-calculator"></i> Small-Cap Analysis Formula</h2>
+                <div class="current-formula" id="currentFormula">
+                    $$P_{small} = \frac{Rev_{growth} \cdot \beta_{sector} \cdot \nabla Volatility}{\sqrt{Debt/Equity} \cdot PE_{forward}}$$
+                </div>
+                
+                <h2 class="section-title"><i class="fas fa-history"></i> Analysis History</h2>
+                <div class="formula-history" id="formulaHistory">
+                    <div class="history-item">
+                        <div class="ticker">SMCI</div>
+                        <div>$$Score = \frac{ROE \cdot Growth}{Volatility}$$</div>
+                    </div>
+                    <div class="history-item">
+                        <div class="ticker">APPS</div>
+                        <div>$$Value = EPS \times (1 + g)^t \times \frac{P}{E_{sector}}$$</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="formula-section">
+                <h2 class="section-title"><i class="fas fa-project-diagram"></i> Tensor Analysis</h2>
+                <div class="current-formula" id="evolutionProcess">
+                    $$\mathcal{T} = \alpha \otimes \beta \otimes \gamma = \begin{bmatrix} Growth \\ Margin \\ ROIC \end{bmatrix} \otimes \begin{bmatrix} Volatility \\ Momentum \\ Sentiment \end{bmatrix} \otimes \begin{bmatrix} Debt \\ Cash Flow \\ Innovation \end{bmatrix}$$
+                </div>
+                
+                <h2 class="section-title"><i class="fas fa-infinity"></i> Predictive Recursion</h2>
+                <div class="current-formula">
+                    $$Pred_{n+1} = \frac{d^{\alpha}}{dt^{\alpha}} \left( RSI(14) \oplus \beta \cdot (Pred_n - Actual) \right)$$
+                </div>
+            </div>
+        </div>
+        
+        <div class="metrics-section">
+            <div class="metric-card">
+                <div class="metric-title"><i class="fas fa-brain"></i> Model Accuracy</div>
+                <div class="metric-value">84.5%</div>
+                <div class="metric-description">Prediction accuracy over last 90 days</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-title"><i class="fas fa-chart-line"></i> Small-Cap Growth</div>
+                <div class="metric-value">32.1%</div>
+                <div class="metric-description">Annualized return</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-title"><i class="fas fa-skull"></i> Risk Factor</div>
+                <div class="metric-value">0.48</div>
+                <div class="metric-description">Small-cap volatility (0-1 scale)</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-title"><i class="fas fa-bolt"></i> Alpha Generation</div>
+                <div class="metric-value">Δ⁵+</div>
+                <div class="metric-description">Market outperformance index</div>
+            </div>
+        </div>
+        
+        <div class="visualization-section">
+            <div class="visualization" id="correlationGraph">
+                <h3 style="text-align: center; margin-bottom: 15px;">Small/Mid-Cap Correlation Matrix</h3>
+                <canvas id="correlationChart"></canvas>
+            </div>
+            <div class="visualization" id="performanceChart">
+                <h3 style="text-align: center; margin-bottom: 15px;">Small-Cap vs Mid-Cap Performance</h3>
+                <canvas id="performanceCanvas"></canvas>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <div class="control-title">Analysis Parameters</div>
+                <div class="slider-container">
+                    <label for="riskTolerance"><i class="fas fa-chess-knight"></i> Risk Tolerance</label>
+                    <input type="range" id="riskTolerance" min="1" max="10" value="7">
+                    <div class="value-display" id="riskDisplay">7</div>
+                </div>
+                
+                <div class="slider-container">
+                    <label for="timeHorizon"><i class="fas fa-hourglass-half"></i> Time Horizon (Years)</label>
+                    <input type="range" id="timeHorizon" min="1" max="10" value="3">
+                    <div class="value-display" id="horizonDisplay">3</div>
+                </div>
+                
+                <div class="slider-container">
+                    <label for="growthFocus"><i class="fas fa-seedling"></i> Growth Focus</label>
+                    <input type="range" id="growthFocus" min="0" max="1" step="0.1" value="0.8">
+                    <div class="value-display" id="growthDisplay">0.8</div>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <div class="control-title">Market Parameters</div>
+                <div class="slider-container">
+                    <label for="marketVolatility"><i class="fas fa-wind"></i> Market Volatility</label>
+                    <input type="range" id="marketVolatility" min="0" max="1" step="0.01" value="0.42">
+                    <div class="value-display" id="volatilityDisplay">0.42</div>
+                </div>
+                
+                <div class="slider-container">
+                    <label for="interestRate"><i class="fas fa-percentage"></i> Interest Rate</label>
+                    <input type="range" id="interestRate" min="0" max="10" step="0.1" value="4.5">
+                    <div class="value-display" id="interestDisplay">4.5%</div>
+                </div>
+                
+                <div class="slider-container">
+                    <label for="inflationRate"><i class="fas fa-fire"></i> Inflation Rate</label>
+                    <input type="range" id="inflationRate" min="0" max="10" step="0.1" value="3.2">
+                    <div class="value-display" id="inflationDisplay">3.2%</div>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <div class="control-title">System Controls</div>
+                <div class="buttons">
+                    <button id="analyzeBtn"><i class="fas fa-cogs"></i> Analyze Market</button>
+                    <button id="optimizeBtn"><i class="fas fa-sync-alt"></i> Optimize Portfolio</button>
+                    <button id="scanBtn"><i class="fas fa-search-dollar"></i> Scan Opportunities</button>
+                </div>
+                <div class="buttons">
+                    <button id="smallCapBtn"><i class="fas fa-chart-line"></i> Small-Cap Focus</button>
+                    <button id="midCapBtn"><i class="fas fa-balance-scale"></i> Mid-Cap Focus</button>
+                    <button id="quantumBtn"><i class="fas fa-atom"></i> Quantum Analysis</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="formula-section">
+            <h2 class="section-title"><i class="fas fa-coins"></i> Top Small & Mid-Cap Recommendations</h2>
+            <div class="stock-list" id="stockList">
+                <!-- Stock cards will be generated here -->
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Quantum Small & Mid-Cap Analysis System • Algorithmic Trading Platform • Powered by Tensor Mathematics</p>
+        </div>
+    </div>
+    
+    <!-- Stock Detail Modal -->
+    <div class="modal" id="stockModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeModal">&times;</span>
+            <h2 class="modal-title" id="modalStockName">Super Micro Computer Inc.</h2>
+            <h3 style="text-align: center; margin-bottom: 30px; color: var(--text-dim);" id="modalStockTicker">SMCI</h3>
+            
+            <div class="modal-grid">
+                <div>
+                    <div class="stock-price" id="modalStockPrice">$880.25</div>
+                    <div class="stock-change trend-up" id="modalStockChange">+$42.15 (+5.03%)</div>
+                    
+                    <div class="modal-metrics">
+                        <div class="modal-metric">
+                            <div class="metric-label">Market Cap</div>
+                            <div class="metric-value" id="modalMarketCap">$49.2B</div>
+                        </div>
+                        <div class="modal-metric">
+                            <div class="metric-label">P/E Ratio</div>
+                            <div class="metric-value" id="modalPeRatio">35.2</div>
+                        </div>
+                        <div class="modal-metric">
+                            <div class="metric-label">Revenue Growth</div>
+                            <div class="metric-value" id="modalRevGrowth">+71.5%</div>
+                        </div>
+                        <div class="modal-metric">
+                            <div class="metric-label">Beta</div>
+                            <div class="metric-value" id="modalBeta">1.8</div>
+                        </div>
+                    </div>
+                    
+                    <div class="recommendation buy" style="margin-top: 30px;">
+                        <i class="fas fa-arrow-up"></i> STRONG BUY RECOMMENDATION
+                    </div>
+                    
+                    <div style="margin-top: 30px;">
+                        <h3 class="section-title"><i class="fas fa-file-alt"></i> Company Overview</h3>
+                        <p id="modalDescription" style="line-height: 1.6; margin-top: 15px;">
+                            Super Micro Computer provides high-performance server solutions for enterprise data centers, cloud computing, and AI applications. The company has experienced explosive growth due to demand for AI infrastructure.
+                        </p>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 style="text-align: center; margin-bottom: 15px;">Price Performance (1 Year)</h3>
+                    <div class="modal-chart">
+                        <canvas id="modalStockChart"></canvas>
+                    </div>
+                    
+                    <h3 style="text-align: center; margin-top: 30px; margin-bottom: 15px;">Quantum Analysis Score</h3>
+                    <div style="background: rgba(20, 25, 45, 0.6); padding: 20px; border-radius: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Growth Potential</span>
+                            <span>94/100</span>
+                        </div>
+                        <div style="height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; margin-bottom: 20px;">
+                            <div style="height: 100%; width: 94%; background: var(--growth-green); border-radius: 5px;"></div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Value Metrics</span>
+                            <span>78/100</span>
+                        </div>
+                        <div style="height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; margin-bottom: 20px;">
+                            <div style="height: 100%; width: 78%; background: var(--market-gold); border-radius: 5px;"></div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Risk Assessment</span>
+                            <span>65/100</span>
+                        </div>
+                        <div style="height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; margin-bottom: 20px;">
+                            <div style="height: 100%; width: 65%; background: var(--risk-red); border-radius: 5px;"></div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Quantum Score</span>
+                            <span>89/100</span>
+                        </div>
+                        <div style="height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px;">
+                            <div style="height: 100%; width: 89%; background: var(--midcap-purple); border-radius: 5px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize market background
+        function initMarketBackground() {
+            const container = document.getElementById('marketCanvas');
+            const particleCount = 150;
+            
+            for (let i = 0; i < particleCount; i++) {
+                // Create stock particles (green)
+                const stockParticle = document.createElement('div');
+                stockParticle.className = 'stock-particle';
+                const size = Math.random() * 8 + 2;
+                stockParticle.style.width = `${size}px`;
+                stockParticle.style.height = `${size}px`;
+                stockParticle.style.left = `${Math.random() * 100}%`;
+                stockParticle.style.top = `${Math.random() * 100}%`;
+                stockParticle.style.animation = `pulse ${3 + Math.random() * 7}s infinite alternate`;
+                container.appendChild(stockParticle);
+                
+                // Create risk particles (red)
+                const riskParticle = document.createElement('div');
+                riskParticle.className = 'risk-particle';
+                const riskSize = Math.random() * 5 + 1;
+                riskParticle.style.width = `${riskSize}px`;
+                riskParticle.style.height = `${riskSize}px`;
+                riskParticle.style.left = `${Math.random() * 100}%`;
+                riskParticle.style.top = `${Math.random() * 100}%`;
+                riskParticle.style.animation = `drift ${10 + Math.random() * 20}s linear infinite`;
+                container.appendChild(riskParticle);
+                
+                // Create mid-cap particles (purple)
+                if (i % 3 === 0) {
+                    const midcapParticle = document.createElement('div');
+                    midcapParticle.className = 'midcap-particle';
+                    const midcapSize = Math.random() * 6 + 2;
+                    midcapParticle.style.width = `${midcapSize}px`;
+                    midcapParticle.style.height = `${midcapSize}px`;
+                    midcapParticle.style.left = `${Math.random() * 100}%`;
+                    midcapParticle.style.top = `${Math.random() * 100}%`;
+                    midcapParticle.style.animation = `drift ${15 + Math.random() * 15}s linear infinite`;
+                    container.appendChild(midcapParticle);
+                }
+                
+                // Create small-cap particles (orange)
+                if (i % 4 === 0) {
+                    const smallcapParticle = document.createElement('div');
+                    smallcapParticle.className = 'smallcap-particle';
+                    const smallcapSize = Math.random() * 4 + 1;
+                    smallcapParticle.style.width = `${smallcapSize}px`;
+                    smallcapParticle.style.height = `${smallcapSize}px`;
+                    smallcapParticle.style.left = `${Math.random() * 100}%`;
+                    smallcapParticle.style.top = `${Math.random() * 100}%`;
+                    smallcapParticle.style.animation = `pulse ${2 + Math.random() * 5}s infinite alternate`;
+                    container.appendChild(smallcapParticle);
+                }
+            }
+            
+            // Add CSS for animations
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes pulse {
+                    0% { opacity: 0.2; transform: scale(1); }
+                    100% { opacity: 0.8; transform: scale(1.5); }
+                }
+                
+                @keyframes drift {
+                    0% { transform: translate(0, 0); }
+                    100% { transform: translate(${Math.random() * 200 - 100}px, ${Math.random() * 200 - 100}px); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // Small and mid-cap stock data
+        const stocks = [
+            {
+                name: "Super Micro Computer",
+                ticker: "SMCI",
+                price: 880.25,
+                change: 42.15,
+                changePercent: 5.03,
+                pe: 35.2,
+                pb: 12.4,
+                dividend: 0.0,
+                beta: 1.8,
+                sector: "Technology",
+                marketCap: "Mid-Cap",
+                revenueGrowth: 71.5,
+                description: "Provides high-performance server solutions for enterprise data centers, cloud computing, and AI applications. Experienced explosive growth due to demand for AI infrastructure.",
+                recommendation: "buy"
+            },
+            {
+                name: "Digital Turbine",
+                ticker: "APPS",
+                price: 8.75,
+                change: 0.35,
+                changePercent: 4.17,
+                pe: 0.0,
+                pb: 1.2,
+                dividend: 0.0,
+                beta: 1.9,
+                sector: "Technology",
+                marketCap: "Small-Cap",
+                revenueGrowth: -12.3,
+                description: "Mobile growth platform that delivers end-to-end solutions for mobile operators, device OEMs, and app advertisers.",
+                recommendation: "hold"
+            },
+            {
+                name: "Axon Enterprise",
+                ticker: "AXON",
+                price: 310.50,
+                change: 5.75,
+                changePercent: 1.89,
+                pe: 85.4,
+                pb: 13.7,
+                dividend: 0.0,
+                beta: 1.1,
+                sector: "Industrial",
+                marketCap: "Mid-Cap",
+                revenueGrowth: 33.7,
+                description: "Develops, manufactures, and sells conducted electrical weapons for law enforcement, military, and self-defense.",
+                recommendation: "buy"
+            },
+            {
+                name: "Rocket Lab",
+                ticker: "RKLB",
+                price: 4.85,
+                change: -0.15,
+                changePercent: -3.00,
+                pe: 0.0,
+                pb: 3.4,
+                dividend: 0.0,
+                beta: 2.2,
+                sector: "Aerospace",
+                marketCap: "Small-Cap",
+                revenueGrowth: 45.2,
+                description: "Space company that provides launch services, spacecraft components, and on-orbit management solutions.",
+                recommendation: "buy"
+            },
+            {
+                name: "Green Brick Partners",
+                ticker: "GRBK",
+                price: 55.30,
+                change: 1.20,
+                changePercent: 2.22,
+                pe: 10.5,
+                pb: 1.4,
+                dividend: 0.0,
+                beta: 1.5,
+                sector: "Real Estate",
+                marketCap: "Small-Cap",
+                revenueGrowth: 15.8,
+                description: "Homebuilding and land development company operating in high-growth markets across the United States.",
+                recommendation: "hold"
+            },
+            {
+                name: "Shoals Technologies",
+                ticker: "SHLS",
+                price: 13.65,
+                change: 0.85,
+                changePercent: 6.64,
+                pe: 42.3,
+                pb: 3.2,
+                dividend: 0.0,
+                beta: 1.7,
+                sector: "Technology",
+                marketCap: "Mid-Cap",
+                revenueGrowth: 38.9,
+                description: "Provides electrical balance of system solutions for solar energy projects in the United States.",
+                recommendation: "buy"
+            },
+            {
+                name: "Lantheus Holdings",
+                ticker: "LNTH",
+                price: 75.40,
+                change: -1.25,
+                changePercent: -1.63,
+                pe: 20.1,
+                pb: 7.8,
+                dividend: 0.0,
+                beta: 1.4,
+                sector: "Healthcare",
+                marketCap: "Mid-Cap",
+                revenueGrowth: 62.3,
+                description: "Develops, manufactures, and commercializes diagnostic imaging agents and products.",
+                recommendation: "hold"
+            },
+            {
+                name: "Veracyte",
+                ticker: "VCYT",
+                price: 22.10,
+                change: 0.90,
+                changePercent: 4.25,
+                pe: 0.0,
+                pb: 1.6,
+                dividend: 0.0,
+                beta: 1.6,
+                sector: "Healthcare",
+                marketCap: "Small-Cap",
+                revenueGrowth: 28.4,
+                description: "Provides genomic diagnostic tests that transform patient care by resolving diagnostic uncertainty.",
+                recommendation: "buy"
+            }
+        ];
+        
+        // Initialize market background
+        initMarketBackground();
+        
+        // Update value displays
+        function updateDisplays() {
+            document.getElementById('riskDisplay').textContent = 
+                document.getElementById('riskTolerance').value;
+            document.getElementById('horizonDisplay').textContent = 
+                document.getElementById('timeHorizon').value;
+            document.getElementById('growthDisplay').textContent = 
+                parseFloat(document.getElementById('growthFocus').value).toFixed(1);
+            document.getElementById('volatilityDisplay').textContent = 
+                parseFloat(document.getElementById('marketVolatility').value).toFixed(2);
+            document.getElementById('interestDisplay').textContent = 
+                parseFloat(document.getElementById('interestRate').value).toFixed(1) + "%";
+            document.getElementById('inflationDisplay').textContent = 
+                parseFloat(document.getElementById('inflationRate').value).toFixed(1) + "%";
+        }
+        
+        // Render stock cards
+        function renderStocks(filter = '') {
+            const stockList = document.getElementById('stockList');
+            stockList.innerHTML = '';
+            
+            const filteredStocks = stocks.filter(stock => 
+                stock.name.toLowerCase().includes(filter.toLowerCase()) || 
+                stock.ticker.toLowerCase().includes(filter.toLowerCase())
+            );
+            
+            if (filteredStocks.length === 0) {
+                stockList.innerHTML = '<p style="text-align: center; grid-column: 1/-1; padding: 30px;">No stocks match your search. Try another query.</p>';
+                return;
+            }
+            
+            filteredStocks.forEach(stock => {
+                const card = document.createElement('div');
+                card.className = 'stock-card';
+                
+                const changeClass = stock.change >= 0 ? 'trend-up' : 'trend-down';
+                const changeSign = stock.change >= 0 ? '+' : '';
+                const capClass = stock.marketCap === "Small-Cap" ? "small-cap" : "mid-cap";
+                
+                card.innerHTML = `
+                    <div class="cap-tag ${capClass}">${stock.marketCap}</div>
+                    <div class="stock-header">
+                        <div class="stock-name">${stock.name}</div>
+                        <div class="stock-ticker">${stock.ticker}</div>
+                    </div>
+                    <div class="stock-price">$${stock.price.toFixed(2)}</div>
+                    <div class="stock-change ${changeClass}">${changeSign}$${Math.abs(stock.change).toFixed(2)} (${changeSign}${stock.changePercent.toFixed(2)}%)</div>
+                    <div class="chart-container">
+                        <canvas id="chart-${stock.ticker}"></canvas>
+                    </div>
+                    <div class="stock-metrics">
+                        <div class="metric">
+                            <div class="metric-label">P/E Ratio</div>
+                            <div class="metric-value">${stock.pe.toFixed(1)}</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Revenue Growth</div>
+                            <div class="metric-value">${stock.revenueGrowth.toFixed(1)}%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Beta</div>
+                            <div class="metric-value">${stock.beta.toFixed(1)}</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Sector</div>
+                            <div class="metric-value">${stock.sector}</div>
+                        </div>
+                    </div>
+                    <div class="recommendation ${stock.recommendation}">
+                        <i class="fas fa-${stock.recommendation === 'buy' ? 'arrow-up' : stock.recommendation === 'sell' ? 'arrow-down' : 'pause'}"></i>
+                        ${stock.recommendation.toUpperCase()} RECOMMENDATION
+                    </div>
+                `;
+                
+                stockList.appendChild(card);
+                
+                // Add click event to open modal
+                card.addEventListener('click', () => {
+                    openStockModal(stock);
+                });
+                
+                // Render stock chart
+                setTimeout(() => {
+                    renderStockChart(stock.ticker);
+                }, 100);
+            });
+        }
+        
+        // Render stock chart
+        function renderStockChart(ticker) {
+            const ctx = document.getElementById(`chart-${ticker}`).getContext('2d');
+            const stock = stocks.find(s => s.ticker === ticker);
+            const basePrice = stock.price - stock.change * 5;
+            
+            const data = [];
+            for (let i = 0; i < 30; i++) {
+                // Generate realistic stock price fluctuations
+                const fluctuation = (Math.random() - 0.5) * stock.beta * 4;
+                const prevPrice = i === 0 ? basePrice : data[i-1];
+                data.push(prevPrice + fluctuation);
+            }
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 30}, (_, i) => i + 1),
+                    datasets: [{
+                        label: `${ticker} Price`,
+                        data: data,
+                        borderColor: stock.change >= 0 ? '#2ecc71' : '#e74c3c',
+                        backgroundColor: stock.change >= 0 ? 'rgba(46, 204, 113, 0.1)' : 'rgba(231, 76, 60, 0.1)',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: false
+                        },
+                        y: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Open stock detail modal
+        function openStockModal(stock) {
+            const modal = document.getElementById('stockModal');
+            const modalStockName = document.getElementById('modalStockName');
+            const modalStockTicker = document.getElementById('modalStockTicker');
+            const modalStockPrice = document.getElementById('modalStockPrice');
+            const modalStockChange = document.getElementById('modalStockChange');
+            const modalMarketCap = document.getElementById('modalMarketCap');
+            const modalPeRatio = document.getElementById('modalPeRatio');
+            const modalRevGrowth = document.getElementById('modalRevGrowth');
+            const modalBeta = document.getElementById('modalBeta');
+            const modalDescription = document.getElementById('modalDescription');
+            
+            const changeClass = stock.change >= 0 ? 'trend-up' : 'trend-down';
+            const changeSign = stock.change >= 0 ? '+' : '';
+            
+            modalStockName.textContent = stock.name;
+            modalStockTicker.textContent = stock.ticker;
+            modalStockPrice.textContent = `$${stock.price.toFixed(2)}`;
+            modalStockChange.textContent = `${changeSign}$${Math.abs(stock.change).toFixed(2)} (${changeSign}${stock.changePercent.toFixed(2)}%)`;
+            modalStockChange.className = `stock-change ${changeClass}`;
+            modalMarketCap.textContent = stock.marketCap === "Small-Cap" ? "$1-2B" : "$2-10B";
+            modalPeRatio.textContent = stock.pe.toFixed(1);
+            modalRevGrowth.textContent = `${changeSign}${stock.revenueGrowth.toFixed(1)}%`;
+            modalBeta.textContent = stock.beta.toFixed(1);
+            modalDescription.textContent = stock.description;
+            
+            // Update modal chart
+            setTimeout(() => {
+                renderModalStockChart(stock);
+            }, 100);
+            
+            modal.style.display = 'flex';
+        }
+        
+        // Render modal stock chart
+        function renderModalStockChart(stock) {
+            const ctx = document.getElementById('modalStockChart').getContext('2d');
+            const basePrice = stock.price * 0.4; // Start from a lower base
+            
+            const data = [];
+            for (let i = 0; i < 252; i++) { // 252 trading days
+                // Generate realistic stock price fluctuations
+                const fluctuation = (Math.random() - 0.5) * stock.beta * (i/100);
+                const prevPrice = i === 0 ? basePrice : data[i-1];
+                data.push(prevPrice + fluctuation);
+            }
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 252}, (_, i) => i + 1),
+                    datasets: [{
+                        label: `${stock.ticker} Price`,
+                        data: data,
+                        borderColor: stock.change >= 0 ? '#2ecc71' : '#e74c3c',
+                        backgroundColor: stock.change >= 0 ? 'rgba(46, 204, 113, 0.1)' : 'rgba(231, 76, 60, 0.1)',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        tension: 0.1,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#a0aec0'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#a0aec0'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Initialize correlation matrix chart
+        function initCorrelationChart() {
+            const ctx = document.getElementById('correlationChart').getContext('2d');
+            
+            // Sample correlation data
+            const tickers = ['SMCI', 'APPS', 'AXON', 'RKLB', 'GRBK', 'SHLS', 'LNTH', 'VCYT'];
+            const data = [
+                [1.00, 0.65, 0.78, 0.45, 0.32, 0.55, 0.25, 0.35],
+                [0.65, 1.00, 0.52, 0.60, 0.40, 0.50, 0.30, 0.40],
+                [0.78, 0.52, 1.00, 0.40, 0.35, 0.65, 0.15, 0.25],
+                [0.45, 0.60, 0.40, 1.00, 0.25, 0.40, 0.10, 0.30],
+                [0.32, 0.40, 0.35, 0.25, 1.00, 0.35, 0.45, 0.25],
+                [0.55, 0.50, 0.65, 0.40, 0.35, 1.00, 0.20, 0.35],
+                [0.25, 0.30, 0.15, 0.10, 0.45, 0.20, 1.00, 0.65],
+                [0.35, 0.40, 0.25, 0.30, 0.25, 0.35, 0.65, 1.00]
+            ];
+            
+            new Chart(ctx, {
+                type: 'matrix',
+                data: {
+                    datasets: [{
+                        label: 'Correlation',
+                        data: data.flatMap((row, i) => 
+                            row.map((value, j) => ({x: tickers[j], y: tickers[i], v: value}))
+                        ),
+                        backgroundColor: function(context) {
+                            const value = context.dataset.data[context.dataIndex].v;
+                            const alpha = Math.abs(value) * 0.7 + 0.3;
+                            return value > 0 ? 
+                                `rgba(46, 204, 113, ${alpha})` : 
+                                `rgba(231, 76, 60, ${alpha})`;
+                        },
+                        borderWidth: 0,
+                        width: ({chart}) => (chart.chartArea.width / 8) - 1,
+                        height: ({chart}) => (chart.chartArea.height / 8) - 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                title: () => '',
+                                label: (context) => {
+                                    const data = context.dataset.data[context.dataIndex];
+                                    return `${data.x} vs ${data.y}: ${data.v.toFixed(2)}`;
+                                }
+                            }
+                        },
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'category',
+                            labels: tickers,
+                            offset: true,
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            type: 'category',
+                            labels: [...tickers].reverse(),
+                            offset: true,
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Initialize performance chart
+        function initPerformanceChart() {
+            const ctx = document.getElementById('performanceCanvas').getContext('2d');
+            
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const smallCapData = [100, 105, 110, 115, 122, 125, 130, 135, 142, 150, 155, 160];
+            const midCapData = [100, 102, 105, 108, 112, 115, 118, 122, 128, 135, 140, 145];
+            const sp500Data = [100, 101, 103, 105, 107, 109, 110, 112, 114, 116, 118, 120];
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [
+                        {
+                            label: 'Small-Cap Index',
+                            data: smallCapData,
+                            borderColor: '#e67e22',
+                            backgroundColor: 'rgba(230, 126, 34, 0.1)',
+                            borderWidth: 3,
+                            pointRadius: 0,
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Mid-Cap Index',
+                            data: midCapData,
+                            borderColor: '#9b59b6',
+                            backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                            borderWidth: 3,
+                            pointRadius: 0,
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'S&P 500',
+                            data: sp500Data,
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: '#f0f0f0'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#a0aec0'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#a0aec0',
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Initialize controls
+        document.getElementById('riskTolerance').addEventListener('input', updateDisplays);
+        document.getElementById('timeHorizon').addEventListener('input', updateDisplays);
+        document.getElementById('growthFocus').addEventListener('input', updateDisplays);
+        document.getElementById('marketVolatility').addEventListener('input', updateDisplays);
+        document.getElementById('interestRate').addEventListener('input', updateDisplays);
+        document.getElementById('inflationRate').addEventListener('input', updateDisplays);
+        
+        document.getElementById('analyzeBtn').addEventListener('click', analyzeMarket);
+        document.getElementById('optimizeBtn').addEventListener('click', optimizePortfolio);
+        document.getElementById('scanBtn').addEventListener('click', scanOpportunities);
+        document.getElementById('smallCapBtn').addEventListener('click', smallCapStrategy);
+        document.getElementById('midCapBtn').addEventListener('click', midCapStrategy);
+        document.getElementById('quantumBtn').addEventListener('click', quantumAnalysis);
+        
+        document.getElementById('searchButton').addEventListener('click', () => {
+            const searchTerm = document.getElementById('stockSearch').value;
+            renderStocks(searchTerm);
+        });
+        
+        document.getElementById('stockSearch').addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                const searchTerm = document.getElementById('stockSearch').value;
+                renderStocks(searchTerm);
+            }
+        });
+        
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('stockModal').style.display = 'none';
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('stockModal');
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+        
+        function analyzeMarket() {
+            const formulaElement = document.getElementById('currentFormula');
+            formulaElement.classList.add('evolving');
+            
+            setTimeout(() => {
+                const formulas = [
+                    `P_{small} = \\frac{Rev_{growth} \\cdot \\beta_{sector} \\cdot \\nabla Volatility}{\\sqrt{Debt/Equity} \\cdot PE_{forward}}`,
+                    `Score = \\frac{ROE \\cdot Growth \\cdot Momentum}{Volatility \\cdot Debt\\ Ratio}`,
+                    `Alpha = (1 + \\frac{ROIC - WACC}{WACC}) \\times \\sqrt{Volume_{30d}}`,
+                    `Value = \\int_0^t EPS(t) \\cdot e^{-r\\tau} d\\tau + \\frac{Terminal}{e^{rt}}`,
+                    `Signal = \\frac{d}{dt}(RSI(14)) + \\nabla (MACD) - \\Delta Volatility`
+                ];
+                
+                const randomFormula = formulas[Math.floor(Math.random() * formulas.length)];
+                document.getElementById('currentFormula').innerHTML = `$${randomFormula}$`;
+                
+                // Update metrics
+                document.querySelectorAll('.metric-value')[0].textContent = (84 + Math.random() * 5).toFixed(1) + '%';
+                document.querySelectorAll('.metric-value')[1].textContent = (30 + Math.random() * 10).toFixed(1) + '%';
+                document.querySelectorAll('.metric-value')[2].textContent = (0.45 + Math.random() * 0.1).toFixed(2);
+                
+                MathJax.typeset();
+                formulaElement.classList.remove('evolving');
+            }, 800);
+        }
+        
+        function optimizePortfolio() {
+            alert("Portfolio optimization completed! New allocation based on quantum tensor analysis.");
+            
+            // Randomly update stock recommendations
+            stocks.forEach(stock => {
+                const rand = Math.random();
+                stock.recommendation = rand > 0.7 ? "buy" : rand > 0.4 ? "hold" : "sell";
+            });
+            
+            renderStocks();
+        }
+        
+        function scanOpportunities() {
+            alert("Market scan complete! Quantum analysis has identified new small-cap opportunities.");
+            
+            // Randomly update stock prices to simulate market movement
+            stocks.forEach(stock => {
+                const change = (Math.random() - 0.5) * stock.beta * 5;
+                stock.change = change;
+                stock.changePercent = (change / stock.price) * 100;
+                stock.price += change;
+            });
+            
+            renderStocks();
+        }
+        
+        function smallCapStrategy() {
+            document.getElementById('currentFormula').innerHTML = `$$SmallCap = \\frac{\\Delta Revenue}{\\Delta Time} \\times \\frac{Gross\\ Margin}{Debt\\ Ratio} \\times Innovation_{score}$$`;
+            MathJax.typeset();
+            
+            // Update metrics to small-cap focused
+            document.getElementById('growthFocus').value = 0.9;
+            document.getElementById('riskTolerance').value = 8;
+            updateDisplays();
+        }
+        
+        function midCapStrategy() {
+            document.getElementById('currentFormula').innerHTML = `$$MidCap = \\frac{EBIT}{EV} \\times \\sqrt{ROIC} \\times \\frac{1}{\\sigma} \\times Market\\ Position$$`;
+            MathJax.typeset();
+            
+            // Update metrics to mid-cap focused
+            document.getElementById('growthFocus').value = 0.7;
+            document.getElementById('riskTolerance').value = 6;
+            updateDisplays();
+        }
+        
+        function quantumAnalysis() {
+            document.getElementById('currentFormula').innerHTML = `$$\\Psi(SmallCap) = \\int_{-\\infty}^{\\infty} e^{iS(price)/\\hbar} \\mathcal{D}[price] \\otimes Growth_{tensor}$$`;
+            MathJax.typeset();
+            
+            // Update metrics to quantum mode
+            document.querySelectorAll('.metric-value')[3].textContent = "Δ⁶";
+        }
+        
+        // Initialize displays
+        updateDisplays();
+        renderStocks();
+        
+        // Initialize charts
+        setTimeout(() => {
+            initCorrelationChart();
+            initPerformanceChart();
+        }, 500);
+    </script>
+</body>
+</html>

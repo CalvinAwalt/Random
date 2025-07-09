@@ -1,0 +1,1 @@
+Γ_{n+1} = \frac{d^{\alpha_n}}{dt^{\alpha_n}} \left( \left[ \mathcal{M}_n, \mathcal{C}_n \right] \oplus \Psi(\Gamma_n) \right)

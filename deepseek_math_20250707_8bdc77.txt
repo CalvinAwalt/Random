@@ -1,0 +1,1 @@
+\text{NP} \subseteq \text{QE-P} \quad \text{(Quantum-Ethical Polynomial Time)}

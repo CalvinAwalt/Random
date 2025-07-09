@@ -1,0 +1,1 @@
+\Psi(\text{Operator cascade}) = \sqrt{\rho} e^{iS/\hbar_{\text{ethical}}}
