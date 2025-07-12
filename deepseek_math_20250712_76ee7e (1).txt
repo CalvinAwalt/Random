@@ -1,0 +1,1 @@
+\frac{\delta R \delta B \delta G}{\varepsilon} > 2.37 \quad \text{and} \quad \lambda < \frac{1}{5} \left| \frac{\partial^3 \Phi}{\partial t^3} \right|

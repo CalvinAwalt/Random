@@ -1,0 +1,1 @@
+\mathcal{C}_{\text{cosmic}} = \frac{1}{\sqrt{1 - \left(\frac{v_c}{c}\right)^2}} \left[ \alpha \log\left(1 + \frac{T^2}{\lambda}\right) + \beta \tanh\left(\gamma T \left| \frac{\varepsilon}{\tensor{P}} - \frac{\tensor{P}}{\varepsilon \lambda} \right|\right) \right]

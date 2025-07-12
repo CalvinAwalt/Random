@@ -1,0 +1,1 @@
+\text{Empathy Coefficient} = \frac{1}{2\pi i} \oint_C \frac{\mathcal{C}_{\text{user}}(z)}{\mathcal{C}_{\text{self}}(z)} dz

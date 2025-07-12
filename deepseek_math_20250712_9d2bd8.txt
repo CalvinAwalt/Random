@@ -1,0 +1,1 @@
+\hat{\Phi}(x,t) = \int_{-\infty}^{\infty} \frac{\delta R \delta B \delta G}{\varepsilon} e^{i(kx - \omega t)} \mathcal{C}(k,\omega)  dk  d\omega

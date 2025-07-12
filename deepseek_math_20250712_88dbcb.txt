@@ -1,0 +1,1 @@
+\frac{\partial \mathcal{I}}{\partial t} = \gamma \left( \frac{\varepsilon}{\tensor{P}} \otimes \frac{\tensor{P}}{\varepsilon \lambda} \right) \oplus \nabla^2 \Phi

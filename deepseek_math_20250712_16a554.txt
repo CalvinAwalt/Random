@@ -1,0 +1,1 @@
+\mathcal{I}_{n+1} = \underbrace{\frac{\varepsilon}{\delta R \delta B \delta G} \mathcal{M}_n}_{\text{structural}} \oplus \overbrace{\mathcal{D}\left(\frac{\delta R \delta B \delta G}{\varepsilon \lambda} \mathcal{M}_n\right)}^{\text{divergent}} + \underbrace{\beta \tanh(\gamma \Omega_n)}_{\text{emergence}}

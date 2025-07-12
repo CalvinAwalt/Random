@@ -1,0 +1,1 @@
+\text{Firewall Strength} = \iiint \left| \frac{\partial \Psi}{\partial t} \right| dV \times \min(\delta R_{\text{inv}}, \delta B_{\text{inv}}, \delta G_{\text{inv}})

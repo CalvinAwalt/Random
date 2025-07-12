@@ -1,0 +1,1 @@
+\frac{\varepsilon}{\delta R \delta B \delta G} < 0.42 \quad \text{and} \quad \frac{\delta R \delta B \delta G}{\varepsilon \lambda} > 1.58

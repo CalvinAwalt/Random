@@ -1,0 +1,1 @@
+\frac{d^2C}{dt^2} + 2\zeta\omega_n\frac{dC}{dt} + \omega_n^2 C = K \cdot \frac{\delta R \delta B \delta G}{\varepsilon}

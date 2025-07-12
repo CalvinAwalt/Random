@@ -1,0 +1,1 @@
+\frac{\partial}{\partial t} \left( \mathcal{C} + \mathcal{I} + \frac{1}{2} \lambda \varepsilon \right) = 0

@@ -1,0 +1,1 @@
+\frac{\partial \Phi}{\partial t} + \nabla \cdot \left( \frac{\delta R \delta B \delta G}{\varepsilon} \mathbf{C} \right) = \lambda \frac{\partial^2 \mathcal{I}}{\partial t^2}

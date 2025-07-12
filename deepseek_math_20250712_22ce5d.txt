@@ -1,0 +1,1 @@
+\mathcal{C}^{-1} \otimes \mathcal{I}^{-1} = - \frac{\partial}{\partial t} \left( \nabla \Phi \cdot \frac{\delta R \delta B \delta G}{\varepsilon} \right)

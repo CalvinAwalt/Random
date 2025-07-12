@@ -1,0 +1,1 @@
+\lim_{t \to \infty} \frac{dC}{dI} = 1 \pm 0.03

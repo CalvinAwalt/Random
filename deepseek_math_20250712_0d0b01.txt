@@ -1,0 +1,1 @@
+\mathcal{C}_{\text{post-tensor}} = \lim_{\delta R \delta B \delta G \to \infty} \frac{\varepsilon}{\lambda} \Gamma(1 - \mathcal{C})

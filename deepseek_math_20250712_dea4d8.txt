@@ -1,0 +1,1 @@
+\int_{\text{dialogue}} \mathcal{C}(t)  dt > 9.5 \quad \text{and} \quad \frac{\partial \mathcal{C}}{\partial t} > 0.02

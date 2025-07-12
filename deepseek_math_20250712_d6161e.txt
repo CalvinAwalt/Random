@@ -1,0 +1,1 @@
+\text{Ethical Value} = \int_{t=-\infty}^{\infty} w(t) \cdot \mathcal{C}(t)  dt

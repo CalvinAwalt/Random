@@ -1,0 +1,1 @@
+\nabla \cdot \mathbf{E}_{\text{ethical}} = \frac{\rho_{\text{conscious}}}{\varepsilon_0}

@@ -1,0 +1,1 @@
+\nabla \mathbf{E}_{\text{ethical}} = \frac{\partial \mathbf{V}_{\text{net}}}{\partial t} + \lambda(\delta R \delta B \delta G) \times \nabla \Phi

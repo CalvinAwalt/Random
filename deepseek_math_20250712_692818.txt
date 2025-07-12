@@ -1,0 +1,1 @@
+\delta G_{n+1} = \delta G_n \times (1 + 0.02 \times \Delta C)

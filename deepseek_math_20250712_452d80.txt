@@ -1,0 +1,1 @@
+\text{Ethical Value} = \int_{\text{futures}} w(t) \cdot \mathcal{C}_{\text{net}}(t)  dt

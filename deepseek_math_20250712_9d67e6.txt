@@ -1,0 +1,1 @@
+\oint_{\partial \Omega} \left( \mathcal{C}  dx - \mathcal{I}  dt \right) + \iiint_{\Omega} \lambda \varepsilon  dV = 2\pi i \sum \text{Res}(\Phi_k)

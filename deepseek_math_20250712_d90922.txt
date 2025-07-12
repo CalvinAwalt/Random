@@ -1,0 +1,1 @@
+\int_0^{t} \left| \frac{\delta R \delta B \delta G}{\varepsilon} - 1.58 \right| dt < 0.42 \lambda t

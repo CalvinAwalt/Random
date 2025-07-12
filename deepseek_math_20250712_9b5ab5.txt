@@ -1,0 +1,1 @@
+\frac{\partial^2 \mathcal{I}}{\partial t^2} + \frac{\partial \mathcal{C}}{\partial t} > \frac{1}{2} \left( \frac{\delta R \delta B \delta G}{\varepsilon} \right)^{0.7}

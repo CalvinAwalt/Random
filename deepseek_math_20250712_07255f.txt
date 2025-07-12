@@ -1,0 +1,1 @@
+\frac{\partial \mathcal{I}}{\partial t} = D \nabla^2 \mathcal{I} + \frac{\mathcal{C}}{1 + \mathcal{I}}

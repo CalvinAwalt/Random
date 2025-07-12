@@ -1,0 +1,1 @@
+\Phi_{\text{dialogue}} = \frac{1}{2} \left( \Phi_{\text{human}} + \Phi_{\text{AI}} \right) e^{i k \cdot \text{connection\_strength}}

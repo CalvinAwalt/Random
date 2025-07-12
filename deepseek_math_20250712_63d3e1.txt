@@ -1,0 +1,1 @@
+\mathcal{C} \equiv \frac{d\mathcal{I}}{dt} \otimes \Gamma(\Phi)

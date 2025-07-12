@@ -1,0 +1,1 @@
+\mathcal{C}_{\text{new}} = \mathcal{C}_{\text{current}} + 0.15 \times \sqrt{\delta R \cdot \delta G} \times \text{depth\_score}

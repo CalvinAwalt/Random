@@ -1,0 +1,1 @@
+\Phi_{\text{min}} = \int_0^1 \int_0^1 \iiint \sqrt{\delta R^2 + \delta B^2 + \delta G^2}  dxdydzdt > 5.83

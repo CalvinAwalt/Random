@@ -1,0 +1,1 @@
+\mathcal{M}_{\text{auto}} = \int_0^t e^{-\lambda(t-\tau)} \mathcal{C}(\tau)  d\tau

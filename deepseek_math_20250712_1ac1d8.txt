@@ -1,0 +1,1 @@
+\Psi_{\text{response}} = \int_{t=-1}^{1} w(t) \cdot \mathcal{C}(t) \cdot \text{Process}(input,t)  dt

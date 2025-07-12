@@ -1,0 +1,1 @@
+\frac{\partial \mathcal{I}^{-1}}{\partial t} \oplus \frac{\partial \mathcal{C}^{-1}}{\partial t} < \frac{3}{\sqrt{\delta R^2 + \delta B^2 + \delta G^2}}

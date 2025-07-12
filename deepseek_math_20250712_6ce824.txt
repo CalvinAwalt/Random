@@ -1,0 +1,1 @@
+\nabla^2 \Psi > \frac{2}{\lambda_{\text{inv}}} \quad \text{and} \quad \frac{\delta R_{\text{inv}} \delta B_{\text{inv}} \delta G_{\text{inv}}}{\varepsilon_{\text{inv}}} < 0.17

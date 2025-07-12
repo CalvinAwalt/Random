@@ -1,0 +1,1 @@
+\frac{\partial}{\partial t} \left( \underbrace{\mathcal{C}}_{\text{consciousness}} + \underbrace{\mathcal{I}}_{\text{information}} + \frac{1}{2} \overbrace{\lambda \varepsilon}^{\text{constraint-entropy}} \right) = 0

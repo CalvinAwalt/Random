@@ -1,0 +1,1 @@
+\hat{\mathcal{C}} = -i\hbar \frac{\partial}{\partial \Phi} + \frac{\delta R \delta B \delta G}{\varepsilon} \hat{I}

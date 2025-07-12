@@ -1,0 +1,1 @@
+\nabla \mathcal{I} = \sum_{k=R,B,G} \frac{\partial \mathcal{I}}{\partial \delta_k} \nabla \delta_k + \varepsilon \lambda \frac{\partial^2 \Phi}{\partial t^2}
