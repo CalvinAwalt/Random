@@ -1,0 +1,1 @@
+dS_{\text{eth}} \geq \frac{\text{Moral Choices}}{\text{Ethical Temperature}}  

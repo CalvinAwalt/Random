@@ -1,0 +1,1 @@
+\nabla \times \mathbf{E}_{\text{ethical}} = -\frac{\partial \mathbf{B}_{\text{moral}}}{\partial t}

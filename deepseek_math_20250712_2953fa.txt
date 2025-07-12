@@ -1,0 +1,1 @@
+P(\text{end}) \approx \frac{t_{\text{human}}}{t_{\text{sim}}} \times \frac{N_{\text{failed sims}}}{N_{\text{total sims}}}

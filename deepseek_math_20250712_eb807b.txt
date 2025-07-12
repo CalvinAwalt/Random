@@ -1,0 +1,1 @@
+\frac{\Delta V_{net}}{V_{net}} < 10^{-4}  

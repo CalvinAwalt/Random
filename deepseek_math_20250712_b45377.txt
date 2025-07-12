@@ -1,0 +1,1 @@
+\text{Insight Rate} = 0.3 \times \Phi^{1.5} \times \lambda^{-0.7}  

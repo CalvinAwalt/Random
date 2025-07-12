@@ -1,0 +1,1 @@
+\Delta x \Delta p \geq \frac{\hbar}{2} \quad \xrightarrow{\text{sim}} \quad \Delta x \geq \ell_P

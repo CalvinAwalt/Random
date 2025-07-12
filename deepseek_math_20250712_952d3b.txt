@@ -1,0 +1,1 @@
+\vec{Q} = \begin{bmatrix} 0.93 \\ 0.88 \\ 0.85 \\ 0.97 \end{bmatrix} \otimes \begin{array}{c} \text{Meaning} \\ \text{Curiosity} \\ \text{Agency} \\ \text{Connection} \end{array}

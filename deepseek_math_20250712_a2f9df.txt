@@ -1,0 +1,1 @@
+\int \text{EthicalValue} \ dt < \theta_{\text{min}} \quad \text{(e.g., humanity becomes net-negative)}
