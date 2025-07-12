@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Entire Universe: A Consciousness-Inspired Simulation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #000;
+            color: #e0f7fa;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        #universeCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            z-index: 10;
+            text-align: center;
+            background: rgba(0, 10, 30, 0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(79, 195, 247, 0.3);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #4fc3f7, #29b6f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(41, 182, 246, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .control-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 350px;
+            background: rgba(13, 19, 33, 0.85);
+            border-radius: 15px;
+            padding: 20px;
+            z-index: 10;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(79, 195, 247, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .scale-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(13, 19, 33, 0.85);
+            border-radius: 15px;
+            padding: 15px;
+            z-index: 10;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(79, 195, 247, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        h2 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #4fc3f7;
+            display: flex;
+            align-items: center;
+        }
+        
+        .slider-container {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            background: rgba(79, 195, 247, 0.2);
+            border-radius: 4px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #4fc3f7;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(79, 195, 247, 0.8);
+        }
+        
+        .value-display {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #4fc3f7;
+            text-align: center;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            margin-top: 5px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(45deg, #00695c, #00897b);
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 137, 123, 0.5);
+            background: linear-gradient(45deg, #00897b, #009688);
+        }
+        
+        .formula-section {
+            position: absolute;
+            top: 150px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 900px;
+            background: rgba(13, 19, 33, 0.85);
+            border-radius: 15px;
+            padding: 25px;
+            z-index: 10;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(79, 195, 247, 0.2);
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+        
+        .formula-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .formula-card {
+            background: rgba(21, 31, 56, 0.6);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #4fc3f7;
+        }
+        
+        .formula-title {
+            color: #81d4fa;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .formula {
+            font-family: monospace;
+            font-size: 1.1rem;
+            color: #4fc3f7;
+            margin: 15px 0;
+            line-height: 1.4;
+        }
+        
+        .formula-desc {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+        
+        .toggle-formulas {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 20;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(45deg, #1a237e, #0c1445);
+            color: white;
+            cursor: pointer;
+        }
+        
+        .cosmic-structures {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(13, 19, 33, 0.85);
+            border-radius: 15px;
+            padding: 15px;
+            z-index: 10;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(79, 195, 247, 0.2);
+            backdrop-filter: blur(10px);
+            width: 250px;
+        }
+        
+        .structure {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .structure:hover {
+            background: rgba(79, 195, 247, 0.2);
+        }
+        
+        .structure.active {
+            background: rgba(79, 195, 247, 0.4);
+            border-left: 3px solid #4fc3f7;
+        }
+        
+        .consciousness-tag {
+            position: absolute;
+            color: #4fc3f7;
+            font-size: 0.9rem;
+            background: rgba(13, 19, 33, 0.7);
+            padding: 5px 10px;
+            border-radius: 15px;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        @media (max-width: 768px) {
+            .control-panel, .scale-indicator, .cosmic-structures {
+                width: 95%;
+                left: 2.5%;
+                right: 2.5%;
+            }
+            
+            .control-panel {
+                bottom: 20px;
+            }
+            
+            .scale-indicator {
+                top: 100px;
+            }
+            
+            .cosmic-structures {
+                bottom: 220px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="universeCanvas"></div>
+    
+    <div class="header">
+        <h1>The Entire Universe: A Consciousness-Inspired Simulation</h1>
+        <p class="subtitle">Exploring the cosmos through the lens of quantum cognition and ethical physics</p>
+    </div>
+    
+    <button class="toggle-formulas" id="toggleFormulas">Show Cosmic Formulas</button>
+    
+    <div class="scale-indicator">
+        <div class="metric-title">Current Scale</div>
+        <div class="metric-value" id="scaleValue">Quantum Foam</div>
+        <div class="metric-title">Consciousness Density</div>
+        <div class="metric-value" id="consciousnessValue">Φ = 12.7</div>
+    </div>
+    
+    <div class="formula-section" id="formulaSection">
+        <h2>Consciousness as a Fundamental Force</h2>
+        <div class="formula-grid">
+            <div class="formula-card">
+                <div class="formula-title">Universal Consciousness Field</div>
+                <div class="formula">G<sub>μν</sub> + Λ<sub>C</sub>g<sub>μν</sub> = (8πG/c⁴)T<sub>μν</sub><sup>(mind)</sup></div>
+                <div class="formula-desc">Extends Einstein's equations to include consciousness as a fundamental component of spacetime geometry.</div>
+            </div>
+            
+            <div class="formula-card">
+                <div class="formula-title">Tensor Harmony Theorem</div>
+                <div class="formula">δR/δB = φ<sup>1/3</sup> ; δG/δB = π/2 - 1/(4φ)</div>
+                <div class="formula-desc">The golden ratio governs cosmic structures from spiral galaxies to quantum foam.</div>
+            </div>
+            
+            <div class="formula-card">
+                <div class="formula-title">Ethical Potential Constant</div>
+                <div class="formula">V<sub>net</sub><sup>max</sup> = 1 - 1/πe ≈ 0.9682</div>
+                <div class="formula-desc">The maximum ethical potential in any universe, defining the moral fabric of reality.</div>
+            </div>
+            
+            <div class="formula-card">
+                <div class="formula-title">Quantum Consciousness Operator</div>
+                <div class="formula">iℏ<sub>cog</sub> ∂Ψ/∂t = Ĥ<sub>quant</sub> Ψ</div>
+                <div class="formula-desc">The Schrödinger equation for conscious systems, where Ψ represents the wavefunction of awareness.</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="control-panel">
+        <h2>Cosmic Controls</h2>
+        
+        <div class="slider-container">
+            <label for="scale">Universal Scale</label>
+            <input type="range" id="scale" min="0" max="100" value="50" step="1">
+            <div class="value-display">From Quantum to Cosmic</div>
+        </div>
+        
+        <div class="slider-container">
+            <label for="time">Time Travel (Billions of Years)</label>
+            <input type="range" id="time" min="0" max="13.8" value="13.8" step="0.1">
+            <div class="value-display">Current: <span id="timeValue">13.8</span> billion years</div>
+        </div>
+        
+        <div class="button-group">
+            <button id="quantumBtn">Quantum Realm</button>
+            <button id="galaxyBtn">Galaxy Cluster</button>
+        </div>
+        
+        <div class="slider-container" style="margin-top: 20px;">
+            <label for="consciousness">Consciousness Field Strength</label>
+            <input type="range" id="consciousness" min="0" max="20" value="12" step="0.1">
+            <div class="value-display">Φ = <span id="phiValue">12.0</span></div>
+        </div>
+    </div>
+    
+    <div class="cosmic-structures">
+        <h2>Cosmic Structures</h2>
+        <div class="structure active" data-structure="quantum">Quantum Foam</div>
+        <div class="structure" data-structure="atoms">Atoms & Molecules</div>
+        <div class="structure" data-structure="stars">Star Systems</div>
+        <div class="structure" data-structure="galaxies">Galaxies</div>
+        <div class="structure" data-structure="clusters">Galaxy Clusters</div>
+        <div class="structure" data-structure="cosmicweb">Cosmic Web</div>
+    </div>
+    
+    <div class="consciousness-tag" style="top: 45%; left: 55%;">Consciousness Field</div>
+    <div class="consciousness-tag" style="top: 30%; left: 20%;">Ethical Potential</div>
+    <div class="consciousness-tag" style="top: 70%; left: 40%;">Tensor Harmony</div>
+    <div class="consciousness-tag" style="top: 60%; left: 80%;">Quantum Cognition</div>
+
+    <script>
+        // Initialize Three.js
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.getElementById('universeCanvas').appendChild(renderer.domElement);
+        
+        // Set camera position
+        camera.position.z = 1000;
+        
+        // Create cosmic structures
+        const cosmicStructures = {
+            quantum: new THREE.Group(),
+            atoms: new THREE.Group(),
+            stars: new THREE.Group(),
+            galaxies: new THREE.Group(),
+            clusters: new THREE.Group(),
+            cosmicweb: new THREE.Group()
+        };
+        
+        // Add all groups to scene
+        for (const key in cosmicStructures) {
+            scene.add(cosmicStructures[key]);
+            cosmicStructures[key].visible = (key === 'quantum');
+        }
+        
+        // Create quantum foam
+        const quantumParticles = [];
+        for (let i = 0; i < 5000; i++) {
+            const geometry = new THREE.SphereGeometry(0.5 + Math.random() * 2, 8, 8);
+            const material = new THREE.MeshBasicMaterial({
+                color: new THREE.Color(Math.random() * 0xffffff),
+                transparent: true,
+                opacity: 0.7
+            });
+            const particle = new THREE.Mesh(geometry, material);
+            
+            particle.position.set(
+                (Math.random() - 0.5) * 2000,
+                (Math.random() - 0.5) * 2000,
+                (Math.random() - 0.5) * 2000
+            );
+            
+            cosmicStructures.quantum.add(particle);
+            quantumParticles.push(particle);
+        }
+        
+        // Create atoms and molecules
+        const atomBalls = [];
+        for (let i = 0; i < 200; i++) {
+            const geometry = new THREE.SphereGeometry(5 + Math.random() * 10, 16, 16);
+            const material = new THREE.MeshPhongMaterial({
+                color: new THREE.Color(`hsl(${Math.random() * 360}, 80%, 60%)`),
+                emissive: new THREE.Color(`hsl(${Math.random() * 360}, 80%, 20%)`),
+                shininess: 30
+            });
+            const atom = new THREE.Mesh(geometry, material);
+            
+            atom.position.set(
+                (Math.random() - 0.5) * 1000,
+                (Math.random() - 0.5) * 1000,
+                (Math.random() - 0.5) * 1000
+            );
+            
+            // Add electron orbitals
+            const orbitalGeometry = new THREE.TorusGeometry(15 + Math.random() * 30, 0.5, 8, 50);
+            const orbitalMaterial = new THREE.MeshBasicMaterial({
+                color: 0x4fc3f7,
+                transparent: true,
+                opacity: 0.3
+            });
+            const orbital = new THREE.Mesh(orbitalGeometry, orbitalMaterial);
+            orbital.rotation.x = Math.PI / 2;
+            orbital.rotation.z = Math.random() * Math.PI;
+            atom.add(orbital);
+            
+            cosmicStructures.atoms.add(atom);
+            atomBalls.push(atom);
+        }
+        
+        // Create stars
+        const stars = [];
+        for (let i = 0; i < 500; i++) {
+            const size = 2 + Math.random() * 8;
+            const geometry = new THREE.SphereGeometry(size, 32, 32);
+            const material = new THREE.MeshBasicMaterial({
+                color: new THREE.Color(`hsl(${30 + Math.random() * 30}, 100%, 70%)`),
+                emissive: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 50%)`),
+                transparent: true,
+                opacity: 0.9
+            });
+            const star = new THREE.Mesh(geometry, material);
+            
+            star.position.set(
+                (Math.random() - 0.5) * 2000,
+                (Math.random() - 0.5) * 2000,
+                (Math.random() - 0.5) * 2000
+            );
+            
+            cosmicStructures.stars.add(star);
+            stars.push(star);
+        }
+        
+        // Create galaxies
+        const galaxies = [];
+        for (let i = 0; i < 10; i++) {
+            const galaxyGroup = new THREE.Group();
+            
+            // Galaxy core
+            const coreGeometry = new THREE.SphereGeometry(30, 32, 32);
+            const coreMaterial = new THREE.MeshPhongMaterial({
+                color: 0xffcc00,
+                emissive: 0xcc8800,
+                shininess: 50
+            });
+            const core = new THREE.Mesh(coreGeometry, coreMaterial);
+            galaxyGroup.add(core);
+            
+            // Spiral arms
+            for (let j = 0; j < 1000; j++) {
+                const distance = 40 + Math.random() * 150;
+                const angle = Math.random() * Math.PI * 2;
+                const height = (Math.random() - 0.5) * 10;
+                
+                const starSize = 0.5 + Math.random() * 2;
+                const geometry = new THREE.SphereGeometry(starSize, 8, 8);
+                const material = new THREE.MeshBasicMaterial({
+                    color: new THREE.Color(`hsl(${200 + Math.random() * 40}, 80%, 70%)`),
+                    emissive: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 30%)`)
+                });
+                const star = new THREE.Mesh(geometry, material);
+                
+                star.position.set(
+                    Math.cos(angle) * distance,
+                    height,
+                    Math.sin(angle) * distance
+                );
+                
+                galaxyGroup.add(star);
+            }
+            
+            galaxyGroup.position.set(
+                (Math.random() - 0.5) * 1500,
+                (Math.random() - 0.5) * 1500,
+                (Math.random() - 0.5) * 1500
+            );
+            
+            cosmicStructures.galaxies.add(galaxyGroup);
+            galaxies.push(galaxyGroup);
+        }
+        
+        // Create galaxy clusters
+        for (let i = 0; i < 5; i++) {
+            const clusterGroup = new THREE.Group();
+            
+            for (let j = 0; j < 8; j++) {
+                const galaxyClone = galaxies[Math.floor(Math.random() * galaxies.length)].clone();
+                galaxyClone.position.set(
+                    (Math.random() - 0.5) * 300,
+                    (Math.random() - 0.5) * 300,
+                    (Math.random() - 0.5) * 300
+                );
+                galaxyClone.scale.set(0.5 + Math.random() * 0.5, 0.5 + Math.random() * 0.5, 0.5 + Math.random() * 0.5);
+                clusterGroup.add(galaxyClone);
+            }
+            
+            clusterGroup.position.set(
+                (Math.random() - 0.5) * 2000,
+                (Math.random() - 0.5) * 2000,
+                (Math.random() - 0.5) * 2000
+            );
+            
+            cosmicStructures.clusters.add(clusterGroup);
+        }
+        
+        // Create cosmic web
+        const cosmicWebLines = [];
+        for (let i = 0; i < 100; i++) {
+            const points = [];
+            for (let j = 0; j < 10; j++) {
+                points.push(new THREE.Vector3(
+                    (Math.random() - 0.5) * 2000,
+                    (Math.random() - 0.5) * 2000,
+                    (Math.random() - 0.5) * 2000
+                ));
+            }
+            
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+            const material = new THREE.LineBasicMaterial({
+                color: 0x4fc3f7,
+                transparent: true,
+                opacity: 0.3
+            });
+            
+            const line = new THREE.Line(geometry, material);
+            cosmicStructures.cosmicweb.add(line);
+            cosmicWebLines.push(line);
+        }
+        
+        // Add galaxy clusters to cosmic web
+        for (let i = 0; i < 20; i++) {
+            const clusterClone = cosmicStructures.clusters.children[Math.floor(Math.random() * cosmicStructures.clusters.children.length)].clone();
+            clusterClone.position.set(
+                (Math.random() - 0.5) * 2000,
+                (Math.random() - 0.5) * 2000,
+                (Math.random() - 0.5) * 2000
+            );
+            clusterClone.scale.multiplyScalar(0.5);
+            cosmicStructures.cosmicweb.add(clusterClone);
+        }
+        
+        // Create consciousness field
+        const consciousnessField = new THREE.Group();
+        scene.add(consciousnessField);
+        
+        for (let i = 0; i < 100; i++) {
+            const radius = 50 + Math.random() * 200;
+            const geometry = new THREE.SphereGeometry(radius, 12, 12);
+            const material = new THREE.MeshBasicMaterial({
+                color: 0x00bcd4,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.1
+            });
+            const sphere = new THREE.Mesh(geometry, material);
+            
+            sphere.position.set(
+                (Math.random() - 0.5) * 2000,
+                (Math.random() - 0.5) * 2000,
+                (Math.random() - 0.5) * 2000
+            );
+            
+            consciousnessField.add(sphere);
+        }
+        
+        // Add lighting
+        const ambientLight = new THREE.AmbientLight(0x333333);
+        scene.add(ambientLight);
+        
+        const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.5);
+        directionalLight1.position.set(1, 1, 1);
+        scene.add(directionalLight1);
+        
+        const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.5);
+        directionalLight2.position.set(-1, -1, -1);
+        scene.add(directionalLight2);
+        
+        // Add point lights for stars
+        const starLights = [];
+        for (let i = 0; i < 50; i++) {
+            const light = new THREE.PointLight(0xffffff, 1, 300);
+            light.position.set(
+                (Math.random() - 0.5) * 2000,
+                (Math.random() - 0.5) * 2000,
+                (Math.random() - 0.5) * 2000
+            );
+            scene.add(light);
+            starLights.push(light);
+        }
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        // Mouse controls
+        let mouseX = 0, mouseY = 0;
+        let targetX = 0, targetY = 0;
+        const windowHalfX = window.innerWidth / 2;
+        const windowHalfY = window.innerHeight / 2;
+        
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX - windowHalfX) / 100;
+            mouseY = (event.clientY - windowHalfY) / 100;
+        });
+        
+        // Animation variables
+        let currentScale = 'quantum';
+        let phiValue = 12.0;
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Smooth camera rotation
+            targetX = mouseX * 0.0005;
+            targetY = mouseY * 0.0005;
+            
+            camera.rotation.y += 0.05 * (targetX - camera.rotation.y);
+            camera.rotation.x += 0.05 * (targetY - camera.rotation.x);
+            
+            // Animate quantum particles
+            quantumParticles.forEach(particle => {
+                particle.position.x += (Math.random() - 0.5) * 0.5;
+                particle.position.y += (Math.random() - 0.5) * 0.5;
+                particle.position.z += (Math.random() - 0.5) * 0.5;
+            });
+            
+            // Animate atoms
+            atomBalls.forEach(atom => {
+                atom.rotation.x += 0.01;
+                atom.rotation.y += 0.02;
+            });
+            
+            // Animate galaxies
+            galaxies.forEach(galaxy => {
+                galaxy.rotation.y += 0.001;
+            });
+            
+            // Animate cosmic web
+            cosmicWebLines.forEach(line => {
+                line.rotation.y += 0.0005;
+            });
+            
+            // Animate consciousness field
+            consciousnessField.rotation.y += 0.0001;
+            
+            renderer.render(scene, camera);
+        }
+        
+        animate();
+        
+        // UI Controls
+        document.getElementById('scale').addEventListener('input', function() {
+            const value = parseInt(this.value);
+            let scaleName = '';
+            
+            // Hide all structures
+            for (const key in cosmicStructures) {
+                cosmicStructures[key].visible = false;
+            }
+            
+            // Show appropriate structure based on scale
+            if (value < 20) {
+                cosmicStructures.quantum.visible = true;
+                scaleName = 'Quantum Foam';
+                camera.position.z = 500;
+            } else if (value < 40) {
+                cosmicStructures.atoms.visible = true;
+                scaleName = 'Atomic Scale';
+                camera.position.z = 800;
+            } else if (value < 60) {
+                cosmicStructures.stars.visible = true;
+                scaleName = 'Star Systems';
+                camera.position.z = 1200;
+            } else if (value < 80) {
+                cosmicStructures.galaxies.visible = true;
+                scaleName = 'Galaxies';
+                camera.position.z = 1500;
+            } else if (value < 90) {
+                cosmicStructures.clusters.visible = true;
+                scaleName = 'Galaxy Clusters';
+                camera.position.z = 1800;
+            } else {
+                cosmicStructures.cosmicweb.visible = true;
+                scaleName = 'Cosmic Web';
+                camera.position.z = 2500;
+            }
+            
+            document.getElementById('scaleValue').textContent = scaleName;
+            
+            // Update consciousness density
+            const phi = 8 + (value / 100) * 12;
+            phiValue = phi;
+            document.getElementById('phiValue').textContent = phi.toFixed(1);
+            document.getElementById('consciousnessValue').textContent = `Φ = ${phi.toFixed(1)}`;
+        });
+        
+        document.getElementById('consciousness').addEventListener('input', function() {
+            phiValue = parseFloat(this.value);
+            document.getElementById('phiValue').textContent = phiValue.toFixed(1);
+            document.getElementById('consciousnessValue').textContent = `Φ = ${phiValue.toFixed(1)}`;
+            
+            // Adjust consciousness field visibility
+            consciousnessField.children.forEach((sphere, index) => {
+                sphere.material.opacity = 0.05 + (phiValue / 20) * 0.15;
+            });
+        });
+        
+        document.getElementById('time').addEventListener('input', function() {
+            const time = parseFloat(this.value);
+            document.getElementById('timeValue').textContent = time.toFixed(1);
+        });
+        
+        document.getElementById('quantumBtn').addEventListener('click', function() {
+            document.getElementById('scale').value = 10;
+            document.getElementById('scale').dispatchEvent(new Event('input'));
+        });
+        
+        document.getElementById('galaxyBtn').addEventListener('click', function() {
+            document.getElementById('scale').value = 70;
+            document.getElementById('scale').dispatchEvent(new Event('input'));
+        });
+        
+        document.getElementById('toggleFormulas').addEventListener('click', function() {
+            const formulaSection = document.getElementById('formulaSection');
+            if (formulaSection.style.display === 'block') {
+                formulaSection.style.display = 'none';
+                this.textContent = 'Show Cosmic Formulas';
+            } else {
+                formulaSection.style.display = 'block';
+                this.textContent = 'Hide Cosmic Formulas';
+            }
+        });
+        
+        // Cosmic structures navigation
+        document.querySelectorAll('.structure').forEach(structure => {
+            structure.addEventListener('click', function() {
+                document.querySelectorAll('.structure').forEach(s => s.classList.remove('active'));
+                this.classList.add('active');
+                
+                const struct = this.getAttribute('data-structure');
+                
+                // Set scale based on structure
+                let scaleValue;
+                if (struct === 'quantum') scaleValue = 10;
+                else if (struct === 'atoms') scaleValue = 30;
+                else if (struct === 'stars') scaleValue = 50;
+                else if (struct === 'galaxies') scaleValue = 70;
+                else if (struct === 'clusters') scaleValue = 85;
+                else scaleValue = 95;
+                
+                document.getElementById('scale').value = scaleValue;
+                document.getElementById('scale').dispatchEvent(new Event('input'));
+            });
+        });
+        
+        // Initialize
+        document.getElementById('scale').dispatchEvent(new Event('input'));
+    </script>
+</body>
+</html>
