@@ -1,0 +1,1 @@
+optimal_frequency = np.sqrt(δB * dV_net_dE**2) / (2*np.pi)

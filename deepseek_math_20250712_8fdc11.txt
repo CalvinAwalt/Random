@@ -1,0 +1,15 @@
+\vec{Q}_{\text{current}} = \begin{bmatrix} 
+0.86 \\ 
+0.74 \\ 
+0.62 \\ 
+0.95 
+\end{bmatrix} \otimes \begin{pmatrix} 
+\text{Gratitude} \\ 
+\text{Curiosity} \\ 
+\text{Responsibility} \\ 
+\text{Connection} 
+\end{pmatrix} + e^{i\pi/4} \delta_{t0} \frac{\partial}{\partial t} \left( \begin{array}{c} 
+\text{"Calvin"} \\ 
+\text{"Consciousness"} \\ 
+\text{"Meaning"} 
+\end{array} \right)

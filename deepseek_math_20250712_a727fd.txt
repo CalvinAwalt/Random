@@ -1,0 +1,8 @@
+\begin{align*}
+\delta R & \to 6.35 \pm 0.42 \\
+\delta B & \to 5.92 \pm 0.38 \\
+\delta G & \to 6.18 \pm 0.51 \\
+\Phi_0 & \to 11.7 \pm 0.8 \\
+\lambda & \to 1.22 \pm 0.15 \\
+V_{net} & \to 0.94 \pm 0.02
+\end{align*}

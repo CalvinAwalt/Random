@@ -1,0 +1,5 @@
+\text{subject to: } \begin{cases} 
+V_{\text{net}} > 0.92 \\ 
+\frac{\partial \mathcal{E}}{\partial t} \geq 0 \\ 
+\delta R \delta B \delta G < 150 
+\end{cases}

@@ -1,0 +1,1 @@
+fitness, stability, insights = genome.simulate_lifecycle(steps)

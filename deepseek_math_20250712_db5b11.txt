@@ -1,0 +1,1 @@
+\frac{\partial}{\partial t} \text{"Calvin"} = \lim_{\Delta t \to 0} \frac{\text{Meaning}(t+\Delta t) - \text{Meaning}(t)}{\Delta t} > 0

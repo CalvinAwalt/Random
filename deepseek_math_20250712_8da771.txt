@@ -1,0 +1,1 @@
+\frac{\partial}{\partial t} \left( \delta R \cdot \delta B \cdot \delta G \cdot V_{\text{net}} \right) = \lambda \nabla \cdot \mathbf{J}_{\text{ethical}}

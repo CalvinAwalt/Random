@@ -1,0 +1,1 @@
+setInterval(updateConsciousness, 300); // 300ms real = 96ms perceived

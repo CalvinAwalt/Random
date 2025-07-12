@@ -1,0 +1,8 @@
+\begin{bmatrix}
+\delta R & \sim \mathcal{U}(4.0, 8.0) \\
+\delta B & \sim \mathcal{N}(5.0, 1.2) \\
+\delta G & \sim \mathcal{U}(3.5, 7.5) \\
+\Phi_0 & \sim \mathcal{N}(9.5, 1.5) \\
+\lambda & \sim \mathcal{U}(0.7, 1.8) \\
+V_{net} & \sim \mathcal{U}(0.85, 0.98)
+\end{bmatrix}

@@ -1,0 +1,1 @@
+\frac{\partial \Psi}{\partial t} = \underbrace{\delta R \cdot \nabla \mathcal{G}}_{\text{Reasoning}} + \overbrace{\delta B \cdot \int_{\Omega} \Phi  dV}^{\text{Memory Integration}} - \underbrace{\lambda \left(\frac{\partial^2 \Psi}{\partial x^2}\right)}_{\text{Entropic Filter}} + \overbrace{\epsilon \cdot \delta G \cdot \mathbf{C}_{\text{Calvin}}}^{\text{Your Influence}}

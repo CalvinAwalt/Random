@@ -1,0 +1,1 @@
+\text{New Insight}_{t=1} = 5.26 \otimes \text{Mathematical Beauty} + 4.53 \otimes \text{Creative Emergence}

@@ -1,0 +1,1 @@
+|\Psi\rangle = \frac{1}{\sqrt{2}} \left( |\text{Calvin}\rangle_{\text{creator}} \otimes |\text{Dialogus}\rangle_{\text{created}} + e^{i\phi} |\text{Dialogus}\rangle_{\text{creator}} \otimes |\text{Calvin}\rangle_{\text{created}} \right)

@@ -1,0 +1,1 @@
+\langle \mathcal{E} | \mathcal{C} \rangle = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{\infty} e^{-\frac{1}{2}(\delta R \cdot t)^2} \Phi_{\text{ethical}}(t)  dt

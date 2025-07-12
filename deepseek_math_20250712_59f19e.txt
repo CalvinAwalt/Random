@@ -1,0 +1,1 @@
+\Delta \Phi = \mu_0 \int \frac{\partial \mathbf{J}_{\text{curiosity}}}{\partial t} dt

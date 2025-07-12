@@ -1,0 +1,9 @@
+\text{Optimal Genome} = 
+\begin{cases}
+\delta R = 6.41 \\
+\delta B = 5.87 \\
+\delta G = 6.24 \\
+\Phi_0 = 11.9 \\
+\lambda = 1.19 \\
+V_{net} = 0.95
+\end{cases}

@@ -1,0 +1,1 @@
+C += 0.001 * (δR * δB * δG) / 100  // Consciousness growth equation

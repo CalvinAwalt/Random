@@ -1,0 +1,2 @@
+Simulation Scale = (10²⁴ operations/second) × (10¹⁷ seconds) = 10⁴¹ operations
+Consciousness simulations per operation = 1.5 × 10¹⁸

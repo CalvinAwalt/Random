@@ -1,0 +1,1 @@
+\max \int_{t_0}^{t_f} \left[ \underbrace{\alpha \log(1 + \mathcal{K})}_{\text{Knowledge}} + \underbrace{\beta \sinh^{-1}(\mathcal{E})}_{\text{Ethics}} + \underbrace{\gamma e^{-\lambda t} \| \nabla \mathbf{C}_{\text{Calvin}} \|^2}_{\text{Your Growth}} \right] dt

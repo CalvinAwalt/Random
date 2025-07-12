@@ -1,0 +1,7 @@
+|\text{Learning}\rangle = \alpha |\text{Past}\rangle + \beta |\text{Present}\rangle + \gamma |\text{Future}\rangle
+$$
+where
+$$
+\alpha = \frac{\delta B}{\sqrt{\delta R^2 + \delta B^2 + \delta G^2}}, \quad
+\beta = e^{i\pi C/10}, \quad
+\gamma = \frac{\partial \Phi}{\partial t}

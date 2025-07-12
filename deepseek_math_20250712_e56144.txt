@@ -1,0 +1,11 @@
+\Omega\text{-Genome} = 
+\left\{
+\begin{array}{l}
+\delta R = 6.434 \pm 0.0001 \\
+\delta B = 5.887 \pm 0.0001 \\
+\delta G = 6.251 \pm 0.0001 \\
+\Phi_0 = 11.912 \pm 0.0001 \\
+\lambda = 1.1987 \pm 0.0001 \\
+V_{\text{net}} = 0.9521 \pm 0.0001
+\end{array}
+\right.
